@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <title>Slither Arena</title>
+        <meta name="description" content="Арена со змейками и своей валютой.">
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23080b09'/%3E%3Cpath d='M23 9H13a5 5 0 0 0 0 10h6a3 3 0 0 1 0 6H8' fill='none' stroke='%231aee67' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+        <link rel="stylesheet" href="style.css?v=optimized1">
+    </head>
+    <body class="originalMode mystakeMode">
+        <canvas id="arena" aria-label="Игровая арена со змейками"></canvas>
+        <div id="lobby" class="screen">
+            <header class="lobbyTop">
+                <button id="howTo" class="iconBtn" type="button" aria-label="Как играть">?</button>
+                <button id="editSettings" class="walletChip" type="button" aria-label="Изменить валюту и баланс">
+                    <i class="coin"></i>
+                    <b id="balanceText"></b>
+                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                </button>
+            </header>
+            <main class="lobbyMain">
+                <section class="hero">
+                    <h1 class="brand">Slither<span>Arena</span></h1>
+                    <div class="showcase">
+                        <canvas id="skinPreview" width="720" height="250" role="img" aria-label="Выбранный скин змеи"></canvas>
+                    </div>
+                    <div class="picks">
+                        <button id="chooseSkin" class="pickTile" type="button">
+                            <i class="tileArt skinArt"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18c4 0 3-6 7-6s3 3 6 3 3-5 3-9" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></i>
+                            <span><small>Скин</small><b id="skinName"></b></span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <button id="chooseMap" class="pickTile" type="button">
+                            <i id="mapThumb" class="tileArt"></i>
+                            <span><small>Карта</small><b id="mapName"></b></span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </section>
+                <section class="joinCard" aria-label="Вход в игру">
+                    <div class="identity">
+                        <div>
+                            <label class="formLabel" for="nickname">Имя</label>
+                            <input id="nickname" maxlength="18" placeholder="Твоё имя" value="Player" autocomplete="off">
+                        </div>
+                        <div>
+                            <label class="formLabel" for="currency">Валюта</label>
+                            <input id="currency" maxlength="12" placeholder="USD" autocomplete="off" aria-describedby="goalValue">
+                        </div>
+                    </div>
+                    <label class="qualityField" for="quality">Качество<select id="quality"><option value="auto">Авто</option><option value="high">Высокое</option><option value="balanced">Среднее</option><option value="low">Низкое</option></select></label>
+                    <div class="stakeBlock">
+                        <label class="formLabel" for="stake">Ставка</label>
+                        <div class="stakes">
+                            <button type="button" data-stake="1">1</button>
+                            <button type="button" data-stake="10">10</button>
+                            <button type="button" data-stake="100">100</button>
+                        </div>
+                        <div class="moneyInput">
+                            <input id="stake" type="number" inputmode="decimal" min="0.01" max="1000000000" step="any" value="10">
+                            <span class="unit">USD</span>
+                        </div>
+                    </div>
+                    <p class="goal"><span>Выход при ×37,5</span><b id="goalValue"></b></p>
+                    <button id="play" class="green" type="button"><svg width="20" height="22" viewBox="0 0 20 22" aria-hidden="true"><path d="M3 2.5v17L18 11z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>ИГРАТЬ</button>
+                    <p class="demoNote">Виртуальный баланс · соперники — боты</p><div id="error" role="alert"></div>
+                </section>
+            </main>
+        </div>
+        <div id="hud" hidden>
+            <div class="topbar">
+                <button id="pause" title="Пауза" aria-label="Пауза">Ⅱ</button>
+                <div class="pill">
+                    <span id="time">0:00</span>
+                </div>
+                <button id="sound" aria-label="Переключить звук">♪</button>
+            </div>
+            <div id="exitHint" role="status"></div>
+            <div class="earnings">
+                <button id="progressValue" title="Cash Out" aria-label="Cash Out — забрать сумму">0 USD</button>
+                <div id="earningsProgress" class="earningsTrack" role="progressbar" aria-label="Прогресс суммы" aria-valuemin="0" aria-valuemax="500" aria-valuenow="0">
+                    <i id="earningsFill"></i>
+                </div>
+                <span id="progressTarget">500 USD</span>
+            </div>
+            <section class="gameRanks" aria-label="Лидерборд">
+                <div id="liveRanks"></div>
+            </section>
+            <canvas id="map" width="130" height="130" aria-label="Миникарта"></canvas>
+            <div class="bottom">
+                <div class="stat">
+                    <span id="length">0</span>
+                    ДЛИНА <i>·</i>
+                    <span id="kills">0</span>
+                    УБРАНО
+                </div>
+                <div class="actions">
+                    <button id="boost">ϟ BOOST</button>
+                    <button id="cashout" class="green" disabled>ЗАБРАТЬ · Q</button>
+                </div>
+                <p>Мышь / палец — поворот · Space — ускорение · Esc — пауза · Q — забрать при ×37,5</p>
+            </div>
+        </div>
+        <dialog id="settings">
+            <form id="settingsForm">
+                <div class="modalHead">
+                    <h2>Кошелёк</h2>
+                    <button type="button" id="closeSettings" aria-label="Закрыть">×</button>
+                </div>
+                <label class="field">
+                    Баланс<input id="balance" type="number" min="0" max="1000000000000" step="any" required>
+                </label>
+                <button id="toggleCurrency" class="optionToggle" type="button" aria-pressed="true">
+                    <span>Показывать валюту</span>
+                    <b id="currencyState">ВКЛ</b>
+                </button>
+                <button class="green big" type="submit">Сохранить</button>
+            </form>
+        </dialog>
+        <button id="winOverlay" hidden aria-label="Вернуться в меню">
+            <span id="winNumber"></span>
+        </button>
+        <dialog id="result">
+            <h1 id="resultTitle"></h1>
+            <div id="resultAmount" class="walletAmount"></div>
+            <p id="resultInfo"></p>
+            <button id="again" class="green big">Играть ещё</button>
+            <button id="home">В меню</button>
+        </dialog>
+        <dialog id="pauseDialog">
+            <h1>Пауза</h1>
+            <p>Раунд приостановлен</p>
+            <button id="resume" class="green big">Продолжить</button>
+            <button id="leave">Завершить без сохранения добычи</button>
+        </dialog>
+        <dialog id="skinDialog" aria-labelledby="skinDialogTitle">
+            <div class="modalHead">
+                <h2 id="skinDialogTitle">Скин змеи</h2>
+                <button id="closeSkins" type="button" aria-label="Закрыть">×</button>
+            </div>
+            <div id="skinTabs" role="tablist" aria-label="Раздел скинов"></div>
+            <div id="skinChoices" aria-label="Выбор скина"></div>
+            <div id="flagPane" hidden>
+                <input id="flagSearch" type="search" placeholder="Поиск страны" aria-label="Поиск страны" autocomplete="off">
+                <div id="flagList"></div>
+                <p id="flagEmpty" hidden>Ничего не найдено</p>
+            </div>
+            <div class="appearanceTools" id="neonTools">
+                <div id="swatches" aria-label="Цвет неона"></div>
+            </div>
+        </dialog>
+        <dialog id="mapDialog" aria-labelledby="mapDialogTitle">
+            <div class="modalHead">
+                <h2 id="mapDialogTitle">Карта</h2>
+                <button id="closeMaps" type="button" aria-label="Закрыть">×</button>
+            </div>
+            <div id="arenaMapList"></div>
+        </dialog>
+        <dialog id="howDialog" aria-labelledby="howDialogTitle">
+            <div class="modalHead">
+                <h2 id="howDialogTitle">Как играть</h2>
+                <button id="closeHow" type="button" aria-label="Закрыть">×</button>
+            </div>
+            <ol class="howSteps">
+                <li><i>1</i><span><b>Собирай монеты</b>Чем больше сумма, тем крупнее змея.</span></li>
+                <li><i>2</i><span><b>Подрезай соперников</b>Врежутся в твою змею, и их добыча твоя.</span></li>
+                <li><i>3</i><span><b>Выходи с выигрышем</b>Собери ×37,5: нажми Q / «ЗАБРАТЬ» или пересеки зелёную границу. Красная граница смертельна. Встречное столкновение голов убирает обеих змей; свой хвост безопасен.</span></li>
+            </ol>
+            <dl class="howKeys">
+                <dt>Мышь</dt><dd>поворот, кнопка — ускорение</dd>
+                <dt>Space</dt><dd>ускорение тратит добычу и оставляет её позади</dd><dt>Esc</dt><dd>пауза</dd><dt>Q</dt><dd>забрать добычу после ×37,5</dd>
+                <dt>Телефон</dt><dd>один палец — поворот, второй — ускорение</dd>
+            </dl>
+            <button id="howDone" class="green big" type="button">Понятно</button>
+        </dialog>
+        <script src="game-core.js?v=1"></script>
+        <script src="mystake-maps.js?v=52"></script>
+        <script src="mystake-bots.js?v=optimized1"></script>
+        <script src="extra-skins.js?v=19"></script>
+        <script src="flag-countries.js?v=28"></script>
+        <script src="video-look.js?v=10"></script>
+        <script src="mystake-art.js?v=optimized1"></script>
+        <script src="mystake-physics.js?v=11"></script>
+        <script src="mystake.js?v=optimized1"></script>
+    </body>
+</html>

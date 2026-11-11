@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-11",
+  "method": "Same local Chromium browser, fixed static scene, 3 warmups and 40 synchronous render calls, CPU Canvas command submission timing",
+  "viewport": { "width": 1280, "height": 720, "dpr": 1.5 },
+  "scene": { "snakes": 10, "points_per_snake": 700, "coins": 2600 },
+  "original": { "median_render_ms": 7.1, "p95_render_ms": 186.6, "clips_per_frame": 2187, "draw_images_per_frame": 3386 },
+  "optimized": { "median_render_ms": 2.3, "p95_render_ms": 6.8, "clips_per_frame": 0, "draw_images_per_frame": 1909 },
+  "coin_query_after_one_death": { "full_scan_checks": 27280, "grid_candidates": 462 },
+  "limits": "Microbenchmark, not full GPU frame timing; p95 is sensitive to short sample size and environment. No physical phone benchmark or universal FPS guarantee."
+}
