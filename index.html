@@ -6,7 +6,7 @@
         <title>Slither Arena</title>
         <meta name="description" content="Арена со змейками и своей валютой.">
         <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23080b09'/%3E%3Cpath d='M23 9H13a5 5 0 0 0 0 10h6a3 3 0 0 1 0 6H8' fill='none' stroke='%231aee67' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
-        <link rel="stylesheet" href="style.css?v=collision4">
+        <link rel="stylesheet" href="style.css?v=difficulty5">
     </head>
     <body class="originalMode mystakeMode">
         <canvas id="arena" aria-label="Игровая арена со змейками"></canvas>
@@ -50,6 +50,8 @@
                         </div>
                     </div>
                     <label class="qualityField" for="quality">Качество<select id="quality"><option value="auto">Авто</option><option value="high">Высокое</option><option value="balanced">Среднее</option><option value="low">Низкое</option></select></label>
+                    <label class="qualityField" for="difficulty">Сложность<select id="difficulty" aria-describedby="difficultyHint"><option value="easy">Лёгкий</option><option value="hard">Сложный</option></select></label>
+                    <p id="difficultyHint" class="difficultyHint"></p>
                     <div class="stakeBlock">
                         <label class="formLabel" for="stake">Ставка</label>
                         <div class="stakes">
@@ -170,16 +172,17 @@
             <button id="howDone" class="green big" type="button">Понятно</button>
         </dialog>
         <script src="game-core.js?v=1"></script>
-        <script src="snake-collision.js?v=collision4"></script>
+        <script src="snake-collision.js?v=difficulty5"></script>
         <script src="mystake-maps.js?v=52"></script>
-        <script src="mystake-bots.js?v=collision4"></script>
+        <script src="bot-ai.js?v=difficulty5"></script>
+        <script src="mystake-bots.js?v=difficulty5"></script>
         <script src="extra-skins.js?v=19"></script>
         <script src="flag-countries.js?v=28"></script>
         <script src="video-look.js?v=10"></script>
-        <script src="ribbon-mesh.js?v=collision4"></script>
-        <script src="ribbon-renderer.js?v=collision4"></script>
-        <script src="mystake-art.js?v=collision4"></script>
-        <script src="mystake-physics.js?v=11"></script>
-        <script src="mystake.js?v=collision4"></script>
+        <script src="ribbon-mesh.js?v=difficulty5"></script>
+        <script src="ribbon-renderer.js?v=difficulty5"></script>
+        <script src="mystake-art.js?v=difficulty5"></script>
+        <script src="mystake-physics.js?v=difficulty5"></script>
+        <script src="mystake.js?v=difficulty5"></script>
     </body>
 </html>

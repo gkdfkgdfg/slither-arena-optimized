@@ -1,8 +1,8 @@
 {
-  "release": "collision4",
+  "release": "difficulty5",
   "date": "2026-11-11",
   "automated_node_tests": {
-    "passed": 14,
+    "passed": 19,
     "failed": 0
   },
   "animated_skin_audit": {
@@ -91,5 +91,56 @@
     "boost",
     "cashout",
     "exitHint"
-  ]
+  ],
+  "solid_collision_audit_release": "collision4; solid collision code unchanged in difficulty5",
+  "difficulty_audit": {
+    "default_mode": "easy",
+    "easy_mix": {
+      "rookie": 6,
+      "regular": 2,
+      "smart": 1
+    },
+    "hard_mix": {
+      "rookie": 2,
+      "regular": 2,
+      "smart": 5
+    },
+    "mixed_rosters_verified_per_level": 50,
+    "same_cutoff_trials_per_kind": 20,
+    "rookie_collisions": 20,
+    "smart_collisions": 0,
+    "safe_bodies_beside_and_behind_do_not_cause_dodging": true,
+    "attention_lapses_do_not_disable_boundary_awareness": true,
+    "production_player_body_cutoff": {
+      "rookie": {
+        "died": true,
+        "player_alive": true,
+        "credited_kills": 1,
+        "elapsed_seconds": 0.49166666666666736,
+        "loot_coins": 38
+      },
+      "smart": {
+        "died": false,
+        "player_alive": true,
+        "credited_kills": 0,
+        "observed_seconds": 2
+      }
+    },
+    "mode_persists_after_reload": true,
+    "round_starts_with_selected_mix": true,
+    "respawn_retains_kind_in_both_modes": true,
+    "animated_frames_per_level": 600,
+    "console_errors": 0,
+    "webgl_errors": 0,
+    "mobile_menu": {
+      "viewport": [
+        390,
+        844
+      ],
+      "horizontal_overflow": false,
+      "play_button_bottom": 780.3125,
+      "menu_scroll_height": 844
+    },
+    "limitations": "Controlled cutoff outcomes show a skill difference; they do not guarantee wins in every scene. Mobile checks use viewport emulation, not a physical phone."
+  }
 }

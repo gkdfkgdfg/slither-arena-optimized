@@ -14,9 +14,9 @@ const physScale=s=>Math.min(6,Math.max(1,s.radius/15));
 // the player runs 180-360 px/s (cruise ≈330, boost ≈540 units/s) and turns up to ~450°/s at any size;
 // rivals (tracked by their price plates) move ≈165 px/s ≈ 245 units/s.
 const VIDEO_MOVE={cruise:370,boost:540,turn:9,bot:245,botTurn:4.5};
-function physCruise(s){return typeof player!=='undefined'&&s===player?VIDEO_MOVE.cruise:VIDEO_MOVE.bot}
+function physCruise(s){return typeof player!=='undefined'&&s===player?VIDEO_MOVE.cruise:VIDEO_MOVE.bot*(s.brain?.speedScale??1)}
 function physBoost(){return VIDEO_MOVE.boost}
-function physTurnRate(s,boosting){return typeof player!=='undefined'&&s===player?VIDEO_MOVE.turn:VIDEO_MOVE.botTurn}
+function physTurnRate(s,boosting){return typeof player!=='undefined'&&s===player?VIDEO_MOVE.turn:VIDEO_MOVE.botTurn*(s.brain?.turnScale??1)}
 /** Head integrator: capped shortest turn, eased speed, straight advance. */
 function physStepHead(s,targetAngle,boosting,dt){
  const turn=physTurnRate(s,boosting)*dt,da=Math.atan2(Math.sin(targetAngle-s.a),Math.cos(targetAngle-s.a));

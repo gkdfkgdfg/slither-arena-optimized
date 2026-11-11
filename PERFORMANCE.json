@@ -1,31 +1,40 @@
 {
   "date": "2026-11-11",
-  "release": "collision4",
-  "method": "1200 actual requestAnimationFrame callbacks with production collisions enabled; botHeading steers the player to make the input repeatable. No invulnerability.",
-  "environment": "Desktop Chromium in-app browser, approximately 240 callbacks per second; no physical phone benchmark",
+  "release": "difficulty5",
+  "method": "600 actual requestAnimationFrame callbacks per difficulty, production collisions enabled, smart AI steering the player for repeatable input",
+  "environment": "Desktop Chromium in-app browser, approximately 240 callbacks per second; not a physical phone",
   "viewport": {
     "width": 1280,
     "height": 720,
     "dpr": 1.5
   },
-  "initial_snakes": 10,
-  "frames": 1200,
-  "rounds": 1,
-  "raf_interval_ms": {
-    "median": 4.2,
-    "p95": 4.4
+  "easy": {
+    "frames": 600,
+    "rounds": 1,
+    "raf_p95_ms": 4.5,
+    "js_update_ms": {
+      "median": 0.7,
+      "p95": 1.1
+    },
+    "js_render_ms": {
+      "median": 0.5,
+      "p95": 0.7
+    }
   },
-  "js_update_ms": {
-    "median": 0.8,
-    "p95": 1.0
+  "hard": {
+    "frames": 600,
+    "rounds": 1,
+    "raf_p95_ms": 4.5,
+    "js_update_ms": {
+      "median": 0.8,
+      "p95": 1.0
+    },
+    "js_render_ms": {
+      "median": 0.4,
+      "p95": 0.5
+    }
   },
-  "js_render_ms": {
-    "median": 0.4,
-    "p95": 0.5
-  },
-  "collision_segments_at_end": 8207,
-  "collision_grid_cells_at_end": 737,
   "console_errors": 0,
   "renderer_error": null,
-  "limits": "JavaScript and graphics command submission timings, not full GPU frame times or a universal FPS guarantee. Not directly comparable to the previous release artificial growth benchmark."
+  "limits": "JavaScript and graphics command submission timing, not full GPU frame time or a universal FPS guarantee. Short desktop samples are sensitive to scene and environment."
 }

@@ -9,7 +9,7 @@ const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
   '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.webp': 'image/webp',
   '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 const clientFiles = new Set(['index.html', 'style.css', 'game-core.js', 'snake-collision.js', 'ribbon-mesh.js', 'ribbon-renderer.js', 'visual-audit.js', 'mystake.js', 'mystake-art.js',
-  'mystake-physics.js', 'mystake-bots.js', 'mystake-maps.js', 'video-look.js', 'extra-skins.js', 'flag-countries.js']);
+  'mystake-physics.js', 'bot-ai.js', 'mystake-bots.js', 'mystake-maps.js', 'video-look.js', 'extra-skins.js', 'flag-countries.js']);
 
 function createServer({ rootDir = __dirname } = {}) {
   const cache = new Map();
