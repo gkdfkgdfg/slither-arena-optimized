@@ -12,7 +12,7 @@ const bot = (kind, random = () => .5) => ({ id: 1, alive: true, x: 0, y: 0, a: 0
   behavior: 'cruiser', routeAngle: 0, routeTimer: 100, weavePhase: 0, coilCooldown: 0 });
 const wall = (x, y = 0) => ({ id: 2, alive: true, x, y: y - 350, a: Math.PI / 2, radius: 15,
   points: [{ x, y: y - 350 }, { x, y: y + 350 }] });
-const worldFor = (s, others = [], random = () => .5) => ({ snakes: [s, ...others], player: null, coins: [], radius: 2200, playing: true, boost: false, random });
+const worldFor = (s, others = [], random = () => .5) => ({ snakes: [s, ...others], player: others[0] || null, coins: [], radius: 2200, playing: true, boost: false, random });
 
 test('both difficulty modes always contain smart and careless bots, with the intended balance', () => {
   for (let seed = 1; seed <= 50; seed++) for (const level of ['easy', 'hard']) {
@@ -48,6 +48,40 @@ test('attention lapses allow mistakes, but never suppress boundary avoidance', (
   assert.equal(s.brain.avoiding, false);
   s.x = 2100;
   assert.equal(Math.abs(BotAI.heading(s, .1, worldFor(s, [obstacle]))), Math.PI);
+});
+
+test('even distracted rookies avoid ordinary bot traffic early', () => {
+  const s = bot('rookie'), obstacle = wall(340), world = worldFor(s, [obstacle]);
+  world.player = null;
+  s.brain.lapseLeft = .8;
+  assert.ok(Math.abs(BotAI.heading(s, .1, world)) > .1);
+  assert.equal(s.brain.avoiding, true);
+  const detour = s.routeAngle;
+  assert.equal(BotAI.heading(s, .1, worldFor(s)), detour, 'hold a detour instead of turning back into traffic');
+});
+
+test('moving bots avoid head-on and crossing traffic with real turn limits', () => {
+  const context = { player: null };
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '../mystake-physics.js'), 'utf8') + ';globalThis.advance=physStepHead;', context);
+  for (const kind of ['rookie', 'regular', 'smart']) for (const crossing of [false, true]) {
+    const a = bot(kind), b = bot(kind), collisions = new World();
+    a.x = -400; b.x = crossing ? 0 : 400; b.y = crossing ? -400 : 0; b.a = crossing ? Math.PI / 2 : Math.PI; b.id = 2; b.routeAngle = b.a;
+    for (const s of [a, b]) s.points = Array.from({ length: 100 }, (_, i) => ({ x: s.x - Math.cos(s.a) * i * 2, y: s.y - Math.sin(s.a) * i * 2 }));
+    for (let frame = 0; frame < 480; frame++) {
+      for (const s of [a, b]) {
+        const dt = 1 / 120;
+        s.think = (s.think || 0) - dt; s.sinceThink = (s.sinceThink || 0) + dt;
+        if (s.think <= 0) {
+          s.targetAngle = BotAI.heading(s, s.sinceThink, { ...worldFor(s), snakes: [a, b], player: null });
+          s.sinceThink = 0; s.think = s.brain.reaction;
+        }
+        s.collisionX = s.x; s.collisionY = s.y; context.advance(s, s.targetAngle, false, dt);
+        s.points.unshift({ x: s.x, y: s.y }); s.points.length = 100;
+      }
+      assert.equal(collisions.headDeaths([a, b]).size, 0, kind + (crossing ? ' crossing' : ' head-on'));
+    }
+  }
 });
 
 test('a real cut-off kills rookies while smart bots escape using the same head physics and solid collisions', t => {

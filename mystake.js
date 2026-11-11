@@ -84,22 +84,9 @@ function spawnCoin(x,y,value){
 }
 // Match the current round only when a new rival enters the arena.
 function shuffleRivalTiers(){rivalTiers=[...Array(7).fill('small'),...Array(6).fill('peer'),...Array(4).fill('large'),...Array(2).fill('giant'),'titan'];for(let i=rivalTiers.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[rivalTiers[i],rivalTiers[j]]=[rivalTiers[j],rivalTiers[i]]}}
-// ---- Round economy ----
-// Rival values follow a time curve (×GROWTH by SECONDS, then slower) instead of the player's own value,
-// which used to snowball. Player loot is softly steered towards the same curve.
-// natural: a red coin is worth this share of stake×curve at the moment it is eaten.
-// steer/minK/maxK: how strongly player loot is pulled towards curve×lead (lead offsets the lag of steering).
-// Measured frame by frame from the reference videos 1-10.mp4 (start 2500-5000 Bs):
-// exit opens at ×37.5 of the stake (3000 → 112 500), red dot ≈ +0.0003×stake, boost drains ≈ .0012×stake/s,
-// a yellow chain ball ≈ 2% of the stake at the start. Player value follows VIDEO_CURVE (×5 at 6 s, ×14 at 12 s,
-// ×38 at 29 s, ×57 at 42 s); rivals carry 1-3× the stake at the start and up to ~14× by 40 s.
+// Food and boost are fixed shares of the entry amount; loot keeps its face value.
 const EXIT_X=37.5;
-const VIDEO_CURVE=[[0,1],[6,5],[12,14],[19,24],[25,31],[30,40],[42,57]];
-function videoCurve(t=elapsed){const c=VIDEO_CURVE,n=c.length-1;if(t>=c[n][0])return c[n][1]+(t-c[n][0])*1.4;for(let i=1;i<=n;i++)if(t<=c[i][0]){const k=(t-c[i-1][0])/(c[i][0]-c[i-1][0]);return c[i-1][1]*Math.pow(c[i][1]/c[i-1][1],k)}return 1}
-const PACE={red:[.00012,.0005],boost:.0012,ball:.02,tiers:{small:[.5,1.2],peer:[1.2,2.5],large:[2.5,3.5],giant:[3.5,4.5],titan:[4.5,6]},minK:.3,maxK:4};
-function paceCurve(t=elapsed){return 1.7+t/17}
-// World chains (loot lying around, as in the video) are steered so the player tracks VIDEO_CURVE.
-function paceFactor(){const target=sessionStake*videoCurve()*1.08,v=Math.max(sessionStake,player.value);return Math.max(PACE.minK,Math.min(PACE.maxK,target/v))}
+const PACE={tiers:{small:[.5,1.2],peer:[1.2,2.5],large:[2.5,3.5],giant:[3.5,4.5],titan:[4.5,6]}};
 function lenForValue(v){return 26+65*Math.log2(Math.max(1,v/sessionStake))}
 // The player fattens with winnings while the camera stays put (measured from the reference video:
 // width ×1.4 at ×4, ×1.8 at ×16, ×2.7 at ×96). Rivals keep their own thin formula.
@@ -110,8 +97,7 @@ const GROWTH={base:15,power:.42,max:100,ease:3,view:860};
 function viewZoom(){return Math.min(W,H)/GROWTH.view}
 // Measured body radius in the videos (units): ×1 ≈16, ×10 ≈75, ×31 ≈86, ×57 ≈97 — fast early growth, then a plateau.
 function playerRadius(v){const x=Math.max(1,v/sessionStake);return Math.min(GROWTH.max,16+64*(1-Math.exp(-(x-1)/5))+Math.max(0,5.5*Math.log2(x/10)))}
-// A rival's price is fixed when it appears (off screen): sized to what the player still needs to stay on the
-// video curve 5 s ahead, so kills (counted at face value) keep the round on the curve.
+// Rival values depend on their size tier and round time, never on a promised player score.
 function rivalSpawnValue(i){if(!rivalTiers.length)shuffleRivalTiers();const tier=rivalTiers.pop(),range=PACE.tiers[tier];return Math.max(.01,Math.round(sessionStake*rand(...range)*Math.min(12,1+elapsed/90)*100)/100)}
 // Heading whose straight body (laid out behind the head, up to ~1900 units) stays inside the arena.
 function fitHeading(x,y){let best=rand(-Math.PI,Math.PI),bestOut=1e9;for(let k=0;k<24;k++){const h=rand(-Math.PI,Math.PI),tx=x-Math.cos(h)*1900,ty=y-Math.sin(h)*1900,out=Math.max(0,Math.abs(tx)-(R-80))+Math.max(0,Math.abs(ty)-(R-80));if(out<bestOut){bestOut=out;best=h}if(out===0)break}return best}
@@ -149,7 +135,7 @@ function maintainCrowd(dt){crowdTimer-=dt;if(crowdTimer>0)return;crowdTimer=1.2;
 // Loot from rivals dying far away piles up (thousands of balls slow phones down): drop distant chains.
 for(let i=coins.length-1;i>=0;i--){const c=coins[i];if((c.loot||c.boostDrop)&&!c.pull&&elapsed-c.born>90)removeCoin(c)}const near=snakes.filter(s=>s!==player&&s.alive&&Math.abs(s.x-player.x)<W/(2*zoom)+130&&Math.abs(s.y-player.y)<H/(2*zoom)+130);if(near.length>=2)return;let need=Math.min(1,2-near.length);for(const s of snakes){if(need===0)break;if(s===player||!s.alive||s.tailRun>0||dist(s,player)<650)continue;const offscreen=s.points.every(p=>Math.abs(p.x-camera.x)>W/(2*zoom)+100||Math.abs(p.y-camera.y)>H/(2*zoom)+100);if(offscreen){const newcomer=makeSnake(s.id);if(placeNearby(newcomer,false,s.id)){releaseCoins(s);snakes[snakes.indexOf(s)]=newcomer;need--}}}}
 let approachCount=0,tailCrashCooldown=0;
-function seed(){player=null;roundDifficulty=prefs.difficulty;botKinds=BotAI.roster(roundDifficulty);shuffleRivalTiers();exitUnlocked=false;deathTrails=[];crowdTimer=0;approachCount=0;tailCrashCooldown=0;snakes=[];coins=[];coinGrid.clear();collisionWorld.clear();amountCache.clear();particles=[];player=makeSnake(0);player.points=Array.from({length:Math.ceil(BODY.start)},(_,i)=>({x:-i*PHYS.pitch,y:0}));snakes.push(player);for(let i=1;i<=BOT_COUNT;i++){const s=makeSnake(i);if(!(i<=3&&placeNearby(s,true,i))&&!placeAnywhere(s)){s.alive=false;s.respawn=.75}snakes.push(s)}for(let n=0;n<900;n++)spawnCoin();/* videos: ~26 red dots per screen */for(let n=0;n<14;n++){const a=rand(0,6.28),r=rand(100,420);spawnCoin(Math.cos(a)*r,Math.sin(a)*r)}camera={x:player.x,y:player.y}}
+function seed(){player=null;roundDifficulty=prefs.difficulty;botKinds=BotAI.roster(roundDifficulty);shuffleRivalTiers();exitUnlocked=false;deathTrails=[];crowdTimer=0;approachCount=0;tailCrashCooldown=0;snakes=[];coins=[];coinGrid.clear();collisionWorld.clear();amountCache.clear();particles=[];player=makeSnake(0);player.points=Array.from({length:Math.ceil(BODY.start)},(_,i)=>({x:-i*PHYS.pitch,y:0}));snakes.push(player);for(let i=1;i<=BOT_COUNT;i++){const s=makeSnake(i);if(!(i<=3&&placeNearby(s,true,i))&&!placeAnywhere(s)){s.alive=false;s.respawn=.75}snakes.push(s)}for(let n=0;n<900;n++)spawnCoin();/* A small food patch ahead gives the first seconds visible progress. */for(let n=0;n<36;n++){const a=rand(-1.1,1.1),r=rand(60,480);spawnCoin(Math.cos(a)*r,Math.sin(a)*r)}camera={x:player.x,y:player.y}}
 function start(){const stake=Number($('stake').value);if(!Number.isFinite(stake)||stake<.01||stake>1e9){$('error').textContent='Укажи сумму входа от 0.01 до 1 000 000 000.';return false}if(stake>prefs.balance){$('error').textContent='Недостаточно баланса. Нажми на него вверху, чтобы изменить.';return false}prefs.difficulty=BotAI.normalize($('difficulty').value);prefs.stake=stake;prefs.name=$('nickname').value.trim()||'Player';sessionStake=stake;prefs.balance=Math.round((prefs.balance-stake)*1000000)/1000000;save();mode='play';touchPoints.clear();steerPointer=null;touchOrigin=null;paused=false;elapsed=0;kills=0;boost=false;aim={x:1,y:0};zoom=viewZoom();acc=0;last=performance.now();seed();player.a=0;player.points=Array.from({length:Math.ceil(bodyPoints(player))},(_,i)=>({x:-i*PHYS.pitch,y:0}));$('lobby').hidden=true;$('hud').hidden=false;$('error').textContent='';$('result').close();$('winOverlay').hidden=true;tone(500,.12);renderHUD();return true}
 $('play').onclick=start;$('again').onclick=()=>{if(!start()){ $('result').close();home()}};
 function home(){ $('winOverlay').hidden=true;mode='menu';paused=false;boost=false;$('hud').hidden=true;$('lobby').hidden=false;$('result').close();$('pauseDialog').close();sync();sessionStake=prefs.stake;seed()}
@@ -198,7 +184,7 @@ const suck=s.radius*1.6+35,suck2=suck*suck,pullSpeed=Math.max(112,s.velocity||0)
 coinGrid.query(s.x,s.y,suck,coinCandidates);const stamp=++coinStamp;for(const c of coinCandidates)c.checkStamp=stamp;
 if(s.pulledCoins)for(const c of s.pulledCoins)if(c.slot>=0&&c.checkStamp!==stamp){c.checkStamp=stamp;coinCandidates.push(c)}
 for(const c of coinCandidates){coinChecks++;if(c.slot<0)continue;if(c.pull&&!c.pull.alive){c.pull.pulledCoins?.delete(c);c.pull=null}const mine=c.pull===s,dx=s.x-c.x,dy=s.y-c.y;if(!mine&&(Math.abs(dx)>suck||Math.abs(dy)>suck))continue;const d2=dx*dx+dy*dy;
- if(d2<(s.radius+c.r+5)**2){const natural=c.h===0&&!c.boostDrop,gain=natural?sessionStake*rand(PACE.red[0],PACE.red[1]):c.value,before=s.value;s.value+=gain;s.len+=lenForValue(s.value)-lenForValue(before);if(s===player&&playing){tone(rand(780,1050),.035);burst(c.x,c.y,c.h===46?'#ffd746':'#ff383c',3)}removeCoin(c);if(natural)spawnCoin()}
+ if(d2<(s.radius+c.r+5)**2){const natural=c.h===0&&!c.boostDrop,gain=natural?ArenaCore.foodValue(sessionStake):c.value,before=s.value;s.value+=gain;s.len+=lenForValue(s.value)-lenForValue(before);if(s===player&&playing){tone(rand(780,1050),.035);burst(c.x,c.y,c.h===46?'#ffd746':'#ff383c',3)}removeCoin(c);if(natural)spawnCoin()}
  else if(mine||(!c.pull&&d2<suck2)){if(!c.pull){c.pull=s;(s.pulledCoins??=new Set()).add(c)}const d=Math.sqrt(d2);if(d>1e-7){const step=Math.min(d,pullSpeed*dt+d*Math.min(1,dt*3));c.x+=dx/d*step;c.y+=dy/d*step;coinGrid.move(c)}}
 }
 

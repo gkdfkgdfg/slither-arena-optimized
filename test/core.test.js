@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { SpatialGrid, removeIndexed, boostCost } = require('../game-core');
+const { SpatialGrid, removeIndexed, boostCost, foodValue } = require('../game-core');
 
 test('spatial queries retain every nearby item after moving, deleting and crossing zero', () => {
   const grid = new SpatialGrid(96), items = [];
@@ -39,7 +39,7 @@ test('constant-time deletion maintains slots and is safe when repeated', () => {
   }
 });
 
-test('boost charges meaningful value, conserves dropped value and never crosses the floor', () => {
+test('boost has a small fixed cost, conserves dropped value and never crosses the floor', () => {
   let value = 100, spent = 0;
   for (let i = 0; i < 6000; i++) {
     const cost = boostCost(value, 100, 1 / 60);
@@ -47,8 +47,19 @@ test('boost charges meaningful value, conserves dropped value and never crosses 
     value -= cost; spent += cost;
     assert.ok(value >= 25 - 1e-9);
   }
-  assert.ok(Math.abs(value - 25) < 1e-8);
+  assert.ok(Math.abs(value - 88) < 1e-8);
   assert.ok(Math.abs(value + spent - 100) < 1e-8);
   assert.equal(boostCost(25, 100, 1), 0);
-  assert.ok(boostCost(100, 100, 1) >= 3);
+  assert.equal(boostCost(100, 100, 5), .6);
+  assert.equal(boostCost(10000, 100, 5), .6, 'large loot must not multiply the boost charge');
+  assert.equal(boostCost(25.1, 100, 1000), 25.1 - 25);
+  assert.equal(boostCost(100, 100, -1), 0);
+});
+
+test('ordinary food gives a visible early gain, exceeding a short boost charge', () => {
+  const stake = 100, gains = [0, .25, .5, .75, 1].map(r => foodValue(stake, () => r));
+  assert.ok(gains.every(value => value >= .3 && value <= .7 + 1e-12));
+  const twentyCoins = 20 * foodValue(stake, () => .5);
+  assert.equal(twentyCoins, 10);
+  assert.ok(twentyCoins > boostCost(stake, stake, 5) * 10);
 });

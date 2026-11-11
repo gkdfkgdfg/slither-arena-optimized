@@ -1,6 +1,6 @@
 {
   "date": "2026-11-11",
-  "release": "difficulty5",
+  "release": "balance6",
   "method": "600 actual requestAnimationFrame callbacks per difficulty, production collisions enabled, smart AI steering the player for repeatable input",
   "environment": "Desktop Chromium in-app browser, approximately 240 callbacks per second; not a physical phone",
   "viewport": {
@@ -11,27 +11,27 @@
   "easy": {
     "frames": 600,
     "rounds": 1,
-    "raf_p95_ms": 4.5,
+    "raf_p95_ms": 4.3,
     "js_update_ms": {
       "median": 0.7,
-      "p95": 1.1
+      "p95": 0.9
     },
     "js_render_ms": {
-      "median": 0.5,
-      "p95": 0.7
+      "median": 0.4,
+      "p95": 0.6
     }
   },
   "hard": {
     "frames": 600,
     "rounds": 1,
-    "raf_p95_ms": 4.5,
+    "raf_p95_ms": 4.3,
     "js_update_ms": {
-      "median": 0.8,
-      "p95": 1.0
+      "median": 0.7,
+      "p95": 0.9
     },
     "js_render_ms": {
       "median": 0.4,
-      "p95": 0.5
+      "p95": 0.6
     }
   },
   "console_errors": 0,

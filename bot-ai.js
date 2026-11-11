@@ -82,27 +82,32 @@
       route = Math.atan2(s.coilCenter.y + Math.sin(a) * 90 - s.y, s.coilCenter.x + Math.cos(a) * 90 - s.x);
       if (!s.coilTime) { s.routeAngle = s.a; s.routeTimer = 4; }
     }
-    if (brain.lapseLeft > 0) return route;
-    const look = Math.max(65, (s.velocity || 245) * p.horizon) + s.radius * 2 + p.margin, nearby = [];
+    const speed = s.velocity || 245, nearby = [];
     for (const other of world.snakes) {
       if (other === s || !other.alive) continue;
-      const safe = s.radius + other.radius + p.margin, reach2 = (look + safe) ** 2;
+      const isPlayer = other === player && world.playing;
+      // Inattention makes rookies vulnerable to the player's cut-offs, not to ordinary traffic.
+      if (isPlayer && brain.lapseLeft > 0) continue;
+      const margin = isPlayer ? p.margin : 42;
+      const look = Math.max(65, speed * (isPlayer ? p.horizon : 2.4)) + s.radius * 2 + margin;
+      const safe = s.radius + other.radius + margin, reach2 = (look + safe) ** 2;
       const points = other.points;
       for (let i = 0; i < points.length - 1; i += 4) {
         const a = points[i], b = points[Math.min(points.length - 1, i + 4)];
-        if (geometry.pointSegmentDistance2(s.x, s.y, a.x, a.y, b.x, b.y) < reach2) nearby.push({ ax: a.x, ay: a.y, bx: b.x, by: b.y, safe });
+        if (geometry.pointSegmentDistance2(s.x, s.y, a.x, a.y, b.x, b.y) < reach2) nearby.push({ ax: a.x, ay: a.y, bx: b.x, by: b.y, safe, look });
       }
-      // Only attentive bots extrapolate a short head path. The player gets the same safety margin as everyone else.
-      if (p.predict && other === player && world.playing) {
-        const d = (other.velocity || 370) * p.predict;
+      // Traffic prediction prevents opposing bots choosing a route through each other's moving heads.
+      const prediction = isPlayer ? p.predict : 1.2;
+      if (prediction) {
+        const d = (other.velocity || (isPlayer ? 370 : 245)) * prediction;
         if ((s.x - other.x) ** 2 + (s.y - other.y) ** 2 < reach2) nearby.push({ ax: other.x, ay: other.y,
-          bx: other.x + Math.cos(other.a) * d, by: other.y + Math.sin(other.a) * d, safe });
+          bx: other.x + Math.cos(other.a) * d, by: other.y + Math.sin(other.a) * d, safe, look });
       }
     }
     const danger = angle => {
-      const x = s.x + Math.cos(angle) * look, y = s.y + Math.sin(angle) * look;
       let score = 0;
       for (const obstacle of nearby) {
+        const x = s.x + Math.cos(angle) * obstacle.look, y = s.y + Math.sin(angle) * obstacle.look;
         const d2 = geometry.segmentDistance2(s.x, s.y, x, y, obstacle.ax, obstacle.ay, obstacle.bx, obstacle.by);
         if (d2 < obstacle.safe ** 2) score += (1 - Math.sqrt(d2) / obstacle.safe) * 180;
       }
@@ -111,10 +116,12 @@
     if (!nearby.length || danger(route) < .01) return route;
     brain.avoiding = true;
     let bestAngle = route, bestScore = Infinity;
-    for (const offset of p.offsets) {
+    for (const offset of profiles.smart.offsets) {
       const angle = route + offset, score = Math.abs(offset) * 20 + angleGap(angle, s.a) * 8 + danger(angle);
       if (score < bestScore) { bestScore = score; bestAngle = angle; }
     }
+    // Commit to the detour instead of swinging back into the same body at the next decision.
+    s.routeAngle = bestAngle; s.routeTimer = Math.max(s.routeTimer, 1.25);
     return bestAngle;
   }
   return { normalize, roster, createBrain, heading };

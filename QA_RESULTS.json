@@ -1,8 +1,8 @@
 {
-  "release": "difficulty5",
+  "release": "balance6",
   "date": "2026-11-11",
   "automated_node_tests": {
-    "passed": 19,
+    "passed": 22,
     "failed": 0
   },
   "animated_skin_audit": {
@@ -92,7 +92,7 @@
     "cashout",
     "exitHint"
   ],
-  "solid_collision_audit_release": "collision4; solid collision code unchanged in difficulty5",
+  "solid_collision_audit_release": "collision4; solid collision code unchanged in balance6",
   "difficulty_audit": {
     "default_mode": "easy",
     "easy_mix": {
@@ -141,6 +141,60 @@
       "play_button_bottom": 780.3125,
       "menu_scroll_height": 844
     },
-    "limitations": "Controlled cutoff outcomes show a skill difference; they do not guarantee wins in every scene. Mobile checks use viewport emulation, not a physical phone."
+    "limitations": "Controlled cutoff outcomes show a skill difference; they do not guarantee wins in every scene. Mobile checks use viewport emulation, not a physical phone.",
+    "release": "difficulty5 UI audit; controlled cutoff and mixed-roster tests rerun for balance6"
+  },
+  "balance_audit": {
+    "boost_cost_per_second_as_share_of_entry": 0.0012,
+    "boost_cost_grows_with_collected_value": false,
+    "food_reward_as_share_of_entry": {
+      "min": 0.003,
+      "max": 0.007,
+      "mean": 0.005
+    },
+    "additional_food_near_start": 36,
+    "production_boost_probe": {
+      "entry": 100,
+      "seconds": 5,
+      "remaining": 99.39999999999714,
+      "alive": true
+    },
+    "production_food_probe": {
+      "entry": 100,
+      "collected": 20,
+      "midpoint_random_reward": 10
+    },
+    "traffic_audit": {
+      "method": "3 seeded 60-second simulations per case, production update, spawning and head/body physics. Player made inactive and crowd relocation disabled to isolate NPC traffic.",
+      "seeds": [
+        41,
+        99,
+        207
+      ],
+      "easy_before_peer_deaths": [
+        36,
+        40,
+        42
+      ],
+      "easy_after_peer_deaths": [
+        2,
+        4,
+        4
+      ],
+      "hard_after_peer_deaths": [
+        2,
+        3,
+        1
+      ],
+      "after_boundary_deaths": 0,
+      "limits": "Small controlled sample; random trajectories diverge after changing AI and food, so seeds are repeatable initial conditions, not identical encounters."
+    },
+    "head_on_and_crossing_encounters": "all 3 skill types survived controlled moving-bot tests using actual head physics and collisions",
+    "player_cutoff": {
+      "rookie_deaths_in_20": 20,
+      "smart_deaths_in_20": 0
+    },
+    "console_errors": 0,
+    "webgl_errors": 0
   }
 }

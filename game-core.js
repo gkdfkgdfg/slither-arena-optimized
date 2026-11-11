@@ -61,8 +61,13 @@
   }
 
   function boostCost(value, stake, dt) {
-    return Math.max(0, Math.min(value - stake * .25, Math.max(stake * .03, value * .025) * dt));
+    // A small, fixed share of the entry amount, even after collecting large loot.
+    return Math.max(0, Math.min(value - stake * .25, stake * .0012 * dt));
   }
 
-  return { SpatialGrid, removeIndexed, boostCost };
+  function foodValue(stake, random = Math.random) {
+    return stake * (.003 + random() * .004);
+  }
+
+  return { SpatialGrid, removeIndexed, boostCost, foodValue };
 });
