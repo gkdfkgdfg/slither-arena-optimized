@@ -285,7 +285,7 @@ function drawOriginalSnake(g,s,alpha=1){
  g.save();g.globalAlpha=1;g.lineCap='round';g.lineJoin='round';g.strokeStyle='#030810';g.lineWidth=r*2+1;g.beginPath();
  for(let k=1,pen=false;k<m;k++){const p=pts[k-1],q=pts[k];if(off(p,q)){pen=false;continue}if(!pen){g.moveTo(p.x,p.y);pen=true}g.lineTo(q.x,q.y)}g.stroke();
  for(let k=m-1;k>0;k--){const p=pts[k-1],q=pts[k];if(off(p,q))continue;const dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy);if(len<1e-5)continue;
-  const a=Math.atan2(dy,dx),u=64+arc[k]*scale;g.save();g.translate(q.x,q.y);g.rotate(a);g.drawImage(bodyJoint(tex,u),-r,-r,r*2,r*2);g.restore();
+  const a=Math.atan2(dy,dx),u=64+arc[k]*scale,next=pts[k+1],bend=next?Math.abs(Math.atan2(dx*(next.y-q.y)-dy*(next.x-q.x),dx*(next.x-q.x)+dy*(next.y-q.y))):Math.PI;if(bend>.025){g.save();g.translate(q.x,q.y);g.rotate(a);g.drawImage(bodyJoint(tex,u),-r,-r,r*2,r*2);g.restore()}
   g.save();g.translate(p.x,p.y);g.rotate(a);let at=0;while(at<len){const u=((64+(arc[k-1]+at)*scale)%768+768)%768,w=Math.min((len-at)*scale,768-u),world=w/scale;if(w<1e-5)break;g.drawImage(tex,u*sourceScale,0,w*sourceScale,tex.height,at-.3,-r,world+.6,r*2);at+=world}g.restore();
  }
  const head=pts[0],a=(s.previousA??s.a)+Math.atan2(Math.sin((s.a||0)-(s.previousA??s.a??0)),Math.cos((s.a||0)-(s.previousA??s.a??0)))*blend;
