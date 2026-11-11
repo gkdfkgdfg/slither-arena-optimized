@@ -55,19 +55,24 @@ const ENERGY_MATERIALS={
  glacial:{base:[12,43,63],cloud:[27,81,100],light:[94,211,236],core:[230,255,255],phase:3.7},
  emerald_arc:{base:[4,26,24],cloud:[12,77,51],light:[36,231,143],core:[217,255,232],phase:5.1}
 };
-const referenceMaterials=new Map();
+const referenceMaterials=new Map(),skinAssetState=new Map();
+function rememberMaterial(key,source){
+ referenceMaterials.delete(key);referenceMaterials.set(key,source);
+ for(const candidate of referenceMaterials.keys()){if(referenceMaterials.size<=48)break;if(candidate!==key&&skinAssetState.get(candidate)!=='loading')referenceMaterials.delete(candidate)}
+}
+function currentMaterial(key){const source=referenceMaterials.get(key);referenceMaterials.delete(key);referenceMaterials.set(key,source);return source}
 function skinHash(x,y=0){const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n)}
 function skinNoise(x,y){const ix=Math.floor(x),iy=Math.floor(y),sx=x-ix,sy=y-iy,u=sx*sx*(3-2*sx),v=sy*sy*(3-2*sy);return (skinHash(ix,iy)*(1-u)+skinHash(ix+1,iy)*u)*(1-v)+(skinHash(ix,iy+1)*(1-u)+skinHash(ix+1,iy+1)*u)*v}
 function skinTexture(id,color){
  if(id.startsWith("flag_"))return countryTexture(id.slice(5));
- const key=id+color;if(referenceMaterials.has(key))return referenceMaterials.get(key);
- if(typeof VIDEO_SKIN_PAINT!=='undefined'&&VIDEO_SKIN_PAINT[id]){const t=videoSkinTexture(id);referenceMaterials.set(key,t);return t}
+ const key=id+color;if(referenceMaterials.has(key))return currentMaterial(key);
+ if(typeof VIDEO_SKIN_PAINT!=='undefined'&&VIDEO_SKIN_PAINT[id]){const t=videoSkinTexture(id);rememberMaterial(key,t);return t}
  if(typeof STATIC_TEXTURE_BUILD==='undefined'){
   const fallback=document.createElement('canvas');fallback.width=768;fallback.height=128;
-  const f=fallback.getContext('2d'),shade=f.createLinearGradient(0,0,0,128);shade.addColorStop(0,'#111c23');shade.addColorStop(.35,color||'#79cba6');shade.addColorStop(1,'#111c23');f.fillStyle=shade;f.fillRect(0,0,768,128);referenceMaterials.set(key,fallback);
+  const f=fallback.getContext('2d'),shade=f.createLinearGradient(0,0,0,128);shade.addColorStop(0,'#111c23');shade.addColorStop(.35,color||'#79cba6');shade.addColorStop(1,'#111c23');f.fillStyle=shade;f.fillRect(0,0,768,128);rememberMaterial(key,fallback);skinAssetState.set(key,'loading');
   // Decode off the main thread so a newly seen skin does not stall a frame.
-  const img=new Image();img.onload=()=>{const ready=bmp=>{referenceMaterials.set(key,bmp);refresh()};if(typeof createImageBitmap==='function')createImageBitmap(img).then(ready,()=>ready(img));else ready(img)};
-  const refresh=()=>{if(typeof previewSnake==='function')for(const c of document.querySelectorAll('canvas[data-skin]'))if(c.dataset.skin===id){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);previewSnake(g,id,c.width,c.height)}};img.src='skins/'+id+(id==='neon'?'-'+color.slice(1):'')+'.png?v=31';return fallback;
+  const img=new Image();img.onload=()=>{const ready=bmp=>{rememberMaterial(key,bmp);skinAssetState.set(key,'ready');refresh()};if(typeof createImageBitmap==='function')createImageBitmap(img).then(ready,()=>ready(img));else ready(img)};
+  const refresh=()=>{if(typeof previewSnake==='function')for(const c of document.querySelectorAll('canvas[data-skin]'))if(c.dataset.skin===id){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);previewSnake(g,id,c.width,c.height)}};img.onerror=()=>skinAssetState.set(key,'error');img.src='skins/'+id+(id==='neon'?'-'+color.slice(1):'')+'.png?v=31';return fallback;
  }
  const c=document.createElement('canvas');c.width=1536;c.height=256;const g=c.getContext('2d'),W=768,H=128;g.scale(2,2);
  const fill=(c,x=0,y=0,w=W,h=H)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
@@ -193,7 +198,7 @@ function skinTexture(id,color){
  // Bake cylindrical lighting once, avoiding per-segment gradients on mobile.
  g.save();g.setTransform(1,0,0,1,0,0);const im=g.getImageData(0,0,W*2,H*2);for(let y=0;y<H*2;y++){const v=(y-127.5)/128,round=Math.sqrt(Math.max(0,1-v*v)),shade=.18+.82*Math.pow(round,.7),shine=Math.exp(-Math.pow((v+.34)/.12,2))*.36;for(let x=0;x<W*2;x++){const k=(y*W*2+x)*4;for(let j=0;j<3;j++)im.data[k+j]=Math.min(255,im.data[k+j]*shade+shine*100);im.data[k+3]=255}}g.putImageData(im,0,0);g.restore();
  if(['candy','wrapped','dna','skeleton','jellyfish'].includes(id))finishGlass(g,W,H);
- referenceMaterials.set(key,c);return c;
+ rememberMaterial(key,c);return c;
 }
 // Periodic fields share identical edge values. Bake the expensive detail once;
 // the running game draws these textures with its existing continuous body mesh.
@@ -250,11 +255,11 @@ function finishGlass(g,W,H){
 }
 // Local flag images are loaded once, then baked onto the cylindrical body.
 function countryTexture(code){
- const key='flag_'+code;if(referenceMaterials.has(key))return referenceMaterials.get(key);
- const c=document.createElement('canvas');c.width=1536;c.height=256;const g=c.getContext('2d');g.fillStyle='#334651';g.fillRect(0,0,c.width,c.height);referenceMaterials.set(key,c);
+ const key='flag_'+code;if(referenceMaterials.has(key))return currentMaterial(key);
+ const c=document.createElement('canvas');c.width=1536;c.height=256;const g=c.getContext('2d');g.fillStyle='#334651';g.fillRect(0,0,c.width,c.height);rememberMaterial(key,c);skinAssetState.set(key,'loading');
  // Venezuela-style flag body (video-look.js): stripes along the body, emblem as stars/dots.
- if(code==='ve'){flagStyleTexture('ve',null,c);return c}
- const img=new Image();img.onload=()=>{g.clearRect(0,0,c.width,c.height);try{flagStyleTexture(code,img,c)}catch(e){const tile=384;for(let x=0;x<c.width;x+=tile)g.drawImage(img,x,0,tile,c.height)}if(typeof drawSkin==='function')drawSkin()};img.src='flags/'+code+'.png';return c;
+ if(code==='ve'){flagStyleTexture('ve',null,c);skinAssetState.set(key,'ready');return c}
+ const img=new Image();img.onload=()=>{g.clearRect(0,0,c.width,c.height);try{flagStyleTexture(code,img,c)}catch(e){const tile=384;for(let x=0;x<c.width;x+=tile)g.drawImage(img,x,0,tile,c.height)}c.arenaRevision=(c.arenaRevision||0)+1;skinAssetState.set(key,'ready');if(typeof drawSkin==='function')drawSkin()};img.onerror=()=>skinAssetState.set(key,'error');img.src='flags/'+code+'.png';return c;
 }
 function originalPath(g,ps){g.beginPath();ps.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y))}
 // Visible world rectangle set by render(); body pieces outside it are skipped.
@@ -263,36 +268,91 @@ let snakeView=null;
 let snakeBuf={idx:new Int32Array(1024),arc:new Float32Array(1024),nx:new Float32Array(1024),ny:new Float32Array(1024),sp:new Float32Array(1024),sm:new Float32Array(1024),pts:[]};
 function snakeBuffers(n){if(snakeBuf.idx.length<n){const m=Math.max(n,snakeBuf.idx.length*2);snakeBuf={idx:new Int32Array(m),arc:new Float32Array(m),nx:new Float32Array(m),ny:new Float32Array(m),sp:new Float32Array(m),sm:new Float32Array(m),pts:snakeBuf.pts}}return snakeBuf}
 const SKIN_GLINT=new Set(['galaxy','nebula','pearl','ice','robot','goldscale','opal','prism','obsidian','circuit','chrome','ruby','jellyfish','copper']);
-const jointCache=new WeakMap();
-function bodyJoint(tex,u){
- let cache=jointCache.get(tex);if(!cache){cache=new Map();jointCache.set(tex,cache)}
- const phase=((Math.round(u/48)%16)+16)%16;if(cache.has(phase))return cache.get(phase);
- const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),scale=tex.width/768,center=phase*48;
- g.beginPath();g.arc(64,64,64,0,Math.PI*2);g.clip();
- for(let at=0;at<128;){const x=((center-64+at)%768+768)%768,w=Math.min(128-at,768-x);g.drawImage(tex,x*scale,0,w*scale,tex.height,at,0,w,128);at+=w}
- cache.set(phase,c);return c;
+const triX=new Float64Array(3),triY=new Float64Array(3);
+// A shared cross-section at each bend keeps neighbouring texture strips joined.
+function skinTriangle(g,tex,u,w,ax,ay,bx,by,cx,cy,second){
+ g.save();triX[0]=ax;triY[0]=ay;triX[1]=bx;triY[1]=by;triX[2]=cx;triY[2]=cy;g.beginPath();
+ for(let i=0;i<3;i++){const px=triX[i],py=triY[i],qi=(i+2)%3,ri=(i+1)%3,l=Math.hypot(triX[qi]-px,triY[qi]-py)||1,k=Math.hypot(triX[ri]-px,triY[ri]-py)||1,ux=(triX[qi]-px)/l,uy=(triY[qi]-py)/l,vx=(triX[ri]-px)/k,vy=(triY[ri]-py)/k,sx=ux+vx,sy=uy+vy,d=Math.hypot(sx,sy)||1,pad=Math.min(1.5,.55/Math.max(.04,Math.sqrt(Math.max(0,(1-ux*vx-uy*vy)/2)))),x=px-sx/d*pad,y=py-sy/d*pad;i?g.lineTo(x,y):g.moveTo(x,y)}g.closePath();g.clip();
+ if(!second)g.transform(bx-ax,by-ay,cx-ax,cy-ay,ax,ay);
+ else g.transform(bx-cx,by-cy,bx-ax,by-ay,ax+cx-bx,ay+cy-by);
+ g.drawImage(tex,0,0,tex.width,tex.height,-u/w,0,768/w,1);if(u<16)g.drawImage(tex,0,0,tex.width,tex.height,(-u-768)/w,0,768/w,1);if(u+w>752)g.drawImage(tex,0,0,tex.width,tex.height,(768-u)/w,0,768/w,1);g.restore();
+}
+// Joint fan piece: centre P is mid-width, edge points P+E1/P+E2 are the body edge on `side` (+1 = +normal side).
+function fanTriangle(g,tex,u,w,px,py,e1x,e1y,e2x,e2y,side){
+ if(u+w>768)u=768-w;const ax=px-side*e1x,ay=py-side*e1y,cx=px+side*e1x,cy=py+side*e1y,bx=ax+e2x-e1x,by=ay+e2y-e1y;
+ const mx=(e1x+e2x)/3,my=(e1y+e2y)/3,k=1.06;// grow the clip a little around its centroid to hide seams
+ g.save();g.beginPath();g.moveTo(px+(0-mx)*k+mx,py+(0-my)*k+my);g.lineTo(px+(e1x-mx)*k+mx,py+(e1y-my)*k+my);g.lineTo(px+(e2x-mx)*k+mx,py+(e2y-my)*k+my);g.closePath();g.clip();
+ g.transform(bx-ax,by-ay,cx-ax,cy-ay,ax,ay);g.drawImage(tex,0,0,tex.width,tex.height,-u/w,0,768/w,1);g.restore();
+}
+function drawCanvasSnake(g,s,alpha=1){
+ const raw=s.points,n=raw.length;if(n<2)return;
+ const B=snakeBuffers(n+1),idx=B.idx,arc=B.arc,nx=B.nx,ny=B.ny,r=s.radius;
+ // Mesh density follows thickness: thick bodies need fewer, longer pieces.
+ const lite=typeof mobileRenderer!=='undefined'&&mobileRenderer,step=Math.max(5,r*(lite?.55:.4)),step2=step*step;
+ let m=1,lx=raw[0].x,ly=raw[0].y;idx[0]=0;
+ for(let i=1;i<n-1;i++){const dx=raw[i].x-lx,dy=raw[i].y-ly;if(dx*dx+dy*dy>=step2){idx[m++]=i;lx=raw[i].x;ly=raw[i].y}}idx[m++]=n-1;
+ // Drawn centreline: a single-point kink in the physics body (tight coils, growth) tore the stripes
+ // into jagged pieces, so bends sharper than the body allows are rounded off before meshing.
+ const pts=B.pts;for(let k=0;k<m;k++){const q=raw[idx[k]];let o=pts[k];if(!o)o=pts[k]={x:0,y:0};o.x=q.x;o.y=q.y}
+ for(let pass=0;pass<4;pass++)for(let k=1;k<m-1;k++){const a=pts[k-1],p=pts[k],b=pts[k+1],ax=p.x-a.x,ay=p.y-a.y,bx=b.x-p.x,by=b.y-p.y,th=Math.abs(Math.atan2(ax*by-ay*bx,ax*bx+ay*by));if(th>.45){const f=Math.min(.5,(th-.45)*1.5);p.x+=((a.x+b.x)/2-p.x)*f;p.y+=((a.y+b.y)/2-p.y)*f}}
+ const tex=skinTexture(s.skin,s.color),scale=128/(r*2);arc[0]=0;
+ for(let k=0;k<m;k++){const p=pts[k];if(k){const q=pts[k-1];arc[k]=arc[k-1]+Math.hypot(p.x-q.x,p.y-q.y)}const a=pts[k?k-1:0],b=pts[k<m-1?k+1:m-1],d=Math.hypot(b.x-a.x,b.y-a.y)||1;nx[k]=-(b.y-a.y)/d*r;ny[k]=(b.x-a.x)/d*r}
+ // Each piece is an undistorted rectangle with its own normal (like a stroke with round joins):
+ // on the inner side of a bend neighbours simply overlap, the outer gap is closed by a fan of the
+ // same cross-section. However tight the coil, the texture is never squeezed or folded.
+ for(let k=1;k<m;k++){const p=pts[k-1],q=pts[k],d=Math.hypot(q.x-p.x,q.y-p.y)||1;nx[k]=-(q.y-p.y)/d*r;ny[k]=(q.x-p.x)/d*r}nx[0]=nx[1];ny[0]=ny[1];
+ // Paint the material opaque: segment overlap must not multiply spawn opacity.
+ const v=snakeView,pad=r+14,offView=(p,q)=>v&&((p.x<v.l-pad&&q.x<v.l-pad)||(p.x>v.r+pad&&q.x>v.r+pad)||(p.y<v.t-pad&&q.y<v.t-pad)||(p.y>v.b+pad&&q.y>v.b+pad));
+ g.save();g.globalAlpha=1;g.lineCap='round';g.lineJoin='round';g.beginPath();for(let k=1,pen=false;k<m;k++){const p=pts[k-1],q=pts[k];if(offView(p,q)){pen=false;continue}if(!pen){g.moveTo(p.x,p.y);pen=true}g.lineTo(q.x,q.y)}g.strokeStyle='#030810';g.lineWidth=r*2+1;g.stroke();
+ const cap=(p,a,center,head)=>{g.save();g.translate(p.x,p.y);g.rotate(a);g.beginPath();g.arc(0,0,r,head?Math.PI/2:-Math.PI/2,head?Math.PI*1.5:Math.PI/2);g.closePath();g.clip();let offset=0;while(offset<128){const u=((center-64+offset)%768+768)%768,w=Math.min(128-offset,768-u),ts=tex.width/768;g.drawImage(tex,u*ts,0,w*ts,tex.height,-r+offset/scale,-r,w/scale,r*2);offset+=w}g.restore()};
+ for(let k=m-1;k>0;k--){const p=pts[k-1],q=pts[k];
+  if(offView(p,q))continue;
+  const oX=nx[k],oY=ny[k],length=arc[k]-arc[k-1];if(length<.01)continue;let at=0;
+  while(at<length){const rawU=(64+(arc[k-1]+at)*scale)%768,u=rawU>767.999?0:rawU,w=Math.min((length-at)*scale,768-u),end=at+w/scale;if(w<.001)break;
+   const t0=at/length,t1=end/length,x0=p.x+(q.x-p.x)*t0,y0=p.y+(q.y-p.y)*t0,x1=p.x+(q.x-p.x)*t1,y1=p.y+(q.y-p.y)*t1;
+   skinTriangle(g,tex,u,w,x0-oX,y0-oY,x1-oX,y1-oY,x0+oX,y0+oY,false);skinTriangle(g,tex,u,w,x1-oX,y1-oY,x1+oX,y1+oY,x0+oX,y0+oY,true);at=end;}
+  // Joint at p (towards the head): fan on the outer side from this piece's normal to the next one's.
+  if(k>1){const aX=nx[k],aY=ny[k],bX=nx[k-1],bY=ny[k-1],cr=aX*bY-aY*bX,th=Math.atan2(Math.abs(cr),aX*bX+aY*bY);
+   // Fan on every joint, even nearly straight ones: on a fat body a 0.02 rad gap is already a visible dark cut.
+   // It overlaps both neighbouring pieces by a few px so their anti-aliased edges never show the dark underlay.
+   if(!offView(p,p)){const side=cr>0?1:-1,turn0=Math.atan2(cr,aX*bX+aY*bY),sg=turn0<0?-1:1,ext=Math.min(.25,3/r),a0=Math.atan2(aY*side,aX*side)-sg*ext,turn=turn0+sg*ext*2,parts=Math.min(6,Math.ceil(Math.abs(turn)/.5)),uj=((64+arc[k-1]*scale)%768+768)%768;
+    for(let i=0;i<parts;i++){const t0=a0+turn*i/parts,t1=a0+turn*(i+1)/parts;fanTriangle(g,tex,uj,Math.max(.5,Math.abs(turn)/parts*r*.5*scale),p.x,p.y,Math.cos(t0)*r,Math.sin(t0)*r,Math.cos(t1)*r,Math.sin(t1)*r,side)}}}
+ }
+ const P=k=>pts[k],last=m-1;cap(P(last),Math.atan2(P(last).y-P(last-1).y,P(last).x-P(last-1).x),64+arc[last]*scale,false);cap(P(0),Math.atan2(P(1).y-P(0).y,P(1).x-P(0).x),64,true);
+ // Slow travelling reflections, bounded and sparse to keep mobile work small.
+ const time=performance.now()*.001,phase=time*.9+(s.id||0)*.6;
+ const rs=Math.max(1,Math.round(15/step)),ss=Math.max(1,Math.round(65/step));
+ // Flat video-style skins (flags, v_*) have no travelling reflection, as in the reference video.
+ const flatSkin=s.skin.startsWith('flag_')||s.skin.startsWith('v_');
+ g.beginPath();if(!flatSkin)for(let i=1,pen=false;i<m-1;i+=rs){const p=P(i),q=P(i-1);if(offView(p,q)){pen=false;continue}const a=Math.atan2(q.y-p.y,q.x-p.x)+Math.PI/2,off=Math.sin(arc[i]*.012-phase)*r*.48,x=p.x+Math.cos(a)*off,y=p.y+Math.sin(a)*off;if(pen)g.lineTo(x,y);else{g.moveTo(x,y);pen=true}}g.strokeStyle=ENERGY_MATERIALS[s.skin]?'rgba('+ENERGY_MATERIALS[s.skin].core.join(',')+',.28)':['galaxy','nebula','lightning'].includes(s.skin)?'#d9c1ff40':'#fffce322';g.lineWidth=r*.16;g.stroke();
+ if(ENERGY_MATERIALS[s.skin]||SKIN_GLINT.has(s.skin))for(let i=2;i<m-2;i+=ss){const p=P(i),q=P(i-1);if(offView(p,q))continue;const a=Math.atan2(q.y-p.y,q.x-p.x)+Math.PI/2,o=Math.sin(i*9)*r*.7,x=p.x+Math.cos(a)*o,y=p.y+Math.sin(a)*o;g.globalAlpha=alpha*Math.pow(.5+.5*Math.sin(time*1.8+i),5)*.8;g.fillStyle='#ebfbff';g.fillRect(x-2,y-.5,4,1);g.fillRect(x-.5,y-2,1,4)}
+ g.globalAlpha=alpha;const hx=s.x??P(0).x,hy=s.y??P(0).y;if(s.skin==='hw_pumpkin'||s.skin==='hw_ghost')drawHalloweenHead(g,s.skin,hx,hy,s.a||0,r);else if(headSprite(s.skin))drawSpriteHead(g,s.skin,hx,hy,s.a||0,r);else {eyes(g,hx,hy,s.a||0,r*1.24);if(s.skin==='hw_vampire')drawVampireFangs(g,hx,hy,s.a||0,r)}g.restore();
+}
+
+let arenaRibbon,previewRibbon;
+const canvasOnly=new URLSearchParams(location.search).get('renderer')==='canvas';
+function drawSnakeHead(g,s,alpha=1){
+ s.renderX=s.x??s.points[0].x;s.renderY=s.y??s.points[0].y;s.renderRadius=s.radius;
+ g.save();g.globalAlpha=alpha;const x=s.renderX,y=s.renderY,a=s.a||0,r=s.radius;
+ if(s.skin==='hw_pumpkin'||s.skin==='hw_ghost')drawHalloweenHead(g,s.skin,x,y,a,r);
+ else if(headSprite(s.skin))drawSpriteHead(g,s.skin,x,y,a,r);
+ else{eyes(g,x,y,a,r*1.24);if(s.skin==='hw_vampire')drawVampireFangs(g,x,y,a,r)}g.restore();
 }
 function drawOriginalSnake(g,s,alpha=1){
- const raw=s.points,n=raw.length;if(n<2)return;const B=snakeBuffers(n+1),pts=B.pts,arc=B.arc,previous=s.previousPoints?.length===n?s.previousPoints:null;
- const blend=typeof renderAlpha==='number'&&typeof mode!=='undefined'&&mode==='play'&&!paused?renderAlpha:1;
- const r=(s.previousRadius??s.radius)+(s.radius-(s.previousRadius??s.radius))*blend;
- const quality=typeof qualityMode==='string'?qualityMode:'balanced',step=Math.max(7,r*(quality==='high'?.45:quality==='low'?.95:.7)),step2=step*step;
- let m=0,lx=Infinity,ly=Infinity;
- for(let i=0;i<n;i++){const q=raw[i],old=previous?.[i],x=old?old.x+(q.x-old.x)*blend:q.x,y=old?old.y+(q.y-old.y)*blend:q.y;if(i&&i<n-1&&(x-lx)**2+(y-ly)**2<step2)continue;let p=pts[m];if(!p)p=pts[m]={x,y};else{p.x=x;p.y=y}arc[m]=m?arc[m-1]+Math.hypot(x-lx,y-ly):0;lx=x;ly=y;m++}
- if(m<2)return;
- const tex=skinTexture(s.skin,s.color),scale=128/(r*2),sourceScale=tex.width/768,v=snakeView,pad=r+16;
- const off=(p,q)=>v&&((p.x<v.l-pad&&q.x<v.l-pad)||(p.x>v.r+pad&&q.x>v.r+pad)||(p.y<v.t-pad&&q.y<v.t-pad)||(p.y>v.b+pad&&q.y>v.b+pad));
- g.save();g.globalAlpha=1;g.lineCap='round';g.lineJoin='round';g.strokeStyle='#030810';g.lineWidth=r*2+1;g.beginPath();
- for(let k=1,pen=false;k<m;k++){const p=pts[k-1],q=pts[k];if(off(p,q)){pen=false;continue}if(!pen){g.moveTo(p.x,p.y);pen=true}g.lineTo(q.x,q.y)}g.stroke();
- for(let k=m-1;k>0;k--){const p=pts[k-1],q=pts[k];if(off(p,q))continue;const dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy);if(len<1e-5)continue;
-  const a=Math.atan2(dy,dx),u=64+arc[k]*scale,next=pts[k+1],bend=next?Math.abs(Math.atan2(dx*(next.y-q.y)-dy*(next.x-q.x),dx*(next.x-q.x)+dy*(next.y-q.y))):Math.PI;if(bend>.025){g.save();g.translate(q.x,q.y);g.rotate(a);g.drawImage(bodyJoint(tex,u),-r,-r,r*2,r*2);g.restore()}
-  g.save();g.translate(p.x,p.y);g.rotate(a);let at=0;while(at<len){const u=((64+(arc[k-1]+at)*scale)%768+768)%768,w=Math.min((len-at)*scale,768-u),world=w/scale;if(w<1e-5)break;g.drawImage(tex,u*sourceScale,0,w*sourceScale,tex.height,at-.3,-r,world+.6,r*2);at+=world}g.restore();
+ if(!canvasOnly){if(previewRibbon===undefined)previewRibbon=SnakeRibbon.create();const c=g.canvas;
+  if(previewRibbon?.draw([s],{width:c.width,height:c.height,dpr:1,zoom:1,x:c.width/2,y:c.height/2})){
+   g.drawImage(previewRibbon.canvas,0,0);drawSnakeHead(g,s,alpha);return;
+  }
  }
- const head=pts[0],a=(s.previousA??s.a)+Math.atan2(Math.sin((s.a||0)-(s.previousA??s.a??0)),Math.cos((s.a||0)-(s.previousA??s.a??0)))*blend;
- g.save();g.translate(head.x,head.y);g.rotate(Math.atan2(pts[1].y-head.y,pts[1].x-head.x));g.drawImage(bodyJoint(tex,64),-r,-r,r*2,r*2);g.restore();
- s.renderX=head.x;s.renderY=head.y;s.renderRadius=r;
- if(s.grace>0&&s.id!==undefined){g.strokeStyle='#d9ffee';g.lineWidth=1.6;g.setLineDash([5,7]);g.beginPath();g.arc(head.x,head.y,r+6,0,Math.PI*2);g.stroke();g.setLineDash([])}
- g.globalAlpha=alpha;if(s.skin==='hw_pumpkin'||s.skin==='hw_ghost')drawHalloweenHead(g,s.skin,head.x,head.y,a||0,r);else if(headSprite(s.skin))drawSpriteHead(g,s.skin,head.x,head.y,a||0,r);else{eyes(g,head.x,head.y,a||0,r*1.24);if(s.skin==='hw_vampire')drawVampireFangs(g,head.x,head.y,a||0,r)}g.restore();
+ drawCanvasSnake(g,s,alpha);
+}
+function drawArenaSnakes(g,snakes,viewport){
+ if(!canvasOnly){if(arenaRibbon===undefined)arenaRibbon=SnakeRibbon.create();if(arenaRibbon?.draw(snakes,viewport)){
+   g.save();g.setTransform(viewport.dpr,0,0,viewport.dpr,0,0);g.drawImage(arenaRibbon.canvas,0,0,viewport.width,viewport.height);g.restore();
+   for(const s of snakes)drawSnakeHead(g,s,1);return;
+  }
+ }
+ for(const s of snakes){s.renderX=s.x;s.renderY=s.y;s.renderRadius=s.radius;drawCanvasSnake(g,s,1)}
 }
 
 // Decorative heads are cached once, then rotated with the snake heading.
@@ -319,7 +379,7 @@ function drawHalloweenHead(g,id,x,y,a,r){
 const SPRITE_HEADS={la_quetzal:{},la_calavera:{},la_inti:{},la_jaguar:{},la_hummingbird:{},la_tango:{},la_maya:{},la_carnival:{},la_turpial:{},la_orchid:{},la_diablos:{},la_arepa:{}};
 const headSprites=new Map();
 function headSprite(id){const cfg=SPRITE_HEADS[id];if(!cfg)return null;let h=headSprites.get(id);
- if(!h){h={ready:false,img:null};headSprites.set(id,h);const img=new Image();img.onload=()=>{const done=b=>{h.img=b;h.ready=true;if(typeof previewSnake==='function')for(const c of document.querySelectorAll('canvas[data-skin]'))if(c.dataset.skin===id){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);previewSnake(g,id,c.width,c.height)}};if(typeof createImageBitmap==='function')createImageBitmap(img).then(done,()=>done(img));else done(img)};img.src='skins/'+id+'_head.png?v=3'}
+ if(!h){h={ready:false,img:null};headSprites.set(id,h);const img=new Image();img.onload=()=>{const done=b=>{h.img=b;h.ready=true;if(typeof previewSnake==='function')for(const c of document.querySelectorAll('canvas[data-skin]'))if(c.dataset.skin===id){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);previewSnake(g,id,c.width,c.height)}};if(typeof createImageBitmap==='function')createImageBitmap(img).then(done,()=>done(img));else done(img)};img.onerror=()=>{h.error=true};img.src='skins/'+id+'_head.png?v=3'}
  return h.ready?h:null}
 function drawSpriteHead(g,id,x,y,a,r){const h=headSprites.get(id),cfg=SPRITE_HEADS[id],H=r*(cfg.size||2.6),W=H*h.img.width/h.img.height,nose=cfg.nose!=null?r*cfg.nose:W/2;
  g.save();g.translate(x,y);g.rotate(a);g.drawImage(h.img,nose-W,-H/2,W,H);g.restore()}

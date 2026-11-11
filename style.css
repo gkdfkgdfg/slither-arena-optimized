@@ -194,3 +194,5 @@ dialog::backdrop{background:#03080dc7}
 @media(max-width:600px){#hud .bottom p{display:none}#exitHint{top:57px;font-size:10px}#hud .actions button{min-width:105px}}
 
 .demoNote{text-align:center;color:#91a69a;font:11px/1.4 Arial,sans-serif;margin:9px 0 0}
+
+#hud .topbar button{padding:0;white-space:nowrap;font-size:16px}

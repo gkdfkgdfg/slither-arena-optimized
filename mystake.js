@@ -5,11 +5,11 @@ const numberFormatter=new Intl.NumberFormat('en-US',{minimumFractionDigits:2,max
 const mobileRenderer=matchMedia('(pointer:coarse)').matches;
 const QUALITY={auto:1.5,high:2,balanced:1.5,low:1};
 let qualityMode='auto';try{qualityMode=localStorage.getItem('arena-quality')||'auto'}catch{}if(!(qualityMode in QUALITY))qualityMode='auto';
-let renderScale=QUALITY[qualityMode],renderAlpha=1;
+let renderScale=QUALITY[qualityMode];
 const STEP=1/60,MAX_COINS=3200,coinGrid=new ArenaCore.SpatialGrid(96),coinCandidates=[];
 let coinStamp=0,coinChecks=0,lastCoinChecks=0,debugFrames=0,debugTime=0,frameFPS=60;
 const diagnostics={updateMs:0,renderMs:0};
-window.gameDiagnostics=()=>({mode,paused,elapsed,fps:frameFPS,dpr,renderScale,qualityMode,coins:coins.length,coinChecks:lastCoinChecks,snakes:snakes.filter(s=>s.alive).length,...diagnostics});
+window.gameDiagnostics=()=>({mode,paused,elapsed,fps:frameFPS,dpr,renderScale,qualityMode,coins:coins.length,coinChecks:lastCoinChecks,snakes:snakes.filter(s=>s.alive).length,renderer:arenaRibbon?.diagnostics()??{ready:false,mode:'canvas'},...diagnostics});
 const COLORS=['#37dc77','#36bbef','#b280fa','#f3719c','#f3bf4c'];
 const SKINS=[{id:'neon',name:'Неон',color:'#37dc77'},{id:'skeleton',name:'Скелет',color:'#14202a'},{id:'ice',name:'Ледяная броня',color:'#258ca7'},{id:'lava',name:'Лава',color:'#58120d'},{id:'lightning',name:'Плазма',color:'#4b2469'},{id:'leopard',name:'Леопард',color:'#b49250'},{id:'goldbar',name:'Золотые слитки',color:'#edbc30'},{id:'racing',name:'Гоночный',color:'#ed4538'},{id:'tiger',name:'Золотые полосы',color:'#f6bd28'},{id:'galaxy',name:'Космос',color:'#572887'},{id:'candy',name:'Карамель',color:'#f15794'},...EXTRA_SKINS,...REFERENCE_SKINS,...VIDEO_SKINS];
 const countryNames=new Intl.DisplayNames(['ru'],{type:'region'});
@@ -123,7 +123,7 @@ function maintainCrowd(dt){crowdTimer-=dt;if(crowdTimer>0)return;crowdTimer=1.2;
 for(let i=coins.length-1;i>=0;i--){const c=coins[i];if((c.loot||c.boostDrop)&&!c.pull&&elapsed-c.born>90)removeCoin(c)}const near=snakes.filter(s=>s!==player&&s.alive&&Math.abs(s.x-player.x)<W/(2*zoom)+130&&Math.abs(s.y-player.y)<H/(2*zoom)+130);if(near.length>=2)return;let need=Math.min(1,2-near.length);for(const s of snakes){if(need===0)break;if(s===player||!s.alive||s.tailRun>0||dist(s,player)<650)continue;const offscreen=s.points.every(p=>Math.abs(p.x-camera.x)>W/(2*zoom)+100||Math.abs(p.y-camera.y)>H/(2*zoom)+100);if(offscreen){const newcomer=makeSnake(s.id);if(placeNearby(newcomer,false,s.id)){releaseCoins(s);snakes[snakes.indexOf(s)]=newcomer;need--}}}}
 let approachCount=0,tailCrashCooldown=0;
 function seed(){player=null;shuffleRivalTiers();exitUnlocked=false;deathTrails=[];crowdTimer=0;approachCount=0;tailCrashCooldown=0;snakes=[];coins=[];coinGrid.clear();bodyCells.clear();amountCache.clear();particles=[];for(let i=0;i<=BOT_COUNT;i++)snakes.push(makeSnake(i));player=snakes[0];for(let i=1;i<=3;i++)placeNearby(snakes[i],true,i);for(let n=0;n<900;n++)spawnCoin();/* videos: ~26 red dots per screen */for(let n=0;n<14;n++){const a=rand(0,6.28),r=rand(100,420);spawnCoin(Math.cos(a)*r,Math.sin(a)*r)}camera={x:player.x,y:player.y}}
-function start(){const stake=Number($('stake').value);if(!Number.isFinite(stake)||stake<.01||stake>1e9){$('error').textContent='Укажи сумму входа от 0.01 до 1 000 000 000.';return false}if(stake>prefs.balance){$('error').textContent='Недостаточно баланса. Нажми на него вверху, чтобы изменить.';return false}prefs.stake=stake;prefs.name=$('nickname').value.trim()||'Player';sessionStake=stake;prefs.balance=Math.round((prefs.balance-stake)*1000000)/1000000;save();mode='play';touchPoints.clear();steerPointer=null;touchOrigin=null;paused=false;elapsed=0;kills=0;boost=false;aim={x:1,y:0};zoom=viewZoom();acc=0;last=performance.now();renderAlpha=1;seed();player.a=0;player.points=Array.from({length:Math.ceil(bodyPoints(player))},(_,i)=>({x:-i*PHYS.pitch,y:0}));$('lobby').hidden=true;$('hud').hidden=false;$('error').textContent='';$('result').close();$('winOverlay').hidden=true;tone(500,.12);renderHUD();return true}
+function start(){const stake=Number($('stake').value);if(!Number.isFinite(stake)||stake<.01||stake>1e9){$('error').textContent='Укажи сумму входа от 0.01 до 1 000 000 000.';return false}if(stake>prefs.balance){$('error').textContent='Недостаточно баланса. Нажми на него вверху, чтобы изменить.';return false}prefs.stake=stake;prefs.name=$('nickname').value.trim()||'Player';sessionStake=stake;prefs.balance=Math.round((prefs.balance-stake)*1000000)/1000000;save();mode='play';touchPoints.clear();steerPointer=null;touchOrigin=null;paused=false;elapsed=0;kills=0;boost=false;aim={x:1,y:0};zoom=viewZoom();acc=0;last=performance.now();seed();player.a=0;player.points=Array.from({length:Math.ceil(bodyPoints(player))},(_,i)=>({x:-i*PHYS.pitch,y:0}));$('lobby').hidden=true;$('hud').hidden=false;$('error').textContent='';$('result').close();$('winOverlay').hidden=true;tone(500,.12);renderHUD();return true}
 $('play').onclick=start;$('again').onclick=()=>{if(!start()){ $('result').close();home()}};
 function home(){ $('winOverlay').hidden=true;mode='menu';paused=false;boost=false;$('hud').hidden=true;$('lobby').hidden=false;$('result').close();$('pauseDialog').close();sync();sessionStake=prefs.stake;seed()}
 $('home').onclick=home;$('leave').onclick=home;
@@ -259,7 +259,7 @@ function drawOutside(g,left,top,vw,vh){
  }
  g.restore();
 }
-function render(){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#070f18';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);const ca=mode==='play'&&!paused?renderAlpha:1,cx=camera.x+((player?.previousX??camera.x)-camera.x)*(1-ca),cy=camera.y+((player?.previousY??camera.y)-camera.y)*(1-ca);ctx.translate(-cx,-cy);const vw=W/zoom,vh=H/zoom,left=cx-vw/2-60,top=cy-vh/2-60;
+function render(){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#070f18';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);const cx=camera.x,cy=camera.y;ctx.translate(-cx,-cy);const vw=W/zoom,vh=H/zoom,left=cx-vw/2-60,top=cy-vh/2-60;
 drawArenaMap(ctx,left,top,vw,vh);
 const drawEdge=()=>{
 // Videos 1/9: beyond the line is a flat void drawn OVER bodies and plates, so a snake leaving the arena slides under it.
@@ -277,7 +277,8 @@ ctx.beginPath();ctx.rect(-R,-R,R*2,R*2);
 const goldSprite=foodSprite(true),redSprite=foodSprite(false);for(const c of coins){if(c.x<left||c.x>left+vw+120||c.y<top||c.y>top+vh+120)continue;const gold=c.h===46;if(gold){const r=c.loot?c.r:7;ctx.drawImage(goldSprite,c.x-r,c.y-r,r*2,r*2)}else ctx.drawImage(redSprite,c.x-7.5,c.y-7.5,15,15);}
 for(const trail of deathTrails){ctx.save();ctx.globalAlpha=trail.life/.3;ctx.lineCap='round';originalPath(ctx,trail.points);ctx.strokeStyle='#9bffff55';ctx.lineWidth=trail.radius*2+8;ctx.stroke();ctx.strokeStyle='#f3ffff';ctx.lineWidth=trail.radius*1.5;ctx.stroke();ctx.restore()}
 snakeView=viewRect;viewRect.l=left;viewRect.t=top;viewRect.r=left+vw+120;viewRect.b=top+vh+120;
-const shown=[],ordered=snakes.slice().sort((a,b)=>a.len-b.len);for(const s of ordered){if(!s.alive)continue;{const m=s.radius+10;if(s.points.every(p=>p.x<left-m||p.x>left+vw+120+m||p.y<top-m||p.y>top+vh+120+m))continue}const alpha=s.grace>0?.8:1;drawOriginalSnake(ctx,s,alpha);shown.push(s)}
+const shown=[],ordered=snakes.slice().sort((a,b)=>a.len-b.len);for(const s of ordered){if(!s.alive)continue;{const m=s.radius+10;if(s.points.every(p=>p.x<left-m||p.x>left+vw+120+m||p.y<top-m||p.y>top+vh+120+m))continue}shown.push(s)}
+drawArenaSnakes(ctx,shown,{width:W,height:H,dpr,zoom,x:cx,y:cy});
 // Plates sit above every body, as in the video.
 if(mode==='play'||mode==='result')for(const s of shown)drawAmount(s);
 snakeView=null;drawEdge();
@@ -287,13 +288,12 @@ function oldDrawMap(){const g=$('map').getContext('2d');g.clearRect(0,0,130,130)
 // Top bar from the video: "100,044.63 Bs" green · progress bar (green, yellow after the goal) · "112,500 Bs" white.
 function renderHUD(){const value=Math.max(0,player.value),target=sessionStake*EXIT_X,percent=Math.min(100,value/target*100),cur=prefs.showCurrency?' '+prefs.currency:'',left=money(value)+cur+(exitUnlocked?' · ✓':''),right=originalNumbers.format(target)+cur;$('progressValue').textContent=left;$('progressTarget').textContent=right;const longest=left.length+right.length;$('hud').style.setProperty('--amount-font',Math.max(8,Math.min(11.5,(W-110)/(longest*.66)))+'px');$('hud').style.setProperty('--lc',left.length);$('earningsFill').style.width=percent+'%';$('earningsFill').classList.toggle('done',exitUnlocked);$('progressValue').title=exitUnlocked?'Забрать: Q или зелёная граница':'Для выхода нужно ×37,5';$('cashout').disabled=!exitUnlocked;$('exitHint').textContent=exitUnlocked?'Выход открыт · Q, ЗАБРАТЬ или зелёная граница':'Собери ×37,5 · красная граница опасна';$('exitHint').classList.toggle('unlocked',exitUnlocked);$('earningsProgress').setAttribute('aria-valuenow',value.toFixed(2));$('earningsProgress').setAttribute('aria-valuemax',target);$('earningsProgress').setAttribute('aria-valuetext',fmt(value)+' / '+fmt(target));$('time').textContent=clock(elapsed);$('length').textContent=Math.floor(player.len);$('kills').textContent=kills;}
 let lastPaint=0,slowFrames=0,lastSkinPreview=0;
-function snapshotBodies(){for(const s of snakes){if(!s.alive)continue;s.previousX=s.x;s.previousY=s.y;s.previousA=s.a;s.previousRadius=s.radius;const out=s.previousPoints??=[];for(let i=0;i<s.points.length;i++){const p=s.points[i],q=out[i];if(q){q.x=p.x;q.y=p.y}else out[i]={x:p.x,y:p.y}}out.length=s.points.length}}
 function frame(t){let gap=last?Math.max(0,t-last):STEP*1000;last=t;if(document.hidden){acc=0;requestAnimationFrame(frame);return}
  const live=mode==='play'&&!paused;debugFrames++;debugTime+=gap;if(debugTime>=500){frameFPS=debugFrames*1000/debugTime;debugFrames=0;debugTime=0}
  if(live&&qualityMode==='auto'){if(gap>22&&gap<150)slowFrames++;else slowFrames=Math.max(0,slowFrames-2);if(slowFrames>=45&&renderScale>.75){renderScale=Math.max(.75,renderScale-.25);resize();slowFrames=0}}
- const before=performance.now();coinChecks=0;if(live){acc+=Math.min(gap/1000,.1);let steps=0;while(acc>=STEP&&steps<6&&mode==='play'&&!paused){snapshotBodies();update(STEP);acc-=STEP;steps++}if(steps===6)acc=Math.min(acc,STEP);renderAlpha=acc/STEP}else{acc=0;renderAlpha=1}
+ const before=performance.now();coinChecks=0;if(live){let remaining=Math.min(gap/1000,.08),steps=0;while(remaining>1e-7&&steps<6&&mode==='play'&&!paused){const dt=Math.min(remaining,STEP);update(dt);remaining-=dt;steps++}}
  diagnostics.updateMs=performance.now()-before;lastCoinChecks=coinChecks;
- if(live||t-lastPaint>=1000/30-.5){const a=performance.now();render();diagnostics.renderMs=performance.now()-a;lastPaint=t;if(mode==='menu'&&!stillMotion&&t-lastSkinPreview>=100&&!document.querySelector('dialog[open]')){paintShowcase();lastSkinPreview=t}}
+ if(live||t-lastPaint>=1000/30-.5){const a=performance.now();render();diagnostics.renderMs=performance.now()-a;lastPaint=t;if(mode==='menu'&&!stillMotion&&t-lastSkinPreview>=1000/30&&!document.querySelector('dialog[open]')){paintShowcase();lastSkinPreview=t}}
  requestAnimationFrame(frame)
 }
 document.addEventListener('visibilitychange',()=>{last=0;acc=0;boost=false;if(document.hidden&&mode==='play'&&!paused)togglePause()});

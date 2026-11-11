@@ -1,0 +1,47 @@
+{
+  "release": "visualfix3",
+  "date": "2026-11-11",
+  "automated_node_tests": { "passed": 8, "failed": 0 },
+  "animated_skin_audit": {
+    "ordinary_skin_and_color_variants": 75,
+    "ordinary_draws": 1800,
+    "country_flags": 252,
+    "flag_draws": 756,
+    "image_load_failures": 0,
+    "webgl_errors": 0,
+    "minimum_centerline_alpha_coverage": 1,
+    "failure_threshold": 0.98,
+    "ordinary_contact_sheets_visually_reviewed": 5,
+    "decorative_head_images_loaded": 12,
+    "late_flag_canvas_uploaded_after_revision_change": true,
+    "limitations": "Samples body centerline alpha; does not prove every edge pixel or every possible pose is artifact-free. Contact sheets supplement the automatic coverage check."
+  },
+  "gameplay_scenarios": {
+    "early_cashout_blocked": true,
+    "boost_spends_value_and_preserves_floor": true,
+    "red_border_kills": true,
+    "green_border_exits": true,
+    "unlocked_cashout": true,
+    "q_key_through_interface": true,
+    "death_loot_value_preserved_with_128_drops": true,
+    "head_on_collision_kills_both": true,
+    "ten_death_restart_cycles": true,
+    "pause_freezes_position_and_elapsed_time": true,
+    "gallery_selection_used_in_round": true
+  },
+  "fallback": {
+    "context_loss_uses_canvas": true,
+    "context_restored_and_textures_reuploaded": true,
+    "webgl_error_after_restoration": 0,
+    "forced_canvas_skin_types": ["flag_ve", "hw_mummy", "la_quetzal", "neon"],
+    "forced_canvas_console_errors": 0
+  },
+  "mobile_layout": {
+    "viewport": [390, 844],
+    "horizontal_overflow": false,
+    "steering_handler_delta": [50, -50],
+    "second_touch_enables_boost": true,
+    "cancel_and_release_clear_boost_and_touch_state": true,
+    "limitations": "Layout emulation and handler-level touch tests. Native touch injection is unsupported in this browser; no physical phone was tested."
+  }
+}

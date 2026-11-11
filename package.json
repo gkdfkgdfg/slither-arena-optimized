@@ -2,7 +2,7 @@
   "name": "slither-arena-optimized",
   "version": "1.0.0",
   "private": true,
-  "description": "Slither Arena with a faster Canvas renderer and a dependency-free Node.js server",
+  "description": "Slither Arena with continuous WebGL skins, a Canvas fallback and a dependency-free Node.js server",
   "scripts": { "start": "node server.js", "test": "node --test" },
   "engines": { "node": ">=20" }
 }

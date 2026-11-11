@@ -1,6 +1,8 @@
 {
   "date": "2026-11-11",
-  "method": "Same local Chromium browser, fixed static scene, 3 warmups and 40 synchronous render calls, CPU Canvas command submission timing",
+  "release": "visualfix3",
+  "method": "1500 actual requestAnimationFrame callbacks in a scripted invulnerable round, turning, boosting and five growth stages; timing from the production frame loop",
+  "environment": "Desktop Chromium in-app browser; approximately 240 callbacks per second, not a physical phone",
   "viewport": {
     "width": 1280,
     "height": 720,
@@ -8,24 +10,26 @@
   },
   "scene": {
     "snakes": 10,
-    "points_per_snake": 700,
-    "coins": 2600
+    "coins_at_end": 915,
+    "player_values": [10, 40, 160, 600, 1000]
   },
-  "original": {
-    "median_render_ms": 7.1,
-    "p95_render_ms": 186.6,
-    "clips_per_frame": 2187,
-    "draw_images_per_frame": 3386
+  "frames": 1500,
+  "simulated_seconds": 6.2501,
+  "raf_interval_ms": { "median": 4.2, "p95": 4.4 },
+  "js_render_ms": { "median": 0.4, "p95": 0.7 },
+  "js_update_ms": { "median": 0.2, "p95": 0.4 },
+  "max_player_head_camera_offset_pixels": 0,
+  "nonfinite_body_frames": 0,
+  "additional_stress_test": {
+    "physics_steps": 14400,
+    "fixed_step_seconds": 0.008333333333333333,
+    "simulated_seconds": 120,
+    "rendered_frames": 2400,
+    "nonfinite_body_samples": 0,
+    "max_player_head_camera_offset_pixels": 0,
+    "webgl_error": 0,
+    "gpu_texture_cache_size": 12,
+    "source_material_cache_size": 48
   },
-  "optimized": {
-    "median_render_ms": 2,
-    "p95_render_ms": 6,
-    "clips_per_frame": 0,
-    "draw_images_per_frame": 1737
-  },
-  "coin_query_after_one_death": {
-    "full_scan_checks": 27280,
-    "grid_candidates": 462
-  },
-  "limits": "Microbenchmark, not full GPU frame timing; p95 is sensitive to short sample size and environment. No physical phone benchmark or universal FPS guarantee."
+  "limits": "JS and command submission timing, not complete GPU frame time. Artificial invulnerability and scripted growth isolate rendering and movement. Not a universal FPS guarantee. The previous defective renderer's benchmark is no longer reported as the current release."
 }
