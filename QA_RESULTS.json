@@ -1,7 +1,10 @@
 {
-  "release": "visualfix3",
+  "release": "collision4",
   "date": "2026-11-11",
-  "automated_node_tests": { "passed": 8, "failed": 0 },
+  "automated_node_tests": {
+    "passed": 14,
+    "failed": 0
+  },
   "animated_skin_audit": {
     "ordinary_skin_and_color_variants": 75,
     "ordinary_draws": 1800,
@@ -33,15 +36,60 @@
     "context_loss_uses_canvas": true,
     "context_restored_and_textures_reuploaded": true,
     "webgl_error_after_restoration": 0,
-    "forced_canvas_skin_types": ["flag_ve", "hw_mummy", "la_quetzal", "neon"],
+    "forced_canvas_skin_types": [
+      "flag_ve",
+      "hw_mummy",
+      "la_quetzal",
+      "neon"
+    ],
     "forced_canvas_console_errors": 0
   },
   "mobile_layout": {
-    "viewport": [390, 844],
+    "viewport": [
+      390,
+      844
+    ],
     "horizontal_overflow": false,
-    "steering_handler_delta": [50, -50],
+    "steering_handler_delta": [
+      50,
+      -50
+    ],
     "second_touch_enables_boost": true,
     "cancel_and_release_clear_boost_and_touch_state": true,
-    "limitations": "Layout emulation and handler-level touch tests. Native touch injection is unsupported in this browser; no physical phone was tested."
-  }
+    "limitations": "Layout emulation and handler-level touch tests. Native touch injection is unsupported in this browser; no physical phone was tested.",
+    "removed_hud_elements_absent": true
+  },
+  "animated_skin_audit_release": "visualfix3; renderer unchanged in collision4",
+  "solid_collision_audit": {
+    "spawn_layouts": 50,
+    "spawned_snakes": 500,
+    "overlapping_spawns": 0,
+    "minimum_active_snakes_at_spawn": 10,
+    "player_head_hits_body_despite_legacy_grace_field": true,
+    "fast_head_crossing_body_between_step_endpoints_kills": true,
+    "bot_head_hits_player_body": true,
+    "head_on_kills_both": true,
+    "npc_replay_physics_steps": 14400,
+    "npc_replay_simulated_seconds": 120,
+    "npc_replay_centerline_intersection_samples": 120,
+    "npc_replay_intersections_found": 0,
+    "npc_replay_deaths_by_actor": {
+      "0": 1,
+      "1": 4,
+      "2": 4,
+      "3": 4,
+      "4": 5,
+      "5": 4,
+      "6": 7,
+      "7": 4,
+      "8": 2,
+      "9": 5
+    },
+    "limitations": "Intersection replay samples once per simulated second; unit and integration tests separately check swept heads and solid capsule coverage. A finite test set cannot exhaust all trajectories."
+  },
+  "removed_hud_elements": [
+    "boost",
+    "cashout",
+    "exitHint"
+  ]
 }

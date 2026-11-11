@@ -64,13 +64,14 @@ window.showVisualAuditSheet = function (index) {
   panel.replaceChildren(sheet);
 };
 
-// This runs an artificial invulnerable round: turning, boosting and five sizes.
+// This isolates one snake for turning, boosting and five sizes. Collision
+// behavior with other snakes is covered separately; no grace bypass exists.
 // It measures the live animation loop, rather than calling render repeatedly.
 window.runMotionAudit = async function ({ frames = 1500 } = {}) {
   home();
   const savedBalance = prefs.balance, savedStake = $('stake').value;
   prefs.balance = Math.max(1000, prefs.balance); $('stake').value = 10; start();
-  snakes.forEach(s => { s.grace = 1000; });
+  snakes = [player]; collisionWorld.clear();
   const gaps = [], renders = [], updates = [];
   let previous = performance.now(), jitter = 0, invalidBodies = 0;
   const quantile = (values, fraction) => values.sort((a, b) => a - b)[Math.floor(values.length * fraction)];
@@ -88,7 +89,7 @@ window.runMotionAudit = async function ({ frames = 1500 } = {}) {
       if (snakes.some(s => s.alive && s.points.some(p => !Number.isFinite(p.x + p.y)))) invalidBodies++;
       renders.push(diagnostics.renderMs); updates.push(diagnostics.updateMs);
     }
-    return { frames, simulatedSeconds: elapsed, maxHeadJitterPixels: jitter, invalidBodies,
+    return { frames, scene: 'isolated player', simulatedSeconds: elapsed, maxHeadJitterPixels: jitter, invalidBodies,
       rafMedianMs: quantile(gaps, .5), rafP95Ms: quantile(gaps, .95),
       renderMedianMs: quantile(renders, .5), renderP95Ms: quantile(renders, .95),
       updateMedianMs: quantile(updates, .5), updateP95Ms: quantile(updates, .95), renderer: arenaRibbon?.diagnostics() };

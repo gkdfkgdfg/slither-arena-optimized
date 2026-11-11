@@ -183,15 +183,10 @@ dialog::backdrop{background:#03080dc7}
 #hud .topbar{display:flex;position:fixed;top:62px;left:12px;right:auto;gap:8px;pointer-events:auto}
 #hud .topbar .pill{display:none}
 #hud .topbar button{width:40px;height:40px;border-radius:12px;background:#071710dd;border:1px solid #577762;color:#effff4;font-size:19px}
-#exitHint{position:fixed;top:53px;left:110px;right:12px;text-align:right;color:#fbb4b9;font:600 11px/1.4 Arial,sans-serif;pointer-events:none;text-shadow:0 1px 3px #000}
-#exitHint.unlocked{color:#6fffaa}
 #hud .bottom{display:block;position:fixed;bottom:max(12px,env(safe-area-inset-bottom));left:12px;right:12px;pointer-events:none}
 #hud .bottom .stat{display:none}
-#hud .bottom .actions{display:flex;justify-content:flex-end;gap:10px;pointer-events:none}
-#hud .actions button{min-height:48px;min-width:110px;pointer-events:auto;border-radius:14px}
-#hud .actions button:disabled{opacity:.55;cursor:default}
 #hud .bottom p{color:#d8e8dd;font-size:10px;text-align:right;margin:7px 0 0;text-shadow:0 1px 3px #000}
-@media(max-width:600px){#hud .bottom p{display:none}#exitHint{top:57px;font-size:10px}#hud .actions button{min-width:105px}}
+@media(max-width:600px){#hud .bottom p{display:none}}
 
 .demoNote{text-align:center;color:#91a69a;font:11px/1.4 Arial,sans-serif;margin:9px 0 0}
 

@@ -6,7 +6,7 @@
         <title>Slither Arena</title>
         <meta name="description" content="Арена со змейками и своей валютой.">
         <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23080b09'/%3E%3Cpath d='M23 9H13a5 5 0 0 0 0 10h6a3 3 0 0 1 0 6H8' fill='none' stroke='%231aee67' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
-        <link rel="stylesheet" href="style.css?v=visualfix3">
+        <link rel="stylesheet" href="style.css?v=collision4">
     </head>
     <body class="originalMode mystakeMode">
         <canvas id="arena" aria-label="Игровая арена со змейками"></canvas>
@@ -76,7 +76,6 @@
                 </div>
                 <button id="sound" aria-label="Переключить звук">♪</button>
             </div>
-            <div id="exitHint" role="status"></div>
             <div class="earnings">
                 <button id="progressValue" title="Cash Out" aria-label="Cash Out — забрать сумму">0 USD</button>
                 <div id="earningsProgress" class="earningsTrack" role="progressbar" aria-label="Прогресс суммы" aria-valuemin="0" aria-valuemax="500" aria-valuenow="0">
@@ -94,10 +93,6 @@
                     ДЛИНА <i>·</i>
                     <span id="kills">0</span>
                     УБРАНО
-                </div>
-                <div class="actions">
-                    <button id="boost">ϟ BOOST</button>
-                    <button id="cashout" class="green" disabled>ЗАБРАТЬ · Q</button>
                 </div>
                 <p>Мышь / палец — поворот · Space — ускорение · Esc — пауза · Q — забрать при ×37,5</p>
             </div>
@@ -165,7 +160,7 @@
             <ol class="howSteps">
                 <li><i>1</i><span><b>Собирай монеты</b>Чем больше сумма, тем крупнее змея.</span></li>
                 <li><i>2</i><span><b>Подрезай соперников</b>Врежутся в твою змею, и их добыча твоя.</span></li>
-                <li><i>3</i><span><b>Выходи с выигрышем</b>Собери ×37,5: нажми Q / «ЗАБРАТЬ» или пересеки зелёную границу. Красная граница смертельна. Встречное столкновение голов убирает обеих змей; свой хвост безопасен.</span></li>
+                <li><i>3</i><span><b>Выходи с выигрышем</b>Собери ×37,5: нажми Q, сумму сверху или пересеки зелёную границу. Красная граница смертельна. Касание чужого тела головой смертельно; встречное столкновение голов убирает обеих змей. Свой хвост безопасен.</span></li>
             </ol>
             <dl class="howKeys">
                 <dt>Мышь</dt><dd>поворот, кнопка — ускорение</dd>
@@ -175,15 +170,16 @@
             <button id="howDone" class="green big" type="button">Понятно</button>
         </dialog>
         <script src="game-core.js?v=1"></script>
+        <script src="snake-collision.js?v=collision4"></script>
         <script src="mystake-maps.js?v=52"></script>
-        <script src="mystake-bots.js?v=visualfix3"></script>
+        <script src="mystake-bots.js?v=collision4"></script>
         <script src="extra-skins.js?v=19"></script>
         <script src="flag-countries.js?v=28"></script>
         <script src="video-look.js?v=10"></script>
-        <script src="ribbon-mesh.js?v=visualfix3"></script>
-        <script src="ribbon-renderer.js?v=visualfix3"></script>
-        <script src="mystake-art.js?v=visualfix3"></script>
+        <script src="ribbon-mesh.js?v=collision4"></script>
+        <script src="ribbon-renderer.js?v=collision4"></script>
+        <script src="mystake-art.js?v=collision4"></script>
         <script src="mystake-physics.js?v=11"></script>
-        <script src="mystake.js?v=visualfix3"></script>
+        <script src="mystake.js?v=collision4"></script>
     </body>
 </html>

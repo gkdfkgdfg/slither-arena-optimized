@@ -1,35 +1,31 @@
 {
   "date": "2026-11-11",
-  "release": "visualfix3",
-  "method": "1500 actual requestAnimationFrame callbacks in a scripted invulnerable round, turning, boosting and five growth stages; timing from the production frame loop",
-  "environment": "Desktop Chromium in-app browser; approximately 240 callbacks per second, not a physical phone",
+  "release": "collision4",
+  "method": "1200 actual requestAnimationFrame callbacks with production collisions enabled; botHeading steers the player to make the input repeatable. No invulnerability.",
+  "environment": "Desktop Chromium in-app browser, approximately 240 callbacks per second; no physical phone benchmark",
   "viewport": {
     "width": 1280,
     "height": 720,
     "dpr": 1.5
   },
-  "scene": {
-    "snakes": 10,
-    "coins_at_end": 915,
-    "player_values": [10, 40, 160, 600, 1000]
+  "initial_snakes": 10,
+  "frames": 1200,
+  "rounds": 1,
+  "raf_interval_ms": {
+    "median": 4.2,
+    "p95": 4.4
   },
-  "frames": 1500,
-  "simulated_seconds": 6.2501,
-  "raf_interval_ms": { "median": 4.2, "p95": 4.4 },
-  "js_render_ms": { "median": 0.4, "p95": 0.7 },
-  "js_update_ms": { "median": 0.2, "p95": 0.4 },
-  "max_player_head_camera_offset_pixels": 0,
-  "nonfinite_body_frames": 0,
-  "additional_stress_test": {
-    "physics_steps": 14400,
-    "fixed_step_seconds": 0.008333333333333333,
-    "simulated_seconds": 120,
-    "rendered_frames": 2400,
-    "nonfinite_body_samples": 0,
-    "max_player_head_camera_offset_pixels": 0,
-    "webgl_error": 0,
-    "gpu_texture_cache_size": 12,
-    "source_material_cache_size": 48
+  "js_update_ms": {
+    "median": 0.8,
+    "p95": 1.0
   },
-  "limits": "JS and command submission timing, not complete GPU frame time. Artificial invulnerability and scripted growth isolate rendering and movement. Not a universal FPS guarantee. The previous defective renderer's benchmark is no longer reported as the current release."
+  "js_render_ms": {
+    "median": 0.4,
+    "p95": 0.5
+  },
+  "collision_segments_at_end": 8207,
+  "collision_grid_cells_at_end": 737,
+  "console_errors": 0,
+  "renderer_error": null,
+  "limits": "JavaScript and graphics command submission timings, not full GPU frame times or a universal FPS guarantee. Not directly comparable to the previous release artificial growth benchmark."
 }
