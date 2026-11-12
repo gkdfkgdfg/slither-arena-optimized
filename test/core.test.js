@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { SpatialGrid, removeIndexed, boostCost, foodValue } = require('../game-core');
+const { SpatialGrid, removeIndexed, boostCost, foodValue, EXIT_MULTIPLIERS, normalizeExitMultiplier, cashoutTarget, rivalRoster, rivalProfile } = require('../game-core');
 
 test('spatial queries retain every nearby item after moving, deleting and crossing zero', () => {
   const grid = new SpatialGrid(96), items = [];
@@ -62,4 +62,23 @@ test('ordinary food gives a visible early gain, exceeding a short boost charge',
   const twentyCoins = 20 * foodValue(stake, () => .5);
   assert.equal(twentyCoins, 10);
   assert.ok(twentyCoins > boostCost(stake, stake, 5) * 10);
+});
+
+test('exit multiplier is selectable, validated and applied to the round target', () => {
+  assert.deepEqual(EXIT_MULTIPLIERS, [10, 20, 37.5, 60, 100]);
+  assert.equal(normalizeExitMultiplier('60'), 60);
+  assert.equal(normalizeExitMultiplier('37,5'), 37.5, 'Russian decimal comma is accepted');
+  assert.equal(normalizeExitMultiplier('999'), 37.5);
+  assert.equal(cashoutTarget(10, 100), 1000);
+  assert.equal(cashoutTarget(10, 60), 600);
+  assert.equal(cashoutTarget(.01, 37.5), .375);
+});
+
+test('rival roster keeps large, giant and titan worms common and visibly thick', () => {
+  const roster = rivalRoster(() => .99);
+  assert.equal(roster.filter(t => ['large', 'giant', 'titan'].includes(t)).length, 7);
+  const profile = rivalProfile(10, 'titan', 0, () => .5);
+  assert.ok(profile.value >= 200 && profile.value <= 400);
+  assert.ok(profile.radius >= 50);
+  assert.ok(profile.len >= 500);
 });

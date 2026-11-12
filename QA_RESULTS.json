@@ -1,8 +1,8 @@
 {
-  "release": "balance6",
-  "date": "2026-11-11",
+  "release": "exit7",
+  "date": "2026-11-12",
   "automated_node_tests": {
-    "passed": 22,
+    "passed": 24,
     "failed": 0
   },
   "animated_skin_audit": {
@@ -92,7 +92,7 @@
     "cashout",
     "exitHint"
   ],
-  "solid_collision_audit_release": "collision4; solid collision code unchanged in balance6",
+  "solid_collision_audit_release": "collision4 historical layout and motion audit; exit7 large spawn layouts and traffic recorded in exit7_audit",
   "difficulty_audit": {
     "default_mode": "easy",
     "easy_mix": {
@@ -193,6 +193,132 @@
     "player_cutoff": {
       "rookie_deaths_in_20": 20,
       "smart_deaths_in_20": 0
+    },
+    "console_errors": 0,
+    "webgl_errors": 0
+  },
+  "historical_audits": "Existing skin/fallback/collision/touch audit entries retain the release labels below. The exit7 checks are recorded separately.",
+  "exit7_audit": {
+    "thresholds": [
+      {
+        "x": 10,
+        "target": 100,
+        "early": false,
+        "unlocked": true,
+        "hud": "100 USD",
+        "banked": true,
+        "mode": "result"
+      },
+      {
+        "x": 20,
+        "target": 200,
+        "early": false,
+        "unlocked": true,
+        "hud": "200 USD",
+        "banked": true,
+        "mode": "result"
+      },
+      {
+        "x": 37.5,
+        "target": 375,
+        "early": false,
+        "unlocked": true,
+        "hud": "375 USD",
+        "banked": true,
+        "mode": "result"
+      },
+      {
+        "x": 60,
+        "target": 600,
+        "early": false,
+        "unlocked": true,
+        "hud": "600 USD",
+        "banked": true,
+        "mode": "result"
+      },
+      {
+        "x": 100,
+        "target": 1000,
+        "early": false,
+        "unlocked": true,
+        "hud": "1,000 USD",
+        "banked": true,
+        "mode": "result"
+      }
+    ],
+    "selection_persists_after_reload": true,
+    "q_key_exits_at_selected_target": true,
+    "fractional_target_display": {
+      "stake": 0.01,
+      "multiplier": 37.5,
+      "text": "0.375 USD"
+    },
+    "large_rival_spawns": {
+      "rounds": 50,
+      "minLive": 9,
+      "minLarge": 6,
+      "minTitans": 1,
+      "overlaps": 0,
+      "maxRadius": 50,
+      "maxValue": 394.69
+    },
+    "traffic": {
+      "method": "3 seeded 60-second simulations per mode; real update and physics, player inactive and crowd relocation disabled to isolate bot traffic.",
+      "results": [
+        {
+          "difficulty": "easy",
+          "seed": 41,
+          "peer": 9,
+          "border": 0,
+          "live": 9
+        },
+        {
+          "difficulty": "easy",
+          "seed": 99,
+          "peer": 5,
+          "border": 0,
+          "live": 9
+        },
+        {
+          "difficulty": "easy",
+          "seed": 207,
+          "peer": 5,
+          "border": 0,
+          "live": 9
+        },
+        {
+          "difficulty": "hard",
+          "seed": 41,
+          "peer": 1,
+          "border": 0,
+          "live": 9
+        },
+        {
+          "difficulty": "hard",
+          "seed": 99,
+          "peer": 4,
+          "border": 0,
+          "live": 9
+        },
+        {
+          "difficulty": "hard",
+          "seed": 207,
+          "peer": 5,
+          "border": 0,
+          "live": 9
+        }
+      ],
+      "limits": "Small controlled sample, not every possible trajectory."
+    },
+    "mobile_menu": {
+      "viewport": [
+        390,
+        844
+      ],
+      "horizontal_overflow": false,
+      "play_button_bottom": 823.0208740234375,
+      "multiplier_selector_visible": true,
+      "physical_phone_tested": false
     },
     "console_errors": 0,
     "webgl_errors": 0

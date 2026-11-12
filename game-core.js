@@ -69,5 +69,49 @@
     return stake * (.003 + random() * .004);
   }
 
-  return { SpatialGrid, removeIndexed, boostCost, foodValue };
+  const EXIT_MULTIPLIERS = Object.freeze([10, 20, 37.5, 60, 100]);
+  const DEFAULT_EXIT_MULTIPLIER = 37.5;
+  function normalizeExitMultiplier(value) {
+    const n = typeof value === 'string' ? Number(value.replace(',', '.')) : Number(value);
+    return EXIT_MULTIPLIERS.includes(n) ? n : DEFAULT_EXIT_MULTIPLIER;
+  }
+  function cashoutTarget(stake, multiplier) {
+    const n = Number(stake);
+    return Number.isFinite(n) && n >= 0 ? n * normalizeExitMultiplier(multiplier) : 0;
+  }
+
+  // One small rival, one medium, three large, two giants and two titans per batch.
+  function rivalRoster(random = Math.random) {
+    const tiers = ['small', 'peer', 'large', 'large', 'large', 'giant', 'giant', 'titan', 'titan'];
+    for (let i = tiers.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [tiers[i], tiers[j]] = [tiers[j], tiers[i]];
+    }
+    return tiers;
+  }
+  function rivalProfile(stake, tier, elapsed = 0, random = Math.random) {
+    const ranges = { small: [.8, 1.8], peer: [2, 4], large: [5, 9], giant: [10, 18], titan: [20, 40] };
+    const range = ranges[tier] || ranges.peer;
+    const multiple = (range[0] + random() * (range[1] - range[0])) * Math.min(12, 1 + Math.max(0, elapsed) / 90);
+    const size = Math.log2(Math.max(1, multiple));
+    const minRadius = tier === 'titan' ? 50 : tier === 'giant' ? 44 : tier === 'large' ? 36 : 22;
+    return {
+      value: Math.max(.01, Math.round(stake * multiple * 100) / 100),
+      len: Math.floor(Math.min(650, 260 + random() * 170 + 62 * size)),
+      radius: Math.min(54, Math.max(minRadius, 22 + random() * 9 + size * 3.3))
+    };
+  }
+
+  return {
+    SpatialGrid,
+    removeIndexed,
+    boostCost,
+    foodValue,
+    EXIT_MULTIPLIERS,
+    DEFAULT_EXIT_MULTIPLIER,
+    normalizeExitMultiplier,
+    cashoutTarget,
+    rivalRoster,
+    rivalProfile
+  };
 });

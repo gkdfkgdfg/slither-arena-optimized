@@ -179,7 +179,7 @@ dialog::backdrop{background:#03080dc7}
 
 /* Controls remain reachable on phones as well as desktops. */
 .qualityField{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 12px;font-size:12px;color:#b5c7bd}
-#quality,#difficulty{font:inherit;color:#ddf5e6;background:#15261e;border:1px solid #375744;border-radius:8px;padding:7px 10px}
+#quality,#difficulty,#exitMultiplier{font:inherit;color:#ddf5e6;background:#15261e;border:1px solid #375744;border-radius:8px;padding:7px 10px}
 #hud .topbar{display:flex;position:fixed;top:62px;left:12px;right:auto;gap:8px;pointer-events:auto}
 #hud .topbar .pill{display:none}
 #hud .topbar button{width:40px;height:40px;border-radius:12px;background:#071710dd;border:1px solid #577762;color:#effff4;font-size:19px}
