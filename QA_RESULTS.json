@@ -1,8 +1,8 @@
 {
-  "release": "exit8",
+  "release": "mix9",
   "date": "2026-11-12",
   "automated_node_tests": {
-    "passed": 25,
+    "passed": 27,
     "failed": 0
   },
   "animated_skin_audit": {
@@ -334,5 +334,38 @@
       "report": [],
       "collision_immunity_added": false
     }
+  },
+  "mix9_audit": {
+    "stake": 500,
+    "exitX": 20,
+    "collected": {
+      "alive": false,
+      "cashedOut": true,
+      "value": 10005,
+      "loot": 0,
+      "kills": 0,
+      "balanceUnchanged": true
+    },
+    "respawn": {
+      "alive": true,
+      "tier": "titan",
+      "sameTier": true,
+      "value": 4166.92,
+      "belowTarget": true
+    },
+    "starts": {
+      "runs": 50,
+      "minLive": 10,
+      "overlaps": 0,
+      "mixFailures": 0,
+      "maxValue": 7953.42,
+      "earlyDeaths": 0
+    },
+    "console_errors": 0,
+    "webgl_errors": 0,
+    "viewport": [
+      1280,
+      720
+    ]
   }
 }

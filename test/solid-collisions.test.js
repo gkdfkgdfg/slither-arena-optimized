@@ -75,3 +75,18 @@ test('initial rival tails leave a clear opening ahead of the player without coll
   assert.equal(context.attempt(rival, 550, 450, 0), true);
   assert.equal(rival.grace, 0, 'safe placement must not make rivals intangible');
 });
+
+test('a rival cashout releases pulled coins without dying, dropping loot or crediting the player', () => {
+  const source = fs.readFileSync(path.join(__dirname, '../mystake.js'), 'utf8');
+  const code = source.slice(source.indexOf('function cashoutRival('), source.indexOf('function dropBoostPellet('));
+  const player = { alive: true, value: 500 }, coin = { pull: null };
+  const rival = { alive: true, value: 10000, pulledCoins: new Set([coin]) }; coin.pull = rival;
+  let released = 0;
+  const context = { player, rand: () => 3, releaseCoins(s) { released++; for (const c of s.pulledCoins) c.pull = null; s.pulledCoins.clear(); } };
+  vm.createContext(context); vm.runInContext(code + ';globalThis.bank=cashoutRival;', context);
+  assert.equal(context.bank(rival), true);
+  assert.equal(rival.alive, false); assert.equal(rival.cashedOut, true); assert.equal(rival.respawn, 3);
+  assert.equal(player.value, 500); assert.equal(coin.pull, null); assert.equal(released, 1);
+  assert.equal(context.bank(rival), false, 'bank once only');
+  assert.equal(context.bank(player), false, 'NPC cashout must never remove the player');
+});

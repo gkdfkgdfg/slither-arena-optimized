@@ -74,11 +74,28 @@ test('exit multiplier is selectable, validated and applied to the round target',
   assert.equal(cashoutTarget(.01, 37.5), .375);
 });
 
-test('rival roster keeps large, giant and titan worms common and visibly thick', () => {
-  const roster = rivalRoster(() => .99);
-  assert.equal(roster.filter(t => ['large', 'giant', 'titan'].includes(t)).length, 7);
-  const profile = rivalProfile(10, 'titan', 0, () => .5);
-  assert.ok(profile.value >= 200 && profile.value <= 400);
-  assert.ok(profile.radius >= 50);
-  assert.ok(profile.len >= 500);
+test('rival slots keep three weak, four medium and two fat worms', () => {
+  for (const r of [0, .3, .75, .999]) {
+    const roster = rivalRoster(() => r);
+    assert.equal(roster.length, 9);
+    assert.equal(roster.filter(t => t === 'small').length, 3);
+    assert.equal(roster.filter(t => ['peer', 'large'].includes(t)).length, 4);
+    assert.equal(roster.filter(t => ['giant', 'titan'].includes(t)).length, 2);
+  }
+});
+
+test('rivals have moderate sizes and always spawn below the selected exit goal', () => {
+  const tiers = ['small', 'peer', 'large', 'giant', 'titan'];
+  for (const stake of [.01, 500, 1e9]) for (const x of EXIT_MULTIPLIERS) for (const tier of tiers) {
+    for (const r of [0, .5, .999]) {
+      const profile = rivalProfile(stake, tier, x, () => r);
+      assert.ok(profile.value > 0 && profile.value <= cashoutTarget(stake, x) * .9);
+      assert.ok(profile.radius >= 17 && profile.radius <= 42);
+      assert.equal(profile.tier, tier);
+    }
+  }
+  assert.equal(rivalProfile(500, 'small', 20, () => 0).value, 175);
+  assert.equal(rivalProfile(500, 'titan', 20, () => .5).value, 6000);
+  assert.equal(rivalProfile(500, 'titan', 20, () => 1).value, 8000);
+  assert.equal(rivalProfile(500, 'titan', 10, () => 1).value, 4500);
 });

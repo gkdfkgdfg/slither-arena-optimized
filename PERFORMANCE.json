@@ -1,42 +1,70 @@
 {
+  "release": "mix9",
   "date": "2026-11-12",
-  "release": "exit8",
-  "method": "600 actual requestAnimationFrame callbacks per difficulty, production collisions enabled, smart AI steering the player for repeatable input",
-  "environment": "Desktop Chromium in-app browser, approximately 240 callbacks per second; not a physical phone",
+  "method": "600 actual requestAnimationFrame callbacks, hard difficulty, shared mixed size roster, production collisions, automatic smart steering of the player",
+  "environment": "Desktop Chromium in-app browser; not a physical phone",
   "viewport": {
-    "width": 1743,
-    "height": 1199,
-    "dpr": 1.0937340160059081
+    "width": 1280,
+    "height": 720,
+    "dpr": 1.5
   },
-  "easy": {
-    "frames": 600,
-    "rounds": 1,
-    "raf_p95_ms": 4.3,
-    "js_update_ms": {
-      "median": 1.1,
-      "p95": 1.5
-    },
-    "js_render_ms": {
-      "median": 0.4,
-      "p95": 0.6
-    },
-    "live_snakes_at_end": 10
+  "frames": 600,
+  "player_survived": true,
+  "js_update_ms": {
+    "median": 0.7,
+    "p95": 0.9
   },
-  "hard": {
-    "frames": 600,
-    "rounds": 1,
-    "raf_p95_ms": 4.3,
-    "js_update_ms": {
-      "median": 1.1,
-      "p95": 1.4
-    },
-    "js_render_ms": {
-      "median": 0.4,
-      "p95": 0.5
-    },
-    "live_snakes_at_end": 10
+  "js_render_ms": {
+    "median": 0.3,
+    "p95": 0.5
+  },
+  "raf_gap_ms": {
+    "median": 4.2,
+    "p95": 4.2
   },
   "console_errors": 0,
   "renderer_error": null,
-  "limits": "JavaScript and graphics command submission timing, not full GPU frame time or a universal FPS guarantee. Short desktop samples depend on the visible scene."
+  "limits": "JavaScript and graphics command submission timing, not full GPU frame time or a universal FPS guarantee. Short desktop samples depend on the visible scene.",
+  "previous_exit8": {
+    "date": "2026-11-12",
+    "release": "exit8",
+    "method": "600 actual requestAnimationFrame callbacks per difficulty, production collisions enabled, smart AI steering the player for repeatable input",
+    "environment": "Desktop Chromium in-app browser, approximately 240 callbacks per second; not a physical phone",
+    "viewport": {
+      "width": 1743,
+      "height": 1199,
+      "dpr": 1.0937340160059081
+    },
+    "easy": {
+      "frames": 600,
+      "rounds": 1,
+      "raf_p95_ms": 4.3,
+      "js_update_ms": {
+        "median": 1.1,
+        "p95": 1.5
+      },
+      "js_render_ms": {
+        "median": 0.4,
+        "p95": 0.6
+      },
+      "live_snakes_at_end": 10
+    },
+    "hard": {
+      "frames": 600,
+      "rounds": 1,
+      "raf_p95_ms": 4.3,
+      "js_update_ms": {
+        "median": 1.1,
+        "p95": 1.4
+      },
+      "js_render_ms": {
+        "median": 0.4,
+        "p95": 0.5
+      },
+      "live_snakes_at_end": 10
+    },
+    "console_errors": 0,
+    "renderer_error": null,
+    "limits": "JavaScript and graphics command submission timing, not full GPU frame time or a universal FPS guarantee. Short desktop samples depend on the visible scene."
+  }
 }
