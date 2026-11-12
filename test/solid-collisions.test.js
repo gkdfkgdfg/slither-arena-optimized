@@ -56,10 +56,22 @@ test('actual spawn code rejects a clear head whose long tail crosses another sna
   const code = source.slice(source.indexOf('function commitSpawn('), source.indexOf('function maintainCrowd('));
   const collisionWorld = new World();
   collisionWorld.rebuild([snake([{ x: 0, y: -150 }, { x: 0, y: 150 }], 15)]);
-  const context = { collisionWorld, R: 2200, PHYS: { pitch: 2 }, bodyPoints: () => 301, rand: () => 5, player: { x: 0, y: 0 } };
+  const context = { collisionWorld, mode: 'menu', elapsed: 0, R: 2200, PHYS: { pitch: 2 }, bodyPoints: () => 301, rand: () => 5, player: { x: 0, y: 0 } };
   vm.createContext(context); vm.runInContext(code + ';globalThis.attempt=trySpawn;', context);
   assert.equal(context.attempt({ radius: 15 }, 300, 0, 0), false);
   const s = { radius: 15 };
   assert.equal(context.attempt(s, 300, 300, 0), true);
   assert.equal(s.grace, 0); assert.equal(s.points.length, 301);
+});
+
+test('initial rival tails leave a clear opening ahead of the player without collision immunity', () => {
+  const source = fs.readFileSync(path.join(__dirname, '../mystake.js'), 'utf8');
+  const code = source.slice(source.indexOf('function commitSpawn('), source.indexOf('function maintainCrowd('));
+  const context = { collisionWorld: new World(), SnakeCollision: { segmentDistance2 }, mode: 'play', elapsed: 0,
+    R: 2200, PHYS: { pitch: 2 }, bodyPoints: () => 301, rand: () => 5, player: { x: 0, y: 0, radius: 15 } };
+  vm.createContext(context); vm.runInContext(code + ';globalThis.attempt=trySpawn;', context);
+  assert.equal(context.attempt({ radius: 50 }, 550, 100, 0), false, 'long thick tail would block the opening');
+  const rival = { radius: 50 };
+  assert.equal(context.attempt(rival, 550, 450, 0), true);
+  assert.equal(rival.grace, 0, 'safe placement must not make rivals intangible');
 });

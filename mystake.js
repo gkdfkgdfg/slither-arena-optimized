@@ -114,6 +114,8 @@ function commitSpawn(s,x,y,a){
 function trySpawn(s,x,y,a){
  const L=(Math.ceil(bodyPoints(s))-1)*PHYS.pitch,tx=x-Math.cos(a)*L,ty=y-Math.sin(a)*L,margin=s.radius+45;
  if(Math.max(Math.abs(x),Math.abs(y),Math.abs(tx),Math.abs(ty))>R-margin)return false;
+ // Keep an opening ahead of the player, including clearance for moving, thick tails.
+ if(mode==='play'&&elapsed<.05&&player&&s!==player&&SnakeCollision.segmentDistance2(x,y,tx,ty,player.x,player.y,player.x+650,player.y)<(s.radius+player.radius+170)**2)return false;
  // Test the entire body, not only the head. New snakes are solid immediately.
  if(collisionWorld.hitSegment(x,y,tx,ty,s.radius+30,s))return false;
  return commitSpawn(s,x,y,a);

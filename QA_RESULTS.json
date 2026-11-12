@@ -1,8 +1,8 @@
 {
-  "release": "exit7",
+  "release": "exit8",
   "date": "2026-11-12",
   "automated_node_tests": {
-    "passed": 24,
+    "passed": 25,
     "failed": 0
   },
   "animated_skin_audit": {
@@ -92,7 +92,7 @@
     "cashout",
     "exitHint"
   ],
-  "solid_collision_audit_release": "collision4 historical layout and motion audit; exit7 large spawn layouts and traffic recorded in exit7_audit",
+  "solid_collision_audit_release": "collision4 historical layout and motion audit; exit8 large spawn layouts and traffic recorded in exit8_audit",
   "difficulty_audit": {
     "default_mode": "easy",
     "easy_mix": {
@@ -197,8 +197,8 @@
     "console_errors": 0,
     "webgl_errors": 0
   },
-  "historical_audits": "Existing skin/fallback/collision/touch audit entries retain the release labels below. The exit7 checks are recorded separately.",
-  "exit7_audit": {
+  "historical_audits": "Existing skin/fallback/collision/touch audit entries retain the release labels below. The exit8 checks are recorded separately.",
+  "exit8_audit": {
     "thresholds": [
       {
         "x": 10,
@@ -268,7 +268,7 @@
         {
           "difficulty": "easy",
           "seed": 41,
-          "peer": 9,
+          "peer": 2,
           "border": 0,
           "live": 9
         },
@@ -289,9 +289,9 @@
         {
           "difficulty": "hard",
           "seed": 41,
-          "peer": 1,
+          "peer": 3,
           "border": 0,
-          "live": 9
+          "live": 8
         },
         {
           "difficulty": "hard",
@@ -321,6 +321,18 @@
       "physical_phone_tested": false
     },
     "console_errors": 0,
-    "webgl_errors": 0
+    "webgl_errors": 0,
+    "safe_initial_lane": {
+      "runs": 50,
+      "seconds": 1,
+      "viewport": {
+        "W": 1280,
+        "H": 720
+      },
+      "minLive": 10,
+      "deaths": 0,
+      "report": [],
+      "collision_immunity_added": false
+    }
   }
 }
