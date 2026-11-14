@@ -196,7 +196,7 @@ for(const c of coinCandidates){coinChecks++;if(c.slot<0)continue;if(c.pull&&!c.p
 
 if(!s.alive)continue;s.len=Math.min(s.len,650);if(s===player&&playing)s.radius+=(playerRadius(s.value)-s.radius)*Math.min(1,dt*GROWTH.ease);else s.radius=s.baseR??=s.radius;
 // Crossing the green exit with the player's head banks the round exactly once.
-if(s===player&&playing){if(s.value>=ArenaCore.cashoutTarget(sessionStake,roundExitX))exitUnlocked=true;const out=Math.max(Math.abs(s.x),Math.abs(s.y))-R;if(out>=0){if(!exitUnlocked){die(s,null);return}/* videos: the head slides fully under the void, then the win screen */s.grace=1;if(out>=s.radius*1.3){finish(true);return}}}
+if(s===player&&playing){if(s.value>=ArenaCore.cashoutTarget(sessionStake,roundExitX))exitUnlocked=true;const out=Math.max(Math.abs(s.x),Math.abs(s.y))-R;if(out>=0){if(!exitUnlocked){die(s,null);return}/* Complete the exit once the head has fully crossed the open border. */s.grace=1;if(out>=s.radius*1.3){finish(true);return}}}
 if(s!==player&&Math.max(Math.abs(s.x),Math.abs(s.y))>R-s.radius&&s.grace<=0)die(s,null);
 }
 // Sweep each head across its whole step; grace never makes another body intangible.
@@ -243,41 +243,36 @@ if(!cached||cached.label!==label){if(!cached){cached={c:document.createElement('
 // Videos: the plate is ~18% of the screen width wide and floats r·.7+45 above the head centre.
 const k=1.55,y=(s.renderY??s.y)-(s.renderRadius??s.radius)*.7-45;ctx.drawImage(cached.c,(s.renderX??s.x)-cached.w*k/2,y-cached.h*k/2,cached.w*k,cached.h*k)}
 const viewRect={l:0,t:0,r:0,b:0};
-// Outside the arena: the map stays, dimmed, with a glow along the edge.
-// Locked exit: pulsing red glow and crawling hazard stripes. Open exit: green glow and
-// waves of chevrons streaming outward.
-let hazardPattern=null;
+// A closed exit keeps the floor visible under a soft, dashed red crosshatch.
+// Downsample the already drawn floor only near the border; no per-frame blur filter.
+let hazardPattern=null,outsideFloor=null;
 function drawOutside(g,left,top,vw,vh){
- const L=left,T=top,Rt=left+vw+120,B=top+vh+120;if(L>-R&&T>-R&&Rt<R&&B<R)return;
- const t=performance.now()/1000,open=exitUnlocked,band=280;
+ const L=left,T=top,Rt=left+vw+120,B=top+vh+120;
+ if(exitUnlocked||L>-R&&T>-R&&Rt<R&&B<R)return;
+ const source=g.canvas;
+ if(!outsideFloor)outsideFloor=document.createElement('canvas');
+ const w=Math.max(1,Math.ceil(source.width/4)),h=Math.max(1,Math.ceil(source.height/4));
+ if(outsideFloor.width!==w||outsideFloor.height!==h){outsideFloor.width=w;outsideFloor.height=h}
+ const soft=outsideFloor.getContext('2d');soft.imageSmoothingEnabled=true;
+ soft.drawImage(source,0,0,w,h);
  g.save();g.beginPath();g.rect(L,T,Rt-L,B-T);g.rect(-R,-R,2*R,2*R);g.clip('evenodd');
- // As in the videos: beyond the edge there is no map, only a flat dark void.
- g.fillStyle='#05060e';g.fillRect(L,T,Rt-L,B-T);g.restore();return;
- // Edge glow: one gradient strip per side, pulsing.
- const pulse=.75+.25*Math.sin(t*(open?4:2.4)),rgb=open?'0,255,120':'255,28,48',a=(open?.34:.26)*pulse;
- const sides=[[-R,-R-band,2*R,band,0,-R,0,-R-band],[-R,R,2*R,band,0,R,0,R+band],[-R-band,-R,band,2*R,-R,0,-R-band,0],[R,-R,band,2*R,R,0,R+band,0]];
- for(const [x,y,w,h,x0,y0,x1,y1] of sides){const gr=g.createLinearGradient(x0,y0,x1,y1);gr.addColorStop(0,'rgba('+rgb+','+a+')');gr.addColorStop(.35,'rgba('+rgb+','+a*.35+')');gr.addColorStop(1,'rgba('+rgb+',0)');g.fillStyle=gr;g.fillRect(x,y,w,h)}
- // Corners: radial glow so the side strips join without a visible step.
- for(const sx of [-1,1])for(const sy of [-1,1]){const cx=sx*R,cy=sy*R;if(cx+sx*band<L&&sx>0||cx+sx*band>Rt&&sx<0||cy+sy*band<T&&sy>0||cy+sy*band>B&&sy<0)continue;const gr=g.createRadialGradient(cx,cy,0,cx,cy,band);gr.addColorStop(0,'rgba('+rgb+','+a+')');gr.addColorStop(.35,'rgba('+rgb+','+a*.35+')');gr.addColorStop(1,'rgba('+rgb+',0)');g.fillStyle=gr;g.fillRect(sx>0?cx:cx-band,sy>0?cy:cy-band,band,band)}
- if(!open){
-  if(!hazardPattern){const c=document.createElement('canvas');c.width=c.height=64;const h=c.getContext('2d');h.strokeStyle='#ff2a3c';h.lineWidth=14;for(let k=-64;k<=128;k+=32){h.beginPath();h.moveTo(k,64);h.lineTo(k+64,0);h.stroke()}hazardPattern=g.createPattern(c,'repeat')}
-  hazardPattern.setTransform(new DOMMatrix().translate((t*18)%64,0));g.globalAlpha=.07+.03*Math.sin(t*2.4);g.fillStyle=hazardPattern;g.fillRect(L,T,Rt-L,B-T);g.globalAlpha=1;
- }else{
-  // Chevrons pointing out of the arena, moving outward and fading.
-  const rows=3,span=300,gap=110,sz=16;g.lineCap='round';g.lineJoin='round';
-  for(let k=0;k<rows;k++){const d=((t*120+k*span/rows)%span),alpha=Math.min(1,d/40)*(1-d/span);if(alpha<=.02)continue;g.beginPath();
-   for(const sgn of [-1,1]){const yEdge=sgn*R+sgn*(30+d);if(yEdge>T-30&&yEdge<B+30)for(let x=Math.ceil(Math.max(L,-R)/gap)*gap;x<Math.min(Rt,R);x+=gap){g.moveTo(x-sz,yEdge-sgn*sz*.7);g.lineTo(x,yEdge);g.lineTo(x+sz,yEdge-sgn*sz*.7)}
-    const xEdge=sgn*R+sgn*(30+d);if(xEdge>L-30&&xEdge<Rt+30)for(let y=Math.ceil(Math.max(T,-R)/gap)*gap;y<Math.min(B,R);y+=gap){g.moveTo(xEdge-sgn*sz*.7,y-sz);g.lineTo(xEdge,y);g.lineTo(xEdge-sgn*sz*.7,y+sz)}}
-   g.globalAlpha=alpha*.35;g.strokeStyle='#00ff78';g.lineWidth=11;g.stroke();g.globalAlpha=alpha;g.strokeStyle='#b6ffd0';g.lineWidth=4;g.stroke()}
-  g.globalAlpha=1;
+ // The clip remains in device coordinates while copying the softened floor back.
+ g.save();g.setTransform(1,0,0,1,0,0);g.imageSmoothingEnabled=true;
+ g.drawImage(outsideFloor,0,0,source.width,source.height);g.restore();
+ g.fillStyle='rgba(50,4,16,.22)';g.fillRect(L,T,Rt-L,B-T);
+ if(!hazardPattern){
+  const c=document.createElement('canvas');c.width=c.height=80;const h=c.getContext('2d');
+  h.strokeStyle='#ff7180';h.lineWidth=2;h.setLineDash([10,10]);
+  for(let k=-80;k<=80;k+=40){h.beginPath();h.moveTo(k,0);h.lineTo(k+80,80);h.stroke();h.beginPath();h.moveTo(k,80);h.lineTo(k+80,0);h.stroke()}
+  hazardPattern=g.createPattern(c,'repeat');
  }
- g.restore();
+ g.globalAlpha=.46;g.fillStyle=hazardPattern;g.fillRect(L,T,Rt-L,B-T);g.restore();
 }
 function render(){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#070f18';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);const cx=camera.x,cy=camera.y;ctx.translate(-cx,-cy);const vw=W/zoom,vh=H/zoom,left=cx-vw/2-60,top=cy-vh/2-60;
 drawArenaMap(ctx,left,top,vw,vh);
-const drawEdge=()=>{
-// Videos 1/9: beyond the line is a flat void drawn OVER bodies and plates, so a snake leaving the arena slides under it.
+// Restrict the warning to the floor, so snakes remain visible at an open exit.
 drawOutside(ctx,left,top,vw,vh);
+const drawEdge=()=>{
 ctx.beginPath();ctx.rect(-R,-R,R*2,R*2);
 // Edge as in the videos: a thin mint line with small ticks pointing into the arena (same before and after unlock).
 {const lw=2/zoom,pitch=26,depth=10/zoom*.5;ctx.lineWidth=lw;ctx.strokeStyle=exitUnlocked?'#2af283':'#ff445b';ctx.stroke();

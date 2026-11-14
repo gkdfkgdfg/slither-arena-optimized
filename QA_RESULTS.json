@@ -1,6 +1,6 @@
 {
-  "release": "mix9",
-  "date": "2026-11-12",
+  "release": "border10",
+  "date": "2026-11-15",
   "automated_node_tests": {
     "passed": 27,
     "failed": 0
@@ -367,5 +367,100 @@
       1280,
       720
     ]
+  },
+  "border10_audit": {
+    "sides": [
+      {
+        "name": "right",
+        "insideChanged": 0,
+        "outsideChanged": 12768,
+        "openChanged": 0
+      },
+      {
+        "name": "left",
+        "insideChanged": 0,
+        "outsideChanged": 12901,
+        "openChanged": 0
+      },
+      {
+        "name": "top",
+        "insideChanged": 0,
+        "outsideChanged": 10710,
+        "openChanged": 0
+      },
+      {
+        "name": "bottom",
+        "insideChanged": 0,
+        "outsideChanged": 10472,
+        "openChanged": 0
+      },
+      {
+        "name": "top_left",
+        "insideChanged": 0,
+        "outsideChanged": 19246,
+        "openChanged": 0
+      },
+      {
+        "name": "bottom_right",
+        "insideChanged": 0,
+        "outsideChanged": 19016,
+        "openChanged": 0
+      }
+    ],
+    "softBuffer": {
+      "width": 480,
+      "height": 270,
+      "canvasWidth": 1920,
+      "canvasHeight": 1080
+    },
+    "gameplay": [
+      {
+        "open": false,
+        "mode": "result",
+        "alive": false,
+        "winVisible": false,
+        "value": 10
+      },
+      {
+        "open": true,
+        "mode": "result",
+        "alive": true,
+        "winVisible": true,
+        "value": 100
+      }
+    ],
+    "renderTiming": {
+      "viewport": {
+        "W": 1280,
+        "H": 720,
+        "dpr": 1.5
+      },
+      "samples": [
+        {
+          "open": false,
+          "frames": 180,
+          "median": 0.09999999403953552,
+          "p95": 0.20000001788139343
+        },
+        {
+          "open": true,
+          "frames": 180,
+          "median": 0.09999999403953552,
+          "p95": 0.20000001788139343
+        }
+      ]
+    },
+    "mobile": {
+      "W": 390,
+      "H": 844,
+      "dpr": 1.0000000298023224,
+      "bufferWidth": 98,
+      "bufferHeight": 211,
+      "horizontalOverflow": false
+    },
+    "openSnakeHeadVisible": true,
+    "console_errors": 0,
+    "renderer_errors": 0,
+    "limitations": "Visual QA and CPU command submission timing on desktop Chromium, including mobile viewport emulation; not physical phone performance."
   }
 }
