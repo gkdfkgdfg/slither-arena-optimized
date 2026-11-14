@@ -88,20 +88,31 @@ function worldPiece(name,seed){
  g.globalAlpha=1;g.globalCompositeOperation='destination-in';g.drawImage(m,0,0);
  worldPieces.set(key,c);return c;
 }
-function drawVideoWorld(g,left,top,vw,vh){
+// Resample each source once, before camera transforms, so the soft floor cannot
+// change its sampling phase as the camera moves. Weak keys follow artwork eviction.
+const softMapImages=new WeakMap();
+function softMapImage(image){
+ let soft=softMapImages.get(image);if(soft)return soft;
+ const width=image.naturalWidth||image.width,height=image.naturalHeight||image.height;
+ const scale=Math.min(.5,512/Math.max(width,height));
+ soft=document.createElement('canvas');soft.width=Math.max(1,Math.ceil(width*scale));soft.height=Math.max(1,Math.ceil(height*scale));
+ const g=soft.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(image,0,0,soft.width,soft.height);
+ softMapImages.set(image,soft);return soft;
+}
+function drawVideoWorld(g,left,top,vw,vh,soft=false){
  g.fillStyle=WORLD_SEA;g.fillRect(left,top,vw+120,vh+120);
  for(const p of WORLD_LAYOUT){const h=p.size/2;if(p.x+h<left||p.x-h>left+vw+120||p.y+h<top||p.y-h>top+vh+120)continue;
-  const c=worldPiece(p.img,p.seed);if(!c)continue;g.save();g.translate(p.x,p.y);g.rotate(p.rot);if(p.flip)g.scale(-1,1);g.drawImage(c,-h,-h,p.size,p.size);g.restore()}
+  const c=worldPiece(p.img,p.seed);if(!c)continue;g.save();g.translate(p.x,p.y);g.rotate(p.rot);if(p.flip)g.scale(-1,1);g.drawImage(soft?softMapImage(c):c,-h,-h,p.size,p.size);g.restore()}
 }
-function drawArenaMap(g,left,top,vw,vh,id=arenaMap){
- if(id==='vid_world'){drawVideoWorld(g,left,top,vw,vh);return}
+function drawArenaMap(g,left,top,vw,vh,id=arenaMap,soft=false){
+ if(id==='vid_world'){drawVideoWorld(g,left,top,vw,vh,soft);return}
  if(id!=='original'){
   const entry=requestArenaArtwork(id);g.fillStyle='#101b25';g.fillRect(left,top,vw+120,vh+120);
   if(entry.ready){const size=(ARENA_MAPS.find(m=>m.id===id)||{}).size||900;
    // Mirror decorative floors at edges; keep national flag mosaics upright.
    for(let col=Math.floor(left/size);col*size<left+vw+120;col++)for(let row=Math.floor(top/size);row*size<top+vh+120;row++){
     const flipX=Math.abs(col%2)===1,flipY=id!=='venezuela'&&Math.abs(row%2)===1;
-    g.save();g.translate(col*size+(flipX?size:0),row*size+(flipY?size:0));g.scale(flipX?-1:1,flipY?-1:1);g.drawImage(entry.image,-.25,-.25,size+.5,size+.5);g.restore();
+    g.save();g.translate(col*size+(flipX?size:0),row*size+(flipY?size:0));g.scale(flipX?-1:1,flipY?-1:1);g.drawImage(soft?softMapImage(entry.image):entry.image,-.25,-.25,size+.5,size+.5);g.restore();
    }
    g.fillStyle='rgba(2,8,16,'+(1-mapLight(id))+')';g.fillRect(left,top,vw+120,vh+120);
   }
@@ -109,7 +120,7 @@ function drawArenaMap(g,left,top,vw,vh,id=arenaMap){
  }
  const stepX=63,stepY=72;
  for(let col=Math.floor(left/stepX)-1;col<(left+vw+100)/stepX;col++)for(let row=Math.floor(top/stepY)-1;row<(top+vh+100)/stepY;row++){
-  const x=col*stepX,y=row*stepY+(col%2)*stepY/2,variant=Math.round((Math.sin(col*17+row*23)+1)*4);g.drawImage(tileSprite(variant),x-50,y-50);
+  const x=col*stepX,y=row*stepY+(col%2)*stepY/2,variant=Math.round((Math.sin(col*17+row*23)+1)*4),tile=tileSprite(variant);g.drawImage(soft?softMapImage(tile):tile,x-50,y-50,tile.width,tile.height);
  }
 }
 function initArenaMaps(){

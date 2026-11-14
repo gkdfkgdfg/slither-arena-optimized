@@ -243,30 +243,21 @@ if(!cached||cached.label!==label){if(!cached){cached={c:document.createElement('
 // Videos: the plate is ~18% of the screen width wide and floats r·.7+45 above the head centre.
 const k=1.55,y=(s.renderY??s.y)-(s.renderRadius??s.radius)*.7-45;ctx.drawImage(cached.c,(s.renderX??s.x)-cached.w*k/2,y-cached.h*k/2,cached.w*k,cached.h*k)}
 const viewRect={l:0,t:0,r:0,b:0};
-// A closed exit keeps the floor visible under a soft, dashed red crosshatch.
-// Downsample the already drawn floor only near the border; no per-frame blur filter.
-let hazardPattern=null,outsideFloor=null;
+// The softened artwork and dashed warning share the map's world coordinates.
+let hazardPattern=null;
 function drawOutside(g,left,top,vw,vh){
  const L=left,T=top,Rt=left+vw+120,B=top+vh+120;
  if(exitUnlocked||L>-R&&T>-R&&Rt<R&&B<R)return;
- const source=g.canvas;
- if(!outsideFloor)outsideFloor=document.createElement('canvas');
- const w=Math.max(1,Math.ceil(source.width/4)),h=Math.max(1,Math.ceil(source.height/4));
- if(outsideFloor.width!==w||outsideFloor.height!==h){outsideFloor.width=w;outsideFloor.height=h}
- const soft=outsideFloor.getContext('2d');soft.imageSmoothingEnabled=true;
- soft.drawImage(source,0,0,w,h);
  g.save();g.beginPath();g.rect(L,T,Rt-L,B-T);g.rect(-R,-R,2*R,2*R);g.clip('evenodd');
- // The clip remains in device coordinates while copying the softened floor back.
- g.save();g.setTransform(1,0,0,1,0,0);g.imageSmoothingEnabled=true;
- g.drawImage(outsideFloor,0,0,source.width,source.height);g.restore();
+ drawArenaMap(g,left,top,vw,vh,arenaMap,true);
  g.fillStyle='rgba(50,4,16,.22)';g.fillRect(L,T,Rt-L,B-T);
  if(!hazardPattern){
-  const c=document.createElement('canvas');c.width=c.height=80;const h=c.getContext('2d');
-  h.strokeStyle='#ff7180';h.lineWidth=2;h.setLineDash([10,10]);
-  for(let k=-80;k<=80;k+=40){h.beginPath();h.moveTo(k,0);h.lineTo(k+80,80);h.stroke();h.beginPath();h.moveTo(k,80);h.lineTo(k+80,0);h.stroke()}
+  const c=document.createElement('canvas');c.width=c.height=128;const h=c.getContext('2d');
+  h.strokeStyle='#ff7180';h.lineWidth=3;h.setLineDash([16*Math.SQRT2,16*Math.SQRT2]);
+  for(let k=-128;k<=128;k+=64){h.beginPath();h.moveTo(k,0);h.lineTo(k+128,128);h.stroke();h.beginPath();h.moveTo(k,128);h.lineTo(k+128,0);h.stroke()}
   hazardPattern=g.createPattern(c,'repeat');
  }
- g.globalAlpha=.46;g.fillStyle=hazardPattern;g.fillRect(L,T,Rt-L,B-T);g.restore();
+ g.globalAlpha=.32;g.fillStyle=hazardPattern;g.fillRect(L,T,Rt-L,B-T);g.restore();
 }
 function render(){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#070f18';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);const cx=camera.x,cy=camera.y;ctx.translate(-cx,-cy);const vw=W/zoom,vh=H/zoom,left=cx-vw/2-60,top=cy-vh/2-60;
 drawArenaMap(ctx,left,top,vw,vh);

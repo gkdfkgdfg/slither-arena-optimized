@@ -1,5 +1,5 @@
 {
-  "release": "border10",
+  "release": "border11",
   "date": "2026-11-15",
   "automated_node_tests": {
     "passed": 27,
@@ -462,5 +462,209 @@
     "console_errors": 0,
     "renderer_errors": 0,
     "limitations": "Visual QA and CPU command submission timing on desktop Chromium, including mobile viewport emulation; not physical phone performance."
+  },
+  "border11_audit": {
+    "cameraMotion": [
+      {
+        "map": "vid_world",
+        "scale": 0.72,
+        "path": "old",
+        "meanChannelDelta": 0.08782159612300097,
+        "changedPercent": 1.764774178567282,
+        "maxChannelSum": 35
+      },
+      {
+        "map": "vid_world",
+        "scale": 0.72,
+        "path": "fixed",
+        "meanChannelDelta": 0.0002838087129274869,
+        "changedPercent": 0,
+        "maxChannelSum": 2
+      },
+      {
+        "map": "vid_world",
+        "scale": 1.25,
+        "path": "old",
+        "meanChannelDelta": 0.04295747381628022,
+        "changedPercent": 0.20878361489715203,
+        "maxChannelSum": 13
+      },
+      {
+        "map": "vid_world",
+        "scale": 1.25,
+        "path": "fixed",
+        "meanChannelDelta": 0,
+        "changedPercent": 0,
+        "maxChannelSum": 0
+      },
+      {
+        "map": "vid_world",
+        "scale": 2,
+        "path": "old",
+        "meanChannelDelta": 0.08142719465183233,
+        "changedPercent": 0.15554091641048162,
+        "maxChannelSum": 9
+      },
+      {
+        "map": "vid_world",
+        "scale": 2,
+        "path": "fixed",
+        "meanChannelDelta": 1.8298931342409603e-05,
+        "changedPercent": 0,
+        "maxChannelSum": 1
+      },
+      {
+        "map": "pumpkin_garden",
+        "scale": 0.72,
+        "path": "old",
+        "meanChannelDelta": 2.580836031666172,
+        "changedPercent": 63.564766438329656,
+        "maxChannelSum": 91
+      },
+      {
+        "map": "pumpkin_garden",
+        "scale": 0.72,
+        "path": "fixed",
+        "meanChannelDelta": 0.00038701188126475484,
+        "changedPercent": 0,
+        "maxChannelSum": 3
+      },
+      {
+        "map": "pumpkin_garden",
+        "scale": 1.25,
+        "path": "old",
+        "meanChannelDelta": 2.0791441832198747,
+        "changedPercent": 53.625777424904065,
+        "maxChannelSum": 92
+      },
+      {
+        "map": "pumpkin_garden",
+        "scale": 1.25,
+        "path": "fixed",
+        "meanChannelDelta": 7.106484544621371e-05,
+        "changedPercent": 0,
+        "maxChannelSum": 2
+      },
+      {
+        "map": "pumpkin_garden",
+        "scale": 2,
+        "path": "old",
+        "meanChannelDelta": 1.5398337237105353,
+        "changedPercent": 41.400417215634604,
+        "maxChannelSum": 96
+      },
+      {
+        "map": "pumpkin_garden",
+        "scale": 2,
+        "path": "fixed",
+        "meanChannelDelta": 6.099643780803201e-05,
+        "changedPercent": 0,
+        "maxChannelSum": 1
+      },
+      {
+        "map": "original",
+        "scale": 0.72,
+        "path": "old",
+        "meanChannelDelta": 0.5751039556914397,
+        "changedPercent": 15.269553775300901,
+        "maxChannelSum": 28
+      },
+      {
+        "map": "original",
+        "scale": 0.72,
+        "path": "fixed",
+        "meanChannelDelta": 0.0003332602310890944,
+        "changedPercent": 0,
+        "maxChannelSum": 3
+      },
+      {
+        "map": "original",
+        "scale": 1.25,
+        "path": "old",
+        "meanChannelDelta": 0.3104283984924451,
+        "changedPercent": 6.992045638333848,
+        "maxChannelSum": 23
+      },
+      {
+        "map": "original",
+        "scale": 1.25,
+        "path": "fixed",
+        "meanChannelDelta": 0,
+        "changedPercent": 0,
+        "maxChannelSum": 0
+      },
+      {
+        "map": "original",
+        "scale": 2,
+        "path": "old",
+        "meanChannelDelta": 0.22170070267896355,
+        "changedPercent": 3.2233567559654515,
+        "maxChannelSum": 14
+      },
+      {
+        "map": "original",
+        "scale": 2,
+        "path": "fixed",
+        "meanChannelDelta": 0,
+        "changedPercent": 0,
+        "maxChannelSum": 0
+      }
+    ],
+    "worldPieces": 10,
+    "allWorldImagesReady": true,
+    "sides": [
+      {
+        "name": "right",
+        "insideChanged": 0,
+        "outsideChanged": 14260,
+        "openChanged": 0
+      },
+      {
+        "name": "left",
+        "insideChanged": 0,
+        "outsideChanged": 14415,
+        "openChanged": 0
+      },
+      {
+        "name": "top",
+        "insideChanged": 0,
+        "outsideChanged": 12455,
+        "openChanged": 0
+      },
+      {
+        "name": "bottom",
+        "insideChanged": 0,
+        "outsideChanged": 12220,
+        "openChanged": 0
+      },
+      {
+        "name": "top_left",
+        "insideChanged": 0,
+        "outsideChanged": 21941,
+        "openChanged": 0
+      },
+      {
+        "name": "bottom_right",
+        "insideChanged": 0,
+        "outsideChanged": 21696,
+        "openChanged": 0
+      }
+    ],
+    "staticSourceReuse": true,
+    "softImageSize": [
+      320,
+      320
+    ],
+    "noFrameBufferCopy": true,
+    "motionFrames": 90,
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "horizontalOverflow": false
+    },
+    "console_errors": 0,
+    "renderer_errors": 0,
+    "limitations": "Chromium desktop with mobile viewport emulation. Pixel comparisons compensate for 1–3 device-pixel camera movement; changedPercent counts a summed RGB difference greater than 3. Not a physical-phone performance measurement."
   }
 }
