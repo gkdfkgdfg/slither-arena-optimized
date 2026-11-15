@@ -17,6 +17,16 @@ const countryNames=new Intl.DisplayNames(['ru'],{type:'region'});
 const countrySkins=Object.entries(FLAG_COUNTRIES).map(([code,en])=>({id:'flag_'+code,name:countryNames.of(code.toUpperCase())||en,color:'#dcecf3',code,en})).sort((a,b)=>(b.code==='ve')-(a.code==='ve')||a.name.localeCompare(b.name,'ru'));
 SKINS.push(...countrySkins);
 const BOT_SKINS=SKINS.filter(s=>!s.id.startsWith('flag_'));
+// Rotate collections, not just colours of the same video materials.
+const botSkinPools=[BOT_SKINS.filter(s=>!s.group),BOT_SKINS.filter(s=>s.group&&s.group!=='video'),VIDEO_SKINS.filter(s=>s.id!=='v_vzla'),countrySkins].map(skins=>({skins,deck:[]}));
+let botSkinPoolIndex=Math.floor(Math.random()*botSkinPools.length),recentBotSkins=[];
+function pickBotSkin(){
+ const pool=botSkinPools[botSkinPoolIndex++%botSkinPools.length],busy=new Set([prefs.skin,...snakes.filter(s=>s.alive).map(s=>s.skin),...recentBotSkins]);
+ if(!pool.deck.some(s=>!busy.has(s.id))){pool.deck=pool.skins.filter(s=>!busy.has(s.id));for(let i=pool.deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool.deck[i],pool.deck[j]]=[pool.deck[j],pool.deck[i]]}}
+ const at=pool.deck.findIndex(s=>!busy.has(s.id)),skin=at>=0?pool.deck.splice(at,1)[0]:pool.skins.find(s=>!busy.has(s.id))||pool.skins[0];
+ recentBotSkins.push(skin.id);if(recentBotSkins.length>9)recentBotSkins.shift();
+ skinTexture(skin.id,skin.color);return skin;
+}
 const BOT_COUNT=9;
 let exitUnlocked=false,deathTrails=[],rivalTiers=[],botKinds=[],roundDifficulty='easy';
 const originalNumbers=new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
@@ -103,7 +113,7 @@ function playerRadius(v){const x=Math.max(1,v/sessionStake);return Math.min(GROW
 function rivalSpawnProfile(i){if(!rivalTiers.length)shuffleRivalTiers();return ArenaCore.rivalProfile(sessionStake,rivalTiers[(i-1)%rivalTiers.length],roundExitX)}
 // Heading whose straight body (laid out behind the head, up to ~2200 units) stays inside the arena.
 function fitHeading(x,y){let best=rand(-Math.PI,Math.PI),bestOut=1e9;for(let k=0;k<24;k++){const h=rand(-Math.PI,Math.PI),tx=x-Math.cos(h)*2200,ty=y-Math.sin(h)*2200,out=Math.max(0,Math.abs(tx)-(R-80))+Math.max(0,Math.abs(ty)-(R-80));if(out<bestOut){bestOut=out;best=h}if(out===0)break}return best}
-function makeSnake(i){const a=rand(0,6.28),r=i===0?0:rand(400,R-200),x=Math.cos(a)*r,y=Math.sin(a)*r,heading=i===0?0:fitHeading(x,y),profile=i===0?{value:sessionStake,len:26,radius:15}:rivalSpawnProfile(i),value=profile.value,len=profile.len,appearance=VIDEO_SKINS[Math.floor(Math.random()*VIDEO_SKINS.length)],p=[];for(let n=0;n<len;n++)p.push({x:x-Math.cos(heading)*n*3,y:y-Math.sin(heading)*n*3});return {id:i,tier:profile.tier,brain:i===0?null:BotAI.createBrain(botKinds[i-1]||'regular'),x,y,a:heading,behavior:['wiggle','square','cruiser','coiler','wiggle','zigzag'][i%6],routeAngle:heading,routeTimer:rand(5,9),weavePhase:rand(0,Math.PI*2),points:p,len,radius:profile.radius,skin:i===0?prefs.skin:appearance.id,color:i===0?(prefs.skin==='neon'?COLORS[prefs.color]:SKINS.find(s=>s.id===prefs.skin).color):appearance.color,name:i===0?prefs.name:['Neon','Mamba','Lucky','Orbit','Sonic','Nova','Ghost','Cobra','Pixel','Venom','Luna','Viper','Ace','Storm'][(i-1)%14],value,target:{x:rand(-R,R),y:rand(-R,R)},nextTurn:0,alive:true,grace:0,drop:0}}
+function makeSnake(i){const a=rand(0,6.28),r=i===0?0:rand(400,R-200),x=Math.cos(a)*r,y=Math.sin(a)*r,heading=i===0?0:fitHeading(x,y),profile=i===0?{value:sessionStake,len:26,radius:15}:rivalSpawnProfile(i),value=profile.value,len=profile.len,appearance=i===0?null:pickBotSkin(),p=[];for(let n=0;n<len;n++)p.push({x:x-Math.cos(heading)*n*3,y:y-Math.sin(heading)*n*3});return {id:i,tier:profile.tier,brain:i===0?null:BotAI.createBrain(botKinds[i-1]||'regular'),x,y,a:heading,behavior:['wiggle','square','cruiser','coiler','wiggle','zigzag'][i%6],routeAngle:heading,routeTimer:rand(5,9),weavePhase:rand(0,Math.PI*2),points:p,len,radius:profile.radius,skin:i===0?prefs.skin:appearance.id,color:i===0?(prefs.skin==='neon'?COLORS[prefs.color]:SKINS.find(s=>s.id===prefs.skin).color):appearance.color,name:i===0?prefs.name:['Neon','Mamba','Lucky','Orbit','Sonic','Nova','Ghost','Cobra','Pixel','Venom','Luna','Viper','Ace','Storm'][(i-1)%14],value,target:{x:rand(-R,R),y:rand(-R,R)},nextTurn:0,alive:true,grace:0,drop:0}}
 let crowdTimer=0;
 function commitSpawn(s,x,y,a){
  s.x=x;s.y=y;s.a=a;s.routeAngle=a;s.routeTimer=rand(5,9);
@@ -244,20 +254,20 @@ if(!cached||cached.label!==label){if(!cached){cached={c:document.createElement('
 const k=1.55,y=(s.renderY??s.y)-(s.renderRadius??s.radius)*.7-45;ctx.drawImage(cached.c,(s.renderX??s.x)-cached.w*k/2,y-cached.h*k/2,cached.w*k,cached.h*k)}
 const viewRect={l:0,t:0,r:0,b:0};
 // The softened artwork and dashed warning share the map's world coordinates.
-let hazardPattern=null;
+const hazardPatterns={};
 function drawOutside(g,left,top,vw,vh){
  const L=left,T=top,Rt=left+vw+120,B=top+vh+120;
- if(exitUnlocked||L>-R&&T>-R&&Rt<R&&B<R)return;
+ if(L>-R&&T>-R&&Rt<R&&B<R)return;
  g.save();g.beginPath();g.rect(L,T,Rt-L,B-T);g.rect(-R,-R,2*R,2*R);g.clip('evenodd');
- drawArenaMap(g,left,top,vw,vh,arenaMap,true);
- g.fillStyle='rgba(50,4,16,.22)';g.fillRect(L,T,Rt-L,B-T);
- if(!hazardPattern){
+ if(!exitUnlocked){drawArenaMap(g,left,top,vw,vh,arenaMap,true);g.fillStyle='rgba(50,4,16,.22)';g.fillRect(L,T,Rt-L,B-T)}
+ const state=exitUnlocked?'open':'closed';
+ if(!hazardPatterns[state]){
   const c=document.createElement('canvas');c.width=c.height=128;const h=c.getContext('2d');
-  h.strokeStyle='#ff7180';h.lineWidth=3;h.setLineDash([16*Math.SQRT2,16*Math.SQRT2]);
+  h.strokeStyle=exitUnlocked?'#2af283':'#ff7180';h.lineWidth=3;h.setLineDash([16*Math.SQRT2,16*Math.SQRT2]);
   for(let k=-128;k<=128;k+=64){h.beginPath();h.moveTo(k,0);h.lineTo(k+128,128);h.stroke();h.beginPath();h.moveTo(k,128);h.lineTo(k+128,0);h.stroke()}
-  hazardPattern=g.createPattern(c,'repeat');
+  hazardPatterns[state]=g.createPattern(c,'repeat');
  }
- g.globalAlpha=.32;g.fillStyle=hazardPattern;g.fillRect(L,T,Rt-L,B-T);g.restore();
+ g.globalAlpha=.32;g.fillStyle=hazardPatterns[state];g.fillRect(L,T,Rt-L,B-T);g.restore();
 }
 function render(){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#070f18';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);const cx=camera.x,cy=camera.y;ctx.translate(-cx,-cy);const vw=W/zoom,vh=H/zoom,left=cx-vw/2-60,top=cy-vh/2-60;
 drawArenaMap(ctx,left,top,vw,vh);
@@ -309,5 +319,5 @@ function drawMap(){const g=$('map').getContext('2d');g.clearRect(0,0,130,130);g.
 function drawJoystick(){if(!mobileRenderer)return;const x=touchOrigin?.x??W*.76,y=touchOrigin?.y??H*.77;ctx.save();ctx.strokeStyle='#ffffff38';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(x,y,44,0,7);ctx.stroke();let kx=x,ky=y;if(touchOrigin){const p=touchPoints.get(steerPointer)||touchOrigin,dx=p.x-x,dy=p.y-y,d=Math.max(1,Math.hypot(dx,dy)/34);kx=x+dx/d;ky=y+dy/d}const knob=ctx.createRadialGradient(kx-5,ky-6,2,kx,ky,17);knob.addColorStop(0,'#e9edf0c0');knob.addColorStop(1,'#b9c1c8a0');ctx.fillStyle=knob;ctx.strokeStyle='#ffffff70';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(kx,ky,17,0,7);ctx.fill();ctx.stroke();ctx.restore()}
 
 initArenaMaps();
-// Warm every skin texture up front so spawning bots never decode mid-round.
-for(const s of VIDEO_SKINS)skinTexture(s.id,s.color);
+// Warm the player's material; each rival warms its selected skin when it spawns.
+skinTexture(player.skin,player.color);

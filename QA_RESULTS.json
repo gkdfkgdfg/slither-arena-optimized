@@ -1,5 +1,5 @@
 {
-  "release": "border11",
+  "release": "looks12",
   "date": "2026-11-15",
   "automated_node_tests": {
     "passed": 27,
@@ -666,5 +666,455 @@
     "console_errors": 0,
     "renderer_errors": 0,
     "limitations": "Chromium desktop with mobile viewport emulation. Pixel comparisons compensate for 1–3 device-pixel camera movement; changedPercent counts a summed RGB difference greater than 3. Not a physical-phone performance measurement."
+  },
+  "looks12_audit": {
+    "rounds": 16,
+    "uniqueSkins": 98,
+    "repeats": 0,
+    "groupFailures": 0,
+    "respawnRepeats": 0,
+    "botMix": [
+      {
+        "round": 0,
+        "groups": {
+          "themed": 3,
+          "video": 2,
+          "flags": 2,
+          "regular": 2
+        },
+        "ids": [
+          "la_maya",
+          "vb_leo",
+          "flag_mg",
+          "emerald_arc",
+          "la_hummingbird",
+          "vb_tiger",
+          "flag_nf",
+          "lightning",
+          "la_turpial"
+        ]
+      },
+      {
+        "round": 1,
+        "groups": {
+          "flags": 3,
+          "regular": 2,
+          "themed": 2,
+          "video": 2
+        },
+        "ids": [
+          "flag_ag",
+          "copper",
+          "hw_ghost",
+          "vb_teal",
+          "flag_vg",
+          "ice",
+          "la_jaguar",
+          "vb_corn",
+          "flag_ug"
+        ]
+      },
+      {
+        "round": 2,
+        "groups": {
+          "themed": 3,
+          "video": 2,
+          "flags": 2,
+          "regular": 2
+        },
+        "ids": [
+          "hw_pumpkin",
+          "vb_eyes",
+          "flag_fo",
+          "circuit",
+          "la_calavera",
+          "vb_rainbow",
+          "flag_at",
+          "candy",
+          "hw_mummy"
+        ]
+      },
+      {
+        "round": 3,
+        "groups": {
+          "flags": 3,
+          "regular": 2,
+          "themed": 2,
+          "video": 2
+        },
+        "ids": [
+          "flag_sa",
+          "wrapped",
+          "la_orchid",
+          "vb_green",
+          "flag_cm",
+          "robot",
+          "la_tango",
+          "vb_tiger",
+          "flag_pr"
+        ]
+      },
+      {
+        "round": 4,
+        "groups": {
+          "themed": 3,
+          "video": 2,
+          "flags": 2,
+          "regular": 2
+        },
+        "ids": [
+          "la_arepa",
+          "vb_sky",
+          "flag_sy",
+          "ornament",
+          "la_quetzal",
+          "vb_corn",
+          "flag_ci",
+          "bee",
+          "la_carnival"
+        ]
+      },
+      {
+        "round": 5,
+        "groups": {
+          "flags": 3,
+          "regular": 2,
+          "themed": 2,
+          "video": 2
+        },
+        "ids": [
+          "flag_st",
+          "obsidian",
+          "la_diablos",
+          "vb_leo",
+          "flag_gm",
+          "lava",
+          "hw_spider",
+          "vb_pink",
+          "flag_km"
+        ]
+      },
+      {
+        "round": 6,
+        "groups": {
+          "themed": 3,
+          "video": 2,
+          "flags": 2,
+          "regular": 2
+        },
+        "ids": [
+          "la_arepa",
+          "vb_green",
+          "flag_nu",
+          "dragon",
+          "la_hummingbird",
+          "vb_tiger",
+          "flag_gp",
+          "watermelon",
+          "la_orchid"
+        ]
+      },
+      {
+        "round": 7,
+        "groups": {
+          "flags": 3,
+          "regular": 2,
+          "themed": 2,
+          "video": 2
+        },
+        "ids": [
+          "flag_lr",
+          "koi",
+          "la_calavera",
+          "vb_sky",
+          "flag_hm",
+          "ruby",
+          "la_jaguar",
+          "vb_rainbow",
+          "flag_bi"
+        ]
+      },
+      {
+        "round": 8,
+        "groups": {
+          "themed": 3,
+          "video": 2,
+          "flags": 2,
+          "regular": 2
+        },
+        "ids": [
+          "hw_pumpkin",
+          "vb_eyes",
+          "flag_kg",
+          "mosaic",
+          "hw_vampire",
+          "vb_tiger",
+          "flag_pm",
+          "hazard",
+          "hw_mummy"
+        ]
+      },
+      {
+        "round": 9,
+        "groups": {
+          "flags": 3,
+          "regular": 2,
+          "themed": 2,
+          "video": 2
+        },
+        "ids": [
+          "flag_sb",
+          "mahjong",
+          "la_tango",
+          "vb_green",
+          "flag_gt",
+          "racing",
+          "la_turpial",
+          "vb_pink",
+          "flag_rw"
+        ]
+      },
+      {
+        "round": 10,
+        "groups": {
+          "themed": 3,
+          "video": 2,
+          "flags": 2,
+          "regular": 2
+        },
+        "ids": [
+          "la_carnival",
+          "vb_leo",
+          "flag_cx",
+          "pearl",
+          "la_inti",
+          "vb_corn",
+          "flag_gi",
+          "neon",
+          "la_maya"
+        ]
+      },
+      {
+        "round": 11,
+        "groups": {
+          "flags": 3,
+          "regular": 2,
+          "themed": 2,
+          "video": 2
+        },
+        "ids": [
+          "flag_hu",
+          "leopard",
+          "la_quetzal",
+          "vb_leo",
+          "flag_np",
+          "plasma_blue",
+          "hw_ghost",
+          "vb_pink",
+          "flag_mv"
+        ]
+      },
+      {
+        "round": 12,
+        "groups": {
+          "themed": 3,
+          "video": 2,
+          "flags": 2,
+          "regular": 2
+        },
+        "ids": [
+          "hw_vampire",
+          "vb_green",
+          "flag_ro",
+          "prism",
+          "la_hummingbird",
+          "vb_eyes",
+          "flag_cn",
+          "plasma_rose",
+          "la_turpial"
+        ]
+      },
+      {
+        "round": 13,
+        "groups": {
+          "flags": 3,
+          "regular": 2,
+          "themed": 2,
+          "video": 2
+        },
+        "ids": [
+          "flag_tf",
+          "galaxy",
+          "la_carnival",
+          "vb_sky",
+          "flag_jm",
+          "goldbar",
+          "la_maya",
+          "vb_tiger",
+          "flag_ki"
+        ]
+      },
+      {
+        "round": 14,
+        "groups": {
+          "themed": 3,
+          "video": 2,
+          "flags": 2,
+          "regular": 2
+        },
+        "ids": [
+          "la_jaguar",
+          "vb_corn",
+          "flag_tn",
+          "frost",
+          "hw_mummy",
+          "vb_eyes",
+          "flag_nc",
+          "jellyfish",
+          "hw_pumpkin"
+        ]
+      },
+      {
+        "round": 15,
+        "groups": {
+          "flags": 3,
+          "regular": 2,
+          "themed": 2,
+          "video": 2
+        },
+        "ids": [
+          "flag_bd",
+          "tiger",
+          "la_orchid",
+          "vb_pink",
+          "flag_ca",
+          "opal",
+          "hw_spider",
+          "vb_leo",
+          "flag_fr"
+        ]
+      }
+    ],
+    "sides": [
+      {
+        "name": "right",
+        "insideChanged": 0,
+        "greenPixels": 2214,
+        "redPixels": 22904
+      },
+      {
+        "name": "left",
+        "insideChanged": 0,
+        "greenPixels": 2190,
+        "redPixels": 9718
+      },
+      {
+        "name": "top",
+        "insideChanged": 0,
+        "greenPixels": 1873,
+        "redPixels": 14923
+      },
+      {
+        "name": "bottom",
+        "insideChanged": 0,
+        "greenPixels": 1878,
+        "redPixels": 17533
+      },
+      {
+        "name": "top_left",
+        "insideChanged": 0,
+        "greenPixels": 3304,
+        "redPixels": 38968
+      },
+      {
+        "name": "bottom_right",
+        "insideChanged": 0,
+        "greenPixels": 3371,
+        "redPixels": 38592
+      }
+    ],
+    "motion": [
+      {
+        "open": false,
+        "scale": 0.72,
+        "changedPercent": 0,
+        "maxChannelSum": 2
+      },
+      {
+        "open": false,
+        "scale": 1.25,
+        "changedPercent": 0,
+        "maxChannelSum": 0
+      },
+      {
+        "open": false,
+        "scale": 2,
+        "changedPercent": 0,
+        "maxChannelSum": 1
+      },
+      {
+        "open": true,
+        "scale": 0.72,
+        "changedPercent": 0,
+        "maxChannelSum": 2
+      },
+      {
+        "open": true,
+        "scale": 1.25,
+        "changedPercent": 0,
+        "maxChannelSum": 0
+      },
+      {
+        "open": true,
+        "scale": 2,
+        "changedPercent": 0,
+        "maxChannelSum": 0
+      }
+    ],
+    "poolSizes": [
+      44,
+      17,
+      9,
+      252
+    ],
+    "renderer": {
+      "ready": true,
+      "textures": 12,
+      "error": null
+    },
+    "errors": [],
+    "visibleAssets": [
+      {
+        "id": "flag_ve",
+        "state": "ready"
+      },
+      {
+        "id": "vb_corn",
+        "state": "ready"
+      },
+      {
+        "id": "flag_mk",
+        "state": "ready"
+      },
+      {
+        "id": "lava",
+        "state": "ready"
+      },
+      {
+        "id": "la_tango",
+        "state": "ready"
+      },
+      {
+        "id": "vb_leo",
+        "state": "ready"
+      }
+    ],
+    "console_errors": 0,
+    "mobile": {
+      "W": 390,
+      "H": 844,
+      "horizontalOverflow": false
+    },
+    "limitations": "Chromium desktop with mobile viewport emulation. Camera motion compares corresponding world pixels after 1–3 device pixel shifts, threshold summed RGB difference >3. The screenshot arranges sampled bots for visual QA."
   }
 }
