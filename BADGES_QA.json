@@ -1,0 +1,66 @@
+{
+  "version": "badges14",
+  "date": "2026-11-17",
+  "automatedTests": {
+    "passed": 37,
+    "failed": 0
+  },
+  "browser": "Desktop Chromium, ChatGPT in-app browser",
+  "mobileWidths": [
+    320,
+    390
+  ],
+  "horizontalOverflow": false,
+  "effectsToggle": {
+    "menu": true,
+    "pause": true,
+    "persistentAfterReload": true,
+    "clearsExistingDecoration": true,
+    "physicsUnchanged": true
+  },
+  "rounds": {
+    "exitMultipliers": [
+      10,
+      20,
+      37.5,
+      60,
+      100
+    ],
+    "stakes": [
+      0.01,
+      500
+    ],
+    "currencies": [
+      "USD",
+      "RUB",
+      "zł",
+      "VENEZUELA1234"
+    ],
+    "currencyHidden": true,
+    "deathAndRestart": true,
+    "allStartsDecoded": true
+  },
+  "renderers": {
+    "webgl": true,
+    "canvas": true
+  },
+  "liveMotion": {
+    "scene": "isolated player with turning, boost and growth",
+    "frames": 900,
+    "simulatedSeconds": 3.746,
+    "invalidBodies": 0,
+    "maxHeadJitterPixels": 0,
+    "rafMedianMs": 4.2,
+    "rafP95Ms": 4.4,
+    "updateP95Ms": 0.3,
+    "renderP95Ms": 0.4
+  },
+  "effectStress": {
+    "renderCalls": 600,
+    "maxRings": 14,
+    "maxLabels": 8,
+    "medianRenderMs": 0.5,
+    "p95RenderMs": 0.7
+  },
+  "limits": "Desktop Chromium measurements are JS/command submission only, not total GPU frame time or phone FPS. Physical Safari/iPhone not tested. Screenshots use local fixtures."
+}
