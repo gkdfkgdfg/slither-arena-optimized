@@ -1,8 +1,8 @@
 {
-  "version": "badges14",
+  "version": "plates15",
   "date": "2026-11-17",
   "automatedTests": {
-    "passed": 37,
+    "passed": 36,
     "failed": 0
   },
   "browser": "Desktop Chromium, ChatGPT in-app browser",
@@ -53,14 +53,23 @@
     "rafMedianMs": 4.2,
     "rafP95Ms": 4.4,
     "updateP95Ms": 0.3,
-    "renderP95Ms": 0.4
+    "renderP95Ms": 0.4,
+    "sourceVersion": "badges14"
   },
   "effectStress": {
     "renderCalls": 600,
     "maxRings": 14,
     "maxLabels": 8,
     "medianRenderMs": 0.5,
-    "p95RenderMs": 0.7
+    "p95RenderMs": 0.7,
+    "sourceVersion": "badges14"
   },
-  "limits": "Desktop Chromium measurements are JS/command submission only, not total GPU frame time or phone FPS. Physical Safari/iPhone not tested. Screenshots use local fixtures."
+  "limits": "Desktop Chromium measurements are JS/command submission only, not total GPU frame time or phone FPS. Physical Safari/iPhone not tested. Screenshots use local fixtures.",
+  "wormPlates": {
+    "geometry": "restored from a4fcd8c",
+    "font": "Lilita One with Arial fallback",
+    "palette": "warm yellow",
+    "extraProfitRow": false,
+    "leftAccentBar": false
+  }
 }

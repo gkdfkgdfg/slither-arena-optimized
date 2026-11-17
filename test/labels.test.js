@@ -18,21 +18,6 @@ test('amounts preserve tiny entry targets and use one readable format',()=>{
  assert.equal(labels.details(400,500,'RUB',false,true,false).unit,'');
 });
 
-test('screen cards avoid clipping, HUD and nearby labels with stable lanes',()=>{
- const cards=[{id:0,x:195,y:422,r:15,w:170,h:55,own:true,priority:100},
-  {id:1,x:208,y:390,r:14,w:130,h:35,own:false,priority:70},
-  {id:2,x:345,y:430,r:20,w:140,h:35,own:false,priority:300},
-  {id:3,x:20,y:45,r:12,w:140,h:35,own:false,priority:20}];
- const obstacles=[{x:0,y:0,w:390,h:56},{x:0,y:56,w:112,h:54}];
- const result=labels.layout(cards,390,844,obstacles);
- const overlaps=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
- assert.equal(result[0].id,0,'player has priority');
- for(const card of result){assert.ok(card.x>=8&&card.x+card.w<=382);assert.ok(card.y>=8&&card.y+card.h<=836);assert.ok(!obstacles.some(b=>overlaps(card,b)))}
- for(let i=0;i<result.length;i++)for(let j=i+1;j<result.length;j++)assert.ok(!overlaps(result[i],result[j]));
- const again=labels.layout(cards.map(c=>({...c,lane:result.find(p=>p.id===c.id).lane})),390,844,obstacles);
- assert.deepEqual(again.map(c=>[c.id,c.lane]),result.map(c=>[c.id,c.lane]));
-});
-
 test('turning effects off immediately clears highlights and blocks all decoration drawing',()=>{
  const fx=FX.create();fx.kill(0,0,50,10);fx.update(.2,{alive:true},true);
  assert.ok(fx.diagnostics().rings>0);fx.setEnabled(false);

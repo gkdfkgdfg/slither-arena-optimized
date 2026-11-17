@@ -7,7 +7,7 @@ let qualityMode='auto';try{qualityMode=localStorage.getItem('arena-quality')||'a
 let renderScale=QUALITY[qualityMode];
 const STEP=1/60,MAX_COINS=3200,coinGrid=new ArenaCore.SpatialGrid(96),coinCandidates=[];
 let coinStamp=0,coinChecks=0,lastCoinChecks=0,debugFrames=0,debugTime=0,frameFPS=60;
-const diagnostics={updateMs:0,renderMs:0};let labelHudBottom=80,labelControlsBottom=130;
+const diagnostics={updateMs:0,renderMs:0};
 window.gameDiagnostics=()=>{const rivals=snakes.filter(s=>s!==player&&s.alive);return {mode,paused,elapsed,fps:frameFPS,dpr,renderScale,qualityMode,effects:prefs.effects,fx:arenaFX.diagnostics(),difficulty:roundDifficulty,exitMultiplier:roundExitX,exitTarget:ArenaCore.cashoutTarget(sessionStake,roundExitX),botMix:rivals.reduce((out,s)=>(out[s.brain?.kind||'regular']=(out[s.brain?.kind||'regular']||0)+1,out),{}),botStats:{weak:rivals.filter(s=>s.tier==='small').length,medium:rivals.filter(s=>s.tier==='peer'||s.tier==='large').length,fat:rivals.filter(s=>s.tier==='giant'||s.tier==='titan').length,large:rivals.filter(s=>s.radius>=34).length,giant:rivals.filter(s=>s.radius>=42).length,maxValue:rivals.reduce((m,s)=>Math.max(m,s.value),0),maxRadius:rivals.reduce((m,s)=>Math.max(m,s.radius),0)},coins:coins.length,coinChecks:lastCoinChecks,snakes:snakes.filter(s=>s.alive).length,renderer:arenaRibbon?.diagnostics()??{ready:false,mode:'canvas'},...diagnostics};};
 const COLORS=['#37dc77','#36bbef','#b280fa','#f3719c','#f3bf4c'];
 const SKINS=[{id:'neon',name:'Неон',color:'#37dc77'},{id:'skeleton',name:'Скелет',color:'#14202a'},{id:'ice',name:'Ледяная броня',color:'#258ca7'},{id:'lava',name:'Лава',color:'#58120d'},{id:'lightning',name:'Плазма',color:'#4b2469'},{id:'leopard',name:'Леопард',color:'#b49250'},{id:'goldbar',name:'Золотые слитки',color:'#edbc30'},{id:'racing',name:'Гоночный',color:'#ed4538'},{id:'tiger',name:'Золотые полосы',color:'#f6bd28'},{id:'galaxy',name:'Космос',color:'#572887'},{id:'candy',name:'Карамель',color:'#f15794'},...EXTRA_SKINS,...REFERENCE_SKINS,...VIDEO_SKINS];
@@ -260,50 +260,20 @@ if(skin==='neon'||skin==='lightning'||skin==='lava'){g.strokeStyle=skin==='lava'
 else{for(let i=s.points.length-5;i>=4;i-=skin==='ice'?10:6){const p=s.points[i],q=s.points[i-3],a=Math.atan2(q.y-p.y,q.x-p.x);g.save();g.translate(p.x,p.y);g.rotate(a);if(skin==='skeleton'){g.strokeStyle='#f0eee0';g.lineWidth=Math.max(1.5,r*.16);g.beginPath();g.moveTo(-5,0);g.lineTo(5,0);g.moveTo(0,-r*.86);g.quadraticCurveTo(-r*.65,0,0,r*.86);g.moveTo(3,-r*.72);g.quadraticCurveTo(-r*.4,0,3,r*.72);g.stroke();g.fillStyle='#fffdf0';g.fillRect(-2,-2,5,4)}else if(skin==='ice'){g.fillStyle='#152f40';g.strokeStyle='#9bdeed';g.lineWidth=1.6;g.beginPath();g.moveTo(-8,-r*.72);g.lineTo(4,-r);g.lineTo(10,-r*.4);g.lineTo(10,r*.4);g.lineTo(4,r);g.lineTo(-8,r*.72);g.lineTo(-4,0);g.closePath();g.fill();g.stroke();g.shadowColor='#08f9ff';g.shadowBlur=8;g.fillStyle='#57faff';g.beginPath();g.arc(2,0,r*.25,0,7);g.fill()}else if(skin==='tiger'){g.strokeStyle='#14100b';g.lineWidth=r*.45;g.beginPath();g.moveTo(-4,-r*.88);g.lineTo(1,-r*.26);g.moveTo(4,r*.88);g.lineTo(0,r*.2);g.stroke()}else if(skin==='candy'){g.strokeStyle='#fff1ed';g.lineWidth=r*.55;g.beginPath();g.moveTo(-5,-r*.86);g.lineTo(5,r*.86);g.stroke()}else if(skin==='galaxy'){g.fillStyle=i%12===0?'#83f3ff':'#fce9ff';g.beginPath();g.arc(Math.sin(i)*4,Math.cos(i*1.3)*r*.65,i%12===0?2:1.2,0,7);g.fill()}g.restore()}}g.restore()}
 // The glowing badge is painted once into a sprite and redrawn only when its text changes.
 // Amount plate above snakes: glass pill with a green cartoon number (Lilita One, no thousands commas).
-// Cached cards render in screen pixels, independently of the arena zoom.
-function amountBadge(s,now){
- let cached=amountCache.get(s.id);if(!cached){cached={c:document.createElement('canvas'),checked:-1000};amountCache.set(s.id,cached)}
- const own=s===player,open=own&&exitUnlocked,tone=own?(open?'gold':'mint'):['giant','titan'].includes(s.tier)?'gold':'slate';
- if(now-cached.checked>=100||cached.viewport!==W||cached.own!==own||cached.open!==open||cached.unit!==(prefs.showCurrency?prefs.currency:'')){
-  cached.checked=now;const data=ArenaLabels.details(s.value,sessionStake,prefs.currency,prefs.showCurrency,own,open),key=[data.amount,data.unit,data.profit,data.multiplier,tone,W].join('|');
-  if(key!==cached.key){
-   const c=cached.c,S=2,maxW=Math.min(W-16,own?290:250);let g=c.getContext('2d'),size=own?19:16,unitSize=10;
-   const measure=()=>{g.font='700 '+size+'px "Roboto Mono",monospace';const main=g.measureText(data.amount).width;g.font='700 '+unitSize+'px Arial';return {main,unit:data.unit?g.measureText(data.unit).width+8:0}};
-   let m=measure();while(m.main+m.unit+28>maxW&&size>10){size--;unitSize=Math.max(8,unitSize-.25);m=measure()}
-   let w=Math.min(maxW,Math.max(own?145:88,Math.ceil(m.main+m.unit+28))),h=own?55:35;
-   if(cached.w&&cached.w>w&&cached.w-w<20)w=Math.min(maxW,cached.w);
-   c.width=Math.ceil(w*S);c.height=Math.ceil(h*S);g=c.getContext('2d');g.scale(S,S);
-   const color=tone==='mint'?'#77fac1':tone==='gold'?'#ffe29b':'#8eafc5';
-   const bg=g.createLinearGradient(0,0,0,h);bg.addColorStop(0,tone==='gold'?'#302d20':tone==='mint'?'#12372f':'#172b3a');bg.addColorStop(1,'#0b1720');
-   g.fillStyle=bg;g.beginPath();g.roundRect(1,1,w-2,h-2,10);g.fill();g.strokeStyle=color;g.lineWidth=1.1;g.stroke();
-   g.fillStyle=color;g.beginPath();g.roundRect(5,10,2.5,h-20,1.2);g.fill();g.textBaseline='middle';
-   const baseline=own?18:17.5,total=m.main+m.unit,x=14+(w-28-total)/2;
-   g.font='700 '+size+'px "Roboto Mono",monospace';g.fillStyle='#f6fff9';g.fillText(data.amount,x,baseline);
-   if(data.unit){g.font='700 '+unitSize+'px Arial';g.fillStyle=color;g.fillText(data.unit,x+m.main+8,baseline+1)}
-   if(own){
-    g.font='700 10px Arial';const pill=Math.min(w*.45,Math.max(44,g.measureText(data.multiplier).width+12));
-    g.fillStyle=color+'22';g.beginPath();g.roundRect(13,33,pill,15,5);g.fill();g.fillStyle=color;g.fillText(data.multiplier,19,40.5,pill-12);
-    let profitSize=11;const profitWidth=w-pill-36;while(profitSize>8){g.font='700 '+profitSize+'px Arial';if(g.measureText(data.profit).width<=profitWidth)break;profitSize--}
-    g.textAlign='right';g.fillStyle=data.positive?'#93edbd':'#ffb4a8';g.fillText(data.profit,w-13,40.5,profitWidth);
-   }
-   Object.assign(cached,{w,h,key,tone});
-  }
-  Object.assign(cached,{viewport:W,own,open,unit:data.unit});
- }
- return cached;
-}
-function drawAmounts(shown){
- const now=performance.now(),cards=[];
- for(const s of shown){const cached=amountBadge(s,now);cards.push({id:s.id,w:cached.w,h:cached.h,x:W/2+((s.renderX??s.x)-camera.x)*zoom,y:H/2+((s.renderY??s.y)-camera.y)*zoom,r:(s.renderRadius??s.radius)*zoom,own:s===player,priority:s.value,lane:cached.lane,cached})}
- const placed=ArenaLabels.layout(cards,W,H,[{x:0,y:0,w:W,h:labelHudBottom},{x:0,y:labelHudBottom,w:112,h:Math.max(0,labelControlsBottom-labelHudBottom)}]);
- ctx.save();ctx.setTransform(dpr,0,0,dpr,0,0);
- for(const card of placed){const source=cards.find(c=>c.id===card.id),ax=Math.max(card.x+7,Math.min(card.x+card.w-7,source.x)),ay=Math.max(card.y+4,Math.min(card.y+card.h-4,source.y)),dx=source.x-ax,dy=source.y-ay,d=Math.hypot(dx,dy);
-  if(d>source.r+8){ctx.strokeStyle=card.cached.tone==='gold'?'#ffe29b77':'#91cdbb66';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(source.x-dx/d*(source.r+4),source.y-dy/d*(source.r+4));ctx.stroke()}
-  ctx.drawImage(card.cached.c,card.x,card.y,card.w,card.h);card.cached.lane=card.lane;
- }
- ctx.restore();
-}
-if(document.fonts?.load)document.fonts.load('700 16px "Roboto Mono"').then(()=>amountCache.clear(),()=>{});
+// Original amount plates: same geometry and positioning, with a rounded font and warm yellow palette.
+const plateNumbers=new Intl.NumberFormat('en-US',{maximumFractionDigits:0,useGrouping:false}),PLATE_FONT='"Lilita One","Arial Black",Arial,sans-serif';
+if(document.fonts&&document.fonts.load)document.fonts.load('14px "Lilita One"').then(()=>amountCache.clear(),()=>{});
+// Original compact plate, warm yellow edge and softly rounded display type.
+// Always two decimals: trimmed zeros made the plate change width (and jump) every frame while boosting.
+const videoPlateNumbers=new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+function plateLabel(v){return videoPlateNumbers.format(Math.floor(v*100)/100).replace(/\s/g,' ')+(prefs.showCurrency?' '+prefs.currency:'')}
+function drawAmount(s){let cached=amountCache.get(s.id);const now=performance.now();const label=cached&&now-cached.checked<100?cached.label:plateLabel(s.value);if(cached&&now-cached.checked>=100)cached.checked=now;
+if(!cached||cached.label!==label){if(!cached){cached={c:document.createElement('canvas'),checked:now};amountCache.set(s.id,cached)}const S=2.5,pad=2,c=cached.c,size=17.5,h=29;let g=c.getContext('2d');g.font='400 '+size+'px '+PLATE_FONT;let w=Math.ceil(g.measureText(label).width+16);if(cached.w0&&w<cached.w0&&w>cached.w0-16)w=cached.w0;cached.w0=w;const cw=Math.ceil((w+pad*2)*S),ch=Math.ceil((h+pad*2)*S);if(c.width!==cw||c.height!==ch){c.width=cw;c.height=ch}else{g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cw,ch)}g=c.getContext('2d');g.scale(S,S);g.translate(pad,pad);
+ g.fillStyle='#3a2c0c';g.beginPath();g.roundRect(0,0,w,h,2);g.fill();g.strokeStyle='#edcf73';g.lineWidth=1.4;g.stroke();
+ g.font='400 '+size+'px '+PLATE_FONT;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff0ae';g.fillText(label,w/2,h/2+.5);
+ cached.label=label;cached.w=w+pad*2;cached.h=h+pad*2}
+// Videos: the plate is ~18% of the screen width wide and floats r·.7+45 above the head centre.
+const k=1.55,y=(s.renderY??s.y)-(s.renderRadius??s.radius)*.7-45;ctx.drawImage(cached.c,(s.renderX??s.x)-cached.w*k/2,y-cached.h*k/2,cached.w*k,cached.h*k)}
 const viewRect={l:0,t:0,r:0,b:0};
 // The softened artwork and dashed warning share the map's world coordinates.
 const hazardPatterns={};
@@ -342,7 +312,7 @@ snakeView=viewRect;viewRect.l=left;viewRect.t=top;viewRect.r=left+vw+120;viewRec
 const shown=[],ordered=snakes.slice().sort((a,b)=>a.len-b.len);for(const s of ordered){if(!s.alive)continue;{const m=s.radius+10;if(s.points.every(p=>p.x<left-m||p.x>left+vw+120+m||p.y<top-m||p.y>top+vh+120+m))continue}shown.push(s)}
 if(mode==='play'||mode==='result')arenaFX.world(ctx,player,zoom,stillMotion);drawArenaSnakes(ctx,shown,{width:W,height:H,dpr,zoom,x:cx,y:cy});
 // Plates sit above every body, as in the video.
-if(mode==='play'||mode==='result'){drawAmounts(shown);arenaFX.floatingLabels(ctx,zoom,stillMotion)}
+if(mode==='play'||mode==='result'){for(const s of shown)drawAmount(s);arenaFX.floatingLabels(ctx,zoom,stillMotion)}
 snakeView=null;drawEdge();
 
 for(const p of particles){ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,2,0,7);ctx.fill()}ctx.globalAlpha=1;ctx.restore();if(mode==='play'){arenaFX.screen(ctx,W,H,stillMotion);drawJoystick();}}
@@ -356,7 +326,6 @@ function renderHUD(){
  $('progressValue').title=exitUnlocked?'Забрать: Q или зелёная граница':'Для выхода нужно '+exitLabel(roundExitX);
  $('progressValue').setAttribute('aria-label',fmt(value)+'. '+(exitUnlocked?'Выход открыт':'Цель '+fmtTarget(target)));
  $('earningsProgress').setAttribute('aria-valuenow',String(value));$('earningsProgress').setAttribute('aria-valuemax',target);$('earningsProgress').setAttribute('aria-valuetext',fmt(value)+' / '+fmtTarget(target));
- labelHudBottom=document.querySelector('.earnings').getBoundingClientRect().bottom+8;labelControlsBottom=$('pause').getBoundingClientRect().bottom+8;
  $('controlsHint').textContent='Мышь / палец — поворот · Space — ускорение · Esc — пауза · Q — забрать при '+exitLabel(roundExitX);$('time').textContent=clock(elapsed);$('length').textContent=Math.floor(player.len);$('kills').textContent=kills;
 }
 let lastPaint=0,slowFrames=0,lastSkinPreview=0;
