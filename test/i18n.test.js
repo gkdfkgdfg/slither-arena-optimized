@@ -45,12 +45,14 @@ test('actual cashout and death messages localize without changing money or payou
   const $=id=>{if(!nodes.has(id))nodes.set(id,{style:{},focus(){},showModal(){}});return nodes.get(id)};
   const state={$ ,tr:t,ArenaLabels:labels,mode:'play',paused:false,exitUnlocked:true,player:{value:12500},sessionStake:500,
    prefs:{balance:1000,currency:'zł',showCurrency:true},W:390,elapsed:83,kills:4,
-   save(){},tone(){},fmt:value=>labels.amount(value)+' zł',clock:()=> '1:23'};
-  vm.createContext(state);vm.runInContext(finish,state);state.finish(success,true);
+   arenaFX:FX.create(),save(){},tone(){},fmt:value=>labels.amount(value)+' zł',clock:()=> '1:23'};
+  state.arenaFX.kill(0,0,50,10);vm.createContext(state);vm.runInContext(finish,state);state.finish(success,true);
+  assert.equal(state.arenaFX.diagnostics().labels,0,'result clears frozen floating labels');
   assert.equal(state.mode,'result');assert.equal(state.prefs.balance,success?13500:1000);
   if(success){
    assert.equal($('winNumber').textContent,'12 500,00');assert.equal($('winCurrency').textContent,'zł');
-   assert.equal($('winProfit').textContent,t('profit',{amount:'+12 000,00 zł'}));
+   assert.equal(nodes.has('winProfit'),false,'cashout only writes the amount and currency');
+   assert.equal(nodes.has('winMultiplier'),false);
   }else{
    assert.equal($('resultTitle').textContent,t('died'));
    assert.equal($('resultInfo').textContent,t('deathInfo',{time:'1:23',kills:4,balance:'1 000,00 zł'}));

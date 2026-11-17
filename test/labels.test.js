@@ -37,3 +37,21 @@ test('currency settings cannot race an asynchronous round start',()=>{
  assert.throws(()=>context.configure('RUB',9999),/между раундами/);assert.equal(context.prefs.balance,100);
  context.mode='menu';context.configure('RUB',9999);assert.equal(context.prefs.currency,'RUB');assert.equal(context.prefs.balance,9999);
 });
+
+test('hiding multipliers clears existing text and keeps loot and exit effects without ratios',()=>{
+ const fx=FX.create(),painted=[];
+ const g={save(){},restore(){},strokeText(){},fillText(text){painted.push(text)}};
+ fx.kill(0,0,50,10);fx.progress(20,false);fx.setShowMultipliers(false);
+ fx.floatingLabels(g,1,false);fx.screen(g,390,844,false);
+ assert.deepEqual(painted,[],'already queued multiplier text disappears immediately');
+ fx.kill(0,0,50,10);fx.kill(0,0,50,10);fx.pickup(0,0,5,10);
+ fx.floatingLabels(g,1,false);fx.screen(g,390,844,false);
+ assert.ok(painted.includes('ДОБЫЧА'));assert.ok(painted.includes('КОМБО'));
+ assert.ok(painted.every(text=>!/[×xх]/.test(text)));
+ fx.progress(40,true);fx.screen(g,390,844,false);
+ assert.ok(painted.includes('ВЫХОД ОТКРЫТ'));
+ assert.equal(fx.diagnostics().unlocked,true);
+ fx.reset();assert.equal(fx.diagnostics().showMultipliers,false);
+ fx.setShowMultipliers(true);painted.length=0;fx.kill(0,0,50,10);fx.floatingLabels(g,1,false);
+ assert.ok(painted.some(text=>text.includes('×5.0')),'switching back restores ratios for new effects');
+});

@@ -31,13 +31,14 @@ let prefs={currency:'USD',balance:1000,stake:10,name:'Player',color:0,sound:true
 try{Object.assign(prefs,JSON.parse(localStorage.getItem('slither-demo-v1')||'{}'))}catch{}
 prefs.currency=String(prefs.currency||'USD').slice(0,12);prefs.balance=Math.max(0,Math.min(1e12,Number(prefs.balance)||0));prefs.stake=Math.max(.01,Math.min(1e9,Number(prefs.stake)||10));prefs.color=Math.abs(Number(prefs.color)||0)%COLORS.length;
 prefs.effects=prefs.effects!==false;prefs.difficulty=BotAI.normalize(prefs.difficulty);prefs.exitX=ArenaCore.normalizeExitMultiplier(prefs.exitX);
+prefs.showMultipliers=prefs.showMultipliers!==false;
 prefs.gameLanguage=ArenaI18n.normalize(new URLSearchParams(location.search).get('lang')||prefs.gameLanguage);
 const gameLanguage=ArenaI18n.create(prefs.gameLanguage),tr=gameLanguage.t;
 // Venezuela (Flags tab) is the default; the old hidden video skins map onto it.
 try{prefs.skin=localStorage.getItem('slither-mystake-skin')||'flag_ve';if(prefs.skin.startsWith('v_')||!localStorage.getItem('slither-video-look2')){prefs.skin='flag_ve';localStorage.setItem('slither-video-look2','1');localStorage.setItem('slither-mystake-skin','flag_ve')}}catch{prefs.skin='flag_ve'}
 if(!SKINS.some(s=>s.id===prefs.skin))prefs.skin='neon';
 let W=innerWidth,H=innerHeight,dpr=1,mode='menu',paused=false,elapsed=0,kills=0,player,snakes=[],coins=[],particles=[],camera={x:0,y:0},aim={x:1,y:0},boost=false,last=0,acc=0,hudTick=0,zoom=1,sessionStake=10,roundExitX=ArenaCore.DEFAULT_EXIT_MULTIPLIER,touchOrigin=null,audioCtx;
-const arenaFX=ArenaEffects.create({translate:tr});arenaFX.setEnabled(prefs.effects);
+const arenaFX=ArenaEffects.create({translate:tr});arenaFX.setEnabled(prefs.effects);arenaFX.setShowMultipliers(prefs.showMultipliers);
 const R=2200,rand=(a,b)=>a+Math.random()*(b-a),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),money=n=>ArenaLabels.amount(n),fmt=n=>money(n)+(prefs.showCurrency?' '+prefs.currency:'');
 function save(){try{localStorage.setItem('slither-mystake-skin',prefs.skin);const shared=JSON.parse(localStorage.getItem('slither-demo-v1')||'{}');localStorage.setItem('slither-demo-v1',JSON.stringify({...prefs,skin:shared.skin||'neon'}))}catch{}}
 function resize(){const v=window.visualViewport;W=Math.round(v?.width||innerWidth);H=Math.round(v?.height||innerHeight);dpr=Math.min(devicePixelRatio||1,renderScale,Math.sqrt(2500000/Math.max(1,W*H)));dpr=Math.max(.5,dpr);if(canvas.width!==Math.round(W*dpr)||canvas.height!==Math.round(H*dpr)){canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);}canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality=qualityMode==='high'?"high":"low";document.documentElement.style.setProperty('--view-width',W+'px');document.documentElement.style.setProperty('--view-height',H+'px');document.documentElement.style.setProperty('--view-top',(v?.offsetTop||0)+'px');document.documentElement.style.setProperty('--view-left',(v?.offsetLeft||0)+'px')}addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);window.visualViewport?.addEventListener('scroll',resize);resize();
@@ -46,13 +47,17 @@ function syncGameLanguage(){
  for(const el of document.querySelectorAll('[data-game-i18n]'))el.textContent=tr(el.dataset.gameI18n);
  for(const [attribute,key] of [['aria-label','gameI18nLabel'],['title','gameI18nTitle']])for(const el of document.querySelectorAll(attribute==='title'?'[data-game-i18n-title]':'[data-game-i18n-label]'))el.setAttribute(attribute,tr(el.dataset[key]));
  for(const id of ['hud','pauseDialog','result','winOverlay','arena'])$(id).lang=gameLanguage.language==='sr'?'sr-Latn':gameLanguage.language;
- canvas.setAttribute('aria-label',tr('arena'));syncEffects();
+ canvas.setAttribute('aria-label',tr('arena'));syncEffects();syncMultipliers();
  if(mode==='play')renderHUD();
 }
 function syncEffects(){ $('effectsEnabled').value=prefs.effects?'on':'off';$('pauseEffects').setAttribute('aria-pressed',String(prefs.effects));$('pauseEffectsState').textContent=tr(prefs.effects?'on':'off');document.body.classList.toggle('effectsOff',!prefs.effects)}
 function setEffectsEnabled(value){prefs.effects=value!==false;arenaFX.setEnabled(prefs.effects);if(!prefs.effects){particles.length=0;deathTrails.length=0}save();syncEffects()}
 $('effectsEnabled').onchange=()=>setEffectsEnabled($('effectsEnabled').value==='on');
 $('pauseEffects').onclick=()=>setEffectsEnabled(!prefs.effects);
+function syncMultipliers(){ $('multipliersVisible').value=prefs.showMultipliers?'on':'off';$('pauseMultipliers').setAttribute('aria-pressed',String(prefs.showMultipliers));$('pauseMultipliersState').textContent=tr(prefs.showMultipliers?'on':'off')}
+function setMultipliersVisible(value){prefs.showMultipliers=value!==false;arenaFX.setShowMultipliers(prefs.showMultipliers);save();syncMultipliers();if(mode==='play')renderHUD()}
+$('multipliersVisible').onchange=()=>setMultipliersVisible($('multipliersVisible').value==='on');
+$('pauseMultipliers').onclick=()=>setMultipliersVisible(!prefs.showMultipliers);
 $('gameLanguage').onchange=()=>{if(mode!=='menu')return;prefs.gameLanguage=gameLanguage.setLanguage($('gameLanguage').value);save();const url=new URL(location.href);url.searchParams.set('lang',prefs.gameLanguage);history.replaceState(null,'',url);syncGameLanguage()};
 function syncDifficulty(){ $('difficulty').value=prefs.difficulty;$('difficultyHint').textContent=prefs.difficulty==='hard'?'Больше внимательных соперников и быстрых реакций.':'Больше рассеянных соперников — легче подрезать.'}
 function exitLabel(x){return '×'+String(x).replace('.',',')}
@@ -187,7 +192,7 @@ async function start(){
 $('play').onclick=start;$('again').onclick=async()=>{if(!await start()){ $('result').close();home()}};
 function home(){ arenaFX.reset();$('winOverlay').hidden=true;mode='menu';paused=false;boost=false;$('hud').hidden=true;$('lobby').hidden=false;$('result').close();$('pauseDialog').close();sync();sessionStake=prefs.stake;seed()}
 $('home').onclick=home;$('leave').onclick=home;
-function finish(success,manual=false){if(mode!=='play'||paused)return;if(success&&(!exitUnlocked||(!manual&&Math.max(Math.abs(player.x),Math.abs(player.y))<R)))return;mode='result';paused=false;boost=false;touchOrigin=null;if(success){prefs.balance=Math.round((prefs.balance+player.value)*1000000)/1000000;save();tone(850,.25);/* videos: HUD stays, dimmed under the overlay; number like 157,737.46 */const won=ArenaLabels.details(player.value,sessionStake,prefs.currency,prefs.showCurrency,true,true);$('winNumber').textContent=won.amount;$('winCurrency').textContent=won.unit;$('winMultiplier').textContent=won.multiplier;$('winProfit').textContent=tr('profit',{amount:won.profit+(won.unit?' '+won.unit:'')});$('winNumber').style.fontSize=Math.max(17,Math.min(52,(W-72)/Math.max(1,won.amount.length*.65)))+'px';$('winOverlay').hidden=false;$('winOverlay').focus();}else{tone(100,.3);$('resultTitle').textContent=tr('died');$('resultAmount').textContent=fmt(0);$('resultInfo').textContent=tr('deathInfo',{time:clock(elapsed),kills,balance:fmt(prefs.balance)});$('result').showModal()}}
+function finish(success,manual=false){if(mode!=='play'||paused)return;if(success&&(!exitUnlocked||(!manual&&Math.max(Math.abs(player.x),Math.abs(player.y))<R)))return;mode='result';paused=false;boost=false;touchOrigin=null;arenaFX.reset();if(success){prefs.balance=Math.round((prefs.balance+player.value)*1000000)/1000000;save();tone(850,.25);/* videos: HUD stays, dimmed under the overlay; number like 157,737.46 */const won=ArenaLabels.details(player.value,sessionStake,prefs.currency,prefs.showCurrency,true,true);$('winNumber').textContent=won.amount;$('winCurrency').textContent=won.unit;$('winNumber').style.fontSize=Math.max(17,Math.min(52,(W-72)/Math.max(1,won.amount.length*.65)))+'px';$('winOverlay').hidden=false;$('winOverlay').focus();}else{tone(100,.3);$('resultTitle').textContent=tr('died');$('resultAmount').textContent=fmt(0);$('resultInfo').textContent=tr('deathInfo',{time:clock(elapsed),kills,balance:fmt(prefs.balance)});$('result').showModal()}}
 $('winOverlay').onclick=home;
 $('result').addEventListener('cancel',e=>{e.preventDefault();home()});
 function togglePause(){if(mode!=='play')return;paused=!paused;boost=false;touchPoints.clear();steerPointer=null;touchOrigin=null;if(paused)$('pauseDialog').showModal();else $('pauseDialog').close()}
@@ -334,10 +339,10 @@ function renderHUD(){
  $('progressAmount').textContent=left;$('progressCurrency').textContent=unit;$('targetAmount').textContent=right;$('targetCurrency').textContent=unit;
  const digits=Math.max(left.length,right.length);$('hud').style.setProperty('--amount-font',Math.max(10,Math.min(16,(W-68)/(digits*1.3)))+'px');
  $('earningsFill').style.width=percent+'%';$('earningsFill').classList.toggle('done',exitUnlocked);$('progressValue').classList.toggle('ready',exitUnlocked);
- $('progressValue').title=exitUnlocked?tr('cashoutHint'):tr('exitNeed',{multiplier:exitLabel(roundExitX)});
+ $('progressValue').title=exitUnlocked?tr('cashoutHint'):tr('exitNeed',{multiplier:prefs.showMultipliers?exitLabel(roundExitX):fmtTarget(target)});
  $('progressValue').setAttribute('aria-label',fmt(value)+'. '+(exitUnlocked?tr('exitOpen'):tr('targetValue',{amount:fmtTarget(target)})));
  $('earningsProgress').setAttribute('aria-valuenow',String(value));$('earningsProgress').setAttribute('aria-valuemax',target);$('earningsProgress').setAttribute('aria-valuetext',fmt(value)+' / '+fmtTarget(target));
- $('controlsHint').textContent=tr('controls',{multiplier:exitLabel(roundExitX)});$('time').textContent=clock(elapsed);$('length').textContent=Math.floor(player.len);$('kills').textContent=kills;
+ $('controlsHint').textContent=tr('controls',{multiplier:prefs.showMultipliers?exitLabel(roundExitX):fmtTarget(target)});$('time').textContent=clock(elapsed);$('length').textContent=Math.floor(player.len);$('kills').textContent=kills;
 }
 let lastPaint=0,slowFrames=0,lastSkinPreview=0;
 function frame(t){let gap=last?Math.max(0,t-last):STEP*1000;last=t;if(document.hidden){acc=0;requestAnimationFrame(frame);return}

@@ -2,11 +2,12 @@
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./arena-i18n'));else root.ArenaEffects=factory(root.ArenaI18n)})(typeof globalThis!=='undefined'?globalThis:this,I18n=>{
  'use strict';
  function create({translate=I18n.create('ru').t}={}){
-  const rings=[],labels=[];let enabled=true,time=0,combo=0,lastKill=-100,pickupAt=-1,stage=1,unlocked=false,boostGlow=0,banner=null;
+  const rings=[],labels=[];let enabled=true,showMultipliers=true,time=0,combo=0,lastKill=-100,pickupAt=-1,stage=1,unlocked=false,boostGlow=0,banner=null;
   const ring=(x,y,color,r=30)=>{if(rings.length<14)rings.push({x,y,color,r,age:0})};
   const label=(x,y,text,color)=>{if(labels.length>=8)labels.shift();labels.push({x,y,text,color,age:0})};
   const announce=(title,sub,color)=>{if(enabled)banner={title,sub,color,age:0}};
   function setEnabled(value){enabled=value!==false;if(!enabled){rings.length=labels.length=0;banner=null;boostGlow=0;combo=0;lastKill=-100}}
+  function setShowMultipliers(value){const next=value!==false;if(next!==showMultipliers){labels.length=0;banner=null}showMultipliers=next}
   function reset(){rings.length=labels.length=0;time=0;combo=0;lastKill=-100;pickupAt=-1;stage=1;unlocked=false;boostGlow=0;banner=null}
   function update(dt,player,boost){
    time+=dt;if(!enabled)return;boostGlow+=(Number(boost&&player.alive)-boostGlow)*(1-Math.exp(-dt*7));
@@ -18,14 +19,14 @@
    if(!enabled)return;
    combo=time-lastKill<7?combo+1:1;lastKill=time;
    ring(x,y,'#ffe28b',55);ring(x,y,'#a6fff0',20);
-   label(x,y,translate('loot',{multiplier:(value/stake).toFixed(1)}),'#ffe28b');
-   announce(combo>1?translate('combo',{count:combo}):translate('cutOff'),translate(combo>1?'anotherRival':'collectLoot'),'#ffe28b');
+   label(x,y,showMultipliers?translate('loot',{multiplier:(value/stake).toFixed(1)}):translate('lootPlain'),'#ffe28b');
+   announce(combo>1?(showMultipliers?translate('combo',{count:combo}):translate('comboPlain')):translate('cutOff'),translate(combo>1?'anotherRival':'collectLoot'),'#ffe28b');
   }
-  function pickup(x,y,value,stake){if(!enabled||time-pickupAt<.12)return;pickupAt=time;ring(x,y,'#ffe891',12);if(value>=stake*.35)label(x,y,'+'+(value/stake).toFixed(1)+'×','#fff1ae')}
+  function pickup(x,y,value,stake){if(!enabled||time-pickupAt<.12)return;pickupAt=time;ring(x,y,'#ffe891',12);if(showMultipliers&&value>=stake*.35)label(x,y,'+'+(value/stake).toFixed(1)+'×','#fff1ae')}
   function progress(mult,open){
    const next=[1,2,5,10,20,40,60,100].filter(v=>mult>=v).at(-1)||1;
    if(open&&!unlocked){unlocked=true;announce(translate('exitBanner'),translate('boundaryHint'),'#8dffae')}
-   else if(next>stage&&next>=2)announce('×'+next,translate('newStage'),'#a5fff0');
+   else if(showMultipliers&&next>stage&&next>=2)announce('×'+next,translate('newStage'),'#a5fff0');
    stage=Math.max(stage,next);
   }
   function world(g,player,zoom,reduced){
@@ -52,7 +53,7 @@
    g.strokeText(banner.title,w/2,y);g.fillText(banner.title,w/2,y);
    g.font='700 '+Math.min(12,w*.025)+'px system-ui';g.fillStyle='#e2f5ff';g.fillText(banner.sub,w/2,y+25);g.restore();
   }
-  return {reset,setEnabled,update,kill,pickup,progress,world,floatingLabels,screen,diagnostics:()=>({enabled,rings:rings.length,labels:labels.length,combo,stage,unlocked})};
+  return {reset,setEnabled,setShowMultipliers,update,kill,pickup,progress,world,floatingLabels,screen,diagnostics:()=>({enabled,showMultipliers,rings:rings.length,labels:labels.length,combo,stage,unlocked})};
  }
  return {create};
 });

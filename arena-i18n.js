@@ -3,8 +3,8 @@
  'use strict';
  const messages={
   ru:{
-   target:'ЦЕЛЬ',pause:'Пауза',paused:'Раунд приостановлен',effects:'Эффекты',on:'ВКЛ',off:'ВЫКЛ',resume:'Продолжить',leave:'Завершить без сохранения добычи',
-   winHeading:'ВЫХОД С ДОБЫЧЕЙ',winHint:'Нажми, чтобы вернуться в меню',returnMenu:'Вернуться в меню',profit:'Прибыль {amount}',died:'ВЫ ПОГИБЛИ',again:'Играть ещё',home:'В меню',
+   showMultipliers:'Показывать множители',lootPlain:'ДОБЫЧА',comboPlain:'КОМБО',target:'ЦЕЛЬ',pause:'Пауза',paused:'Раунд приостановлен',effects:'Эффекты',on:'ВКЛ',off:'ВЫКЛ',resume:'Продолжить',leave:'Завершить без сохранения добычи',
+   returnMenu:'Вернуться в меню',died:'ВЫ ПОГИБЛИ',again:'Играть ещё',home:'В меню',
    deathInfo:'Добыча осталась на арене. Время: {time} · Убрано: {kills}. Баланс: {balance}',
    controls:'Мышь / палец — поворот · Space — ускорение · Esc — пауза · Q — забрать при {multiplier}',
    cashoutHint:'Забрать: Q или зелёная граница',exitNeed:'Для выхода нужно {multiplier}',exitOpen:'Выход открыт',targetValue:'Цель {amount}',
@@ -13,8 +13,8 @@
    exitBanner:'ВЫХОД ОТКРЫТ',boundaryHint:'ДОБЕРИСЬ ДО ЗЕЛЁНОЙ ГРАНИЦЫ',newStage:'НОВЫЙ УРОВЕНЬ ДОБЫЧИ'
   },
   cs:{
-   target:'CÍL',pause:'Pauza',paused:'Hra je pozastavena',effects:'Efekty',on:'ZAP',off:'VYP',resume:'Pokračovat',leave:'Ukončit bez vyzvednutí kořisti',
-   winHeading:'VÝHRA VYZVEDNUTA',winHint:'Klepnutím se vrátíš do menu',returnMenu:'Zpět do menu',profit:'Zisk {amount}',died:'KONEC HRY',again:'Hrát znovu',home:'Do menu',
+   showMultipliers:'Zobrazit násobiče',lootPlain:'KOŘIST',comboPlain:'KOMBO',target:'CÍL',pause:'Pauza',paused:'Hra je pozastavena',effects:'Efekty',on:'ZAP',off:'VYP',resume:'Pokračovat',leave:'Ukončit bez vyzvednutí kořisti',
+   returnMenu:'Zpět do menu',died:'KONEC HRY',again:'Hrát znovu',home:'Do menu',
    deathInfo:'Kořist zůstala v aréně. Čas: {time} · Vyřazení: {kills}. Zůstatek: {balance}',
    controls:'Myš / dotyk — zatáčení · Space — zrychlení · Esc — pauza · Q — vyzvednutí při {multiplier}',
    cashoutHint:'Vyzvednout: Q nebo zelená hranice',exitNeed:'Pro odchod potřebuješ {multiplier}',exitOpen:'Odchod je otevřen',targetValue:'Cíl {amount}',
@@ -23,8 +23,8 @@
    exitBanner:'ODCHOD OTEVŘEN',boundaryHint:'DOJEĎ K ZELENÉ HRANICI',newStage:'NOVÁ ÚROVEŇ KOŘISTI'
   },
   sr:{
-   target:'CILJ',pause:'Pauza',paused:'Igra je pauzirana',effects:'Efekti',on:'UKLJ',off:'ISKLJ',resume:'Nastavi',leave:'Završi bez preuzimanja plena',
-   winHeading:'DOBITAK PREUZET',winHint:'Dodirni za povratak u meni',returnMenu:'Vrati se u meni',profit:'Dobit {amount}',died:'KRAJ IGRE',again:'Igraj ponovo',home:'U meni',
+   showMultipliers:'Prikaži množitelje',lootPlain:'PLEN',comboPlain:'KOMBO',target:'CILJ',pause:'Pauza',paused:'Igra je pauzirana',effects:'Efekti',on:'UKLJ',off:'ISKLJ',resume:'Nastavi',leave:'Završi bez preuzimanja plena',
+   returnMenu:'Vrati se u meni',died:'KRAJ IGRE',again:'Igraj ponovo',home:'U meni',
    deathInfo:'Plen je ostao u areni. Vreme: {time} · Eliminacije: {kills}. Stanje: {balance}',
    controls:'Miš / dodir — skretanje · Space — ubrzanje · Esc — pauza · Q — preuzmi na {multiplier}',
    cashoutHint:'Preuzmi: Q ili zelena granica',exitNeed:'Za izlazak je potrebno {multiplier}',exitOpen:'Izlaz je otvoren',targetValue:'Cilj {amount}',
@@ -33,8 +33,8 @@
    exitBanner:'IZLAZ OTVOREN',boundaryHint:'STIGNI DO ZELENE GRANICE',newStage:'NOVI NIVO PLENA'
   },
   it:{
-   target:'OBIETTIVO',pause:'Pausa',paused:'Partita in pausa',effects:'Effetti',on:'SÌ',off:'NO',resume:'Continua',leave:'Esci senza riscuotere il bottino',
-   winHeading:'VINCITA RISCOSSA',winHint:'Tocca per tornare al menu',returnMenu:'Torna al menu',profit:'Profitto {amount}',died:'SEI MORTO',again:'Gioca ancora',home:'Menu',
+   showMultipliers:'Mostra moltiplicatori',lootPlain:'BOTTINO',comboPlain:'COMBO',target:'OBIETTIVO',pause:'Pausa',paused:'Partita in pausa',effects:'Effetti',on:'SÌ',off:'NO',resume:'Continua',leave:'Esci senza riscuotere il bottino',
+   returnMenu:'Torna al menu',died:'SEI MORTO',again:'Gioca ancora',home:'Menu',
    deathInfo:'Il bottino è rimasto in arena. Tempo: {time} · Eliminati: {kills}. Saldo: {balance}',
    controls:'Mouse / tocco — sterza · Space — accelera · Esc — pausa · Q — riscuoti a {multiplier}',
    cashoutHint:'Riscuoti: Q o confine verde',exitNeed:'Per uscire serve {multiplier}',exitOpen:'Uscita aperta',targetValue:'Obiettivo {amount}',
@@ -43,8 +43,8 @@
    exitBanner:'USCITA APERTA',boundaryHint:'RAGGIUNGI IL CONFINE VERDE',newStage:'NUOVO LIVELLO DI BOTTINO'
   },
   en:{
-   target:'TARGET',pause:'Pause',paused:'Round paused',effects:'Effects',on:'ON',off:'OFF',resume:'Resume',leave:'Leave without collecting loot',
-   winHeading:'CASHED OUT',winHint:'Tap to return to the menu',returnMenu:'Return to menu',profit:'Profit {amount}',died:'YOU DIED',again:'Play again',home:'Menu',
+   showMultipliers:'Show multipliers',lootPlain:'LOOT',comboPlain:'COMBO',target:'TARGET',pause:'Pause',paused:'Round paused',effects:'Effects',on:'ON',off:'OFF',resume:'Resume',leave:'Leave without collecting loot',
+   returnMenu:'Return to menu',died:'YOU DIED',again:'Play again',home:'Menu',
    deathInfo:'Your loot stayed in the arena. Time: {time} · Kills: {kills}. Balance: {balance}',
    controls:'Mouse / touch — steer · Space — boost · Esc — pause · Q — cash out at {multiplier}',
    cashoutHint:'Cash out: Q or the green boundary',exitNeed:'Reach {multiplier} to cash out',exitOpen:'Exit open',targetValue:'Target {amount}',
