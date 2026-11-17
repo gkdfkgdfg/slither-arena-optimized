@@ -4,8 +4,8 @@
 @font-face{font-family:Rubik;font-weight:500;src:url(fonts/rubik-latin-500.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122;font-display:swap}
 @font-face{font-family:Rubik;font-weight:800;src:url(fonts/rubik-latin-800.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122;font-display:swap}
 /* Top panel font in videos 1-10: monospaced bold, footed 1, punctuation in full cells (matched glyph by glyph). */
-@font-face{font-family:'Roboto Mono';font-weight:700;src:url(fonts/robotomono-latin-700.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+20AC;font-display:block}
-@font-face{font-family:'Roboto Mono';font-weight:700;src:url(fonts/robotomono-cyrillic-700.woff2) format('woff2');unicode-range:U+0400-045F,U+0490-0491;font-display:block}
+@font-face{font-family:'Roboto Mono';font-weight:700;src:url(fonts/robotomono-latin-700.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+20AC;font-display:swap}
+@font-face{font-family:'Roboto Mono';font-weight:700;src:url(fonts/robotomono-cyrillic-700.woff2) format('woff2');unicode-range:U+0400-045F,U+0490-0491;font-display:swap}
 
 /* ---- Base ---- */
 :root{color-scheme:dark;--ink:#070f18;--card:#0c1722;--card-2:#122130;--line:#22384a;--line-2:#34506a;--text:#eef6f2;--dim:#93a8b3;--green:#2cf266;--green-edge:#0a7f33;--gold:#ffd746;--red:#ff5a5f;--orange:#ff9a3c;--latam:#e0ba62}
