@@ -1,7 +1,7 @@
 /* Bounded, event-driven effects. No camera shake or changes to gameplay time. */
-(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.ArenaEffects=factory()})(typeof globalThis!=='undefined'?globalThis:this,()=>{
+(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory(require('./arena-i18n'));else root.ArenaEffects=factory(root.ArenaI18n)})(typeof globalThis!=='undefined'?globalThis:this,I18n=>{
  'use strict';
- function create(){
+ function create({translate=I18n.create('ru').t}={}){
   const rings=[],labels=[];let enabled=true,time=0,combo=0,lastKill=-100,pickupAt=-1,stage=1,unlocked=false,boostGlow=0,banner=null;
   const ring=(x,y,color,r=30)=>{if(rings.length<14)rings.push({x,y,color,r,age:0})};
   const label=(x,y,text,color)=>{if(labels.length>=8)labels.shift();labels.push({x,y,text,color,age:0})};
@@ -18,14 +18,14 @@
    if(!enabled)return;
    combo=time-lastKill<7?combo+1:1;lastKill=time;
    ring(x,y,'#ffe28b',55);ring(x,y,'#a6fff0',20);
-   label(x,y,'ДОБЫЧА ×'+(value/stake).toFixed(1),'#ffe28b');
-   announce(combo>1?'КОМБО ×'+combo:'ПОДРЕЗАЛ!',combo>1?'ЕЩЁ ОДИН СОПЕРНИК':'СОБИРАЙ ДОБЫЧУ','#ffe28b');
+   label(x,y,translate('loot',{multiplier:(value/stake).toFixed(1)}),'#ffe28b');
+   announce(combo>1?translate('combo',{count:combo}):translate('cutOff'),translate(combo>1?'anotherRival':'collectLoot'),'#ffe28b');
   }
   function pickup(x,y,value,stake){if(!enabled||time-pickupAt<.12)return;pickupAt=time;ring(x,y,'#ffe891',12);if(value>=stake*.35)label(x,y,'+'+(value/stake).toFixed(1)+'×','#fff1ae')}
   function progress(mult,open){
    const next=[1,2,5,10,20,40,60,100].filter(v=>mult>=v).at(-1)||1;
-   if(open&&!unlocked){unlocked=true;announce('ВЫХОД ОТКРЫТ','ДОБЕРИСЬ ДО ЗЕЛЁНОЙ ГРАНИЦЫ','#8dffae')}
-   else if(next>stage&&next>=2)announce('×'+next,'НОВЫЙ УРОВЕНЬ ДОБЫЧИ','#a5fff0');
+   if(open&&!unlocked){unlocked=true;announce(translate('exitBanner'),translate('boundaryHint'),'#8dffae')}
+   else if(next>stage&&next>=2)announce('×'+next,translate('newStage'),'#a5fff0');
    stage=Math.max(stage,next);
   }
   function world(g,player,zoom,reduced){
