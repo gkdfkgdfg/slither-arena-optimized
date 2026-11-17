@@ -15,13 +15,13 @@ const physScale=s=>Math.min(6,Math.max(1,s.radius/15));
 // rivals (tracked by their price plates) move ≈165 px/s ≈ 245 units/s.
 const VIDEO_MOVE={cruise:370,boost:540,turn:9,bot:245,botTurn:4.5};
 function physCruise(s){return typeof player!=='undefined'&&s===player?VIDEO_MOVE.cruise:VIDEO_MOVE.bot*(s.brain?.speedScale??1)}
-function physBoost(){return VIDEO_MOVE.boost}
+function physBoost(s){return typeof player!=='undefined'&&s!==player?physCruise(s)*1.28:VIDEO_MOVE.boost}
 function physTurnRate(s,boosting){return typeof player!=='undefined'&&s===player?VIDEO_MOVE.turn:VIDEO_MOVE.botTurn*(s.brain?.turnScale??1)}
 /** Head integrator: capped shortest turn, eased speed, straight advance. */
 function physStepHead(s,targetAngle,boosting,dt){
  const turn=physTurnRate(s,boosting)*dt,da=Math.atan2(Math.sin(targetAngle-s.a),Math.cos(targetAngle-s.a));
  s.a+=Math.max(-turn,Math.min(turn,da));
- const target=boosting?physBoost():physCruise(s);if(s.velocity===undefined)s.velocity=physCruise(s);
+ const target=boosting?physBoost(s):physCruise(s);if(s.velocity===undefined)s.velocity=physCruise(s);
  s.velocity+=(target-s.velocity)*(1-Math.exp(-PHYS.accel*dt));
  s.x+=Math.cos(s.a)*s.velocity*dt;s.y+=Math.sin(s.a)*s.velocity*dt;
 }

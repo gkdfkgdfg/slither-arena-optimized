@@ -72,7 +72,7 @@ function skinTexture(id,color){
   const f=fallback.getContext('2d'),shade=f.createLinearGradient(0,0,0,128);shade.addColorStop(0,'#111c23');shade.addColorStop(.35,color||'#79cba6');shade.addColorStop(1,'#111c23');f.fillStyle=shade;f.fillRect(0,0,768,128);rememberMaterial(key,fallback);skinAssetState.set(key,'loading');
   // Decode off the main thread so a newly seen skin does not stall a frame.
   const img=new Image();img.onload=()=>{const ready=bmp=>{rememberMaterial(key,bmp);skinAssetState.set(key,'ready');refresh()};if(typeof createImageBitmap==='function')createImageBitmap(img).then(ready,()=>ready(img));else ready(img)};
-  const refresh=()=>{if(typeof previewSnake==='function')for(const c of document.querySelectorAll('canvas[data-skin]'))if(c.dataset.skin===id){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);previewSnake(g,id,c.width,c.height)}};img.onerror=()=>skinAssetState.set(key,'error');img.src='skins/'+id+(id==='neon'?'-'+color.slice(1):'')+'.png?v=31';return fallback;
+  const refresh=()=>{if(typeof previewSnake==='function')for(const c of document.querySelectorAll('canvas[data-skin]'))if(c.dataset.skin===id){const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);previewSnake(g,id,c.width,c.height)}};img.onerror=()=>{skinAssetState.set(key,'error');referenceMaterials.delete(key)};img.src='skins/'+id+(id==='neon'?'-'+color.slice(1):'')+'.png?v=31';return fallback;
  }
  const c=document.createElement('canvas');c.width=1536;c.height=256;const g=c.getContext('2d'),W=768,H=128;g.scale(2,2);
  const fill=(c,x=0,y=0,w=W,h=H)=>{g.fillStyle=c;g.fillRect(x,y,w,h)};
@@ -259,7 +259,7 @@ function countryTexture(code){
  const c=document.createElement('canvas');c.width=1536;c.height=256;const g=c.getContext('2d');g.fillStyle='#334651';g.fillRect(0,0,c.width,c.height);rememberMaterial(key,c);skinAssetState.set(key,'loading');
  // Venezuela-style flag body (video-look.js): stripes along the body, emblem as stars/dots.
  if(code==='ve'){flagStyleTexture('ve',null,c);skinAssetState.set(key,'ready');return c}
- const img=new Image();img.onload=()=>{g.clearRect(0,0,c.width,c.height);try{flagStyleTexture(code,img,c)}catch(e){const tile=384;for(let x=0;x<c.width;x+=tile)g.drawImage(img,x,0,tile,c.height)}c.arenaRevision=(c.arenaRevision||0)+1;skinAssetState.set(key,'ready');if(typeof drawSkin==='function')drawSkin()};img.onerror=()=>skinAssetState.set(key,'error');img.src='flags/'+code+'.png';return c;
+ const img=new Image();img.onload=()=>{g.clearRect(0,0,c.width,c.height);try{flagStyleTexture(code,img,c)}catch(e){const tile=384;for(let x=0;x<c.width;x+=tile)g.drawImage(img,x,0,tile,c.height)}c.arenaRevision=(c.arenaRevision||0)+1;skinAssetState.set(key,'ready');if(typeof drawSkin==='function')drawSkin()};img.onerror=()=>{skinAssetState.set(key,'error');referenceMaterials.delete(key)};img.src='flags/'+code+'.png';return c;
 }
 function originalPath(g,ps){g.beginPath();ps.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y))}
 // Visible world rectangle set by render(); body pieces outside it are skipped.
@@ -384,3 +384,23 @@ function headSprite(id){const cfg=SPRITE_HEADS[id];if(!cfg)return null;let h=hea
 function drawSpriteHead(g,id,x,y,a,r){const h=headSprites.get(id),cfg=SPRITE_HEADS[id],H=r*(cfg.size||2.6),W=H*h.img.width/h.img.height,nose=cfg.nose!=null?r*cfg.nose:W/2;
  g.save();g.translate(x,y);g.rotate(a);g.drawImage(h.img,nose-W,-H/2,W,H);g.restore()}
 function drawVampireFangs(g,x,y,a,r){g.save();g.translate(x,y);g.rotate(a);g.fillStyle='#fbf6df';for(const side of [-1,1]){g.beginPath();g.moveTo(r*.73,side*r*.23);g.lineTo(r*1.14,side*r*.27);g.lineTo(r*.76,side*r*.43);g.closePath();g.fill()}g.restore()}
+
+// Start the round only after the exact roster's body and decorative head are decoded.
+function snakeAppearanceState(s){
+ const id=s.skin||'neon',key=id.startsWith('flag_')?id:id+s.color;
+ if(skinAssetState.get(key)==='error'||headSprites.get(id)?.error)return 'error';
+ skinTexture(id,s.color);headSprite(id);
+ const body=skinAssetState.get(key),head=headSprites.get(id);
+ return body==='error'||head?.error?'error':body==='loading'||(head&&!head.ready)?'loading':'ready';
+}
+async function prepareSnakeAppearances(roster,timeout=10000){
+ for(const s of roster){const id=s.skin||'neon',key=id.startsWith('flag_')?id:id+s.color;if(skinAssetState.get(key)==='error'){skinAssetState.delete(key);referenceMaterials.delete(key)}if(headSprites.get(id)?.error)headSprites.delete(id)}
+ const begin=performance.now();
+ while(true){
+  const states=roster.map(snakeAppearanceState);
+  if(states.includes('error'))throw Error('Не удалось загрузить скины. Проверь соединение и нажми «Играть» ещё раз.');
+  if(!states.includes('loading'))return;
+  if(performance.now()-begin>timeout)throw Error('Скины ещё загружаются. Нажми «Играть» ещё раз.');
+  await new Promise(resolve=>setTimeout(resolve,30));
+ }
+}

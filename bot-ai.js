@@ -31,14 +31,56 @@
     const p = profiles[kind];
     return { kind, reaction: p.reaction * range(random, .9, 1.1),
       speedScale: p.speed * range(random, .97, 1.03), turnScale: p.turn,
+      personality:['forager','hunter','ambusher','shy','wanderer','scavenger'][Math.floor(random()*6)],intent:'cruise',intentLeft:range(random,1,3),boosting:false,burstLeft:0,burstCooldown:range(random,3,7),orbit:random()<.5?-1:1,
       focusLeft: p.focus ? range(random, ...p.focus) : Infinity, lapseLeft: 0, avoiding: false };
+  }
+  // Goals persist for several seconds. Awareness (difficulty) and personality are independent.
+  function intention(s,dt,world,random){
+    const b=s.brain,player=world.player;
+    b.intentLeft-=dt;b.burstLeft=Math.max(0,b.burstLeft-dt);b.burstCooldown=Math.max(0,b.burstCooldown-dt);
+    if(b.intentLeft<=0){
+      b.intentLeft=range(random,2.2,5.5);b.orbit=random()<.5?-1:1;
+      const close=player?.alive&&world.playing&&Math.hypot(player.x-s.x,player.y-s.y)<760;
+      const pressured=close&&player.radius>s.radius*1.3;
+      b.intent=pressured&&b.personality==='shy'?'retreat':close&&['hunter','ambusher'].includes(b.personality)?(b.personality==='hunter'?'flank':'intercept'):b.personality==='wanderer'?'roam':'forage';
+      if(b.kind==='rookie'&&random()<.28)b.intent='roam';
+      b.roamAngle=s.a+range(random,-1.1,1.1);
+    }
+    let angle=s.routeAngle;
+    if(player?.alive&&world.playing&&['flank','intercept','retreat'].includes(b.intent)){
+      const d=Math.hypot(player.x-s.x,player.y-s.y);
+      if(d>1000){b.intent='forage';b.intentLeft=0;return angle}
+      if(b.intent==='retreat')angle=Math.atan2(s.y-player.y,s.x-player.x)+b.orbit*.35;
+      else {
+        const lead=b.intent==='intercept'?Math.min(1.1,d/500):.15;
+        const side=Math.max(120,player.radius+s.radius+80)*b.orbit;
+        const x=player.x+Math.cos(player.a)*(player.velocity||370)*lead-Math.sin(player.a)*side;
+        const y=player.y+Math.sin(player.a)*(player.velocity||370)*lead+Math.cos(player.a)*side;
+        angle=Math.atan2(y-s.y,x-s.x);
+      }
+      if(b.kind!=='rookie'&&b.burstCooldown<=0&&d>240&&d<650){b.burstLeft=range(random,.45,.9);b.burstCooldown=range(random,5,10)}
+    }else if(b.intent==='roam')angle=b.roamAngle??angle;
+    else {
+      let best=-Infinity,target=null;
+      for(let j=0;j<world.coins.length;j+=3){
+        const c=world.coins[j],dx=c.x-s.x,dy=c.y-s.y,d2=dx*dx+dy*dy;
+        if(d2>650**2||d2<25)continue;
+        const a=Math.atan2(dy,dx);if(angleGap(a,s.a)>1.1)continue;
+        const reward=c.loot?(b.personality==='scavenger'?5:2.5):1;
+        const score=reward/(80+Math.sqrt(d2))-angleGap(a,s.a)*.002;
+        if(score>best){best=score;target=a}
+      }
+      if(target!==null)angle=target;
+    }
+    b.boosting=b.burstLeft>0&&angleGap(angle,s.a)<.4;
+    return angle;
   }
   function heading(s, dt, world) {
     const random = world.random || Math.random, limit = world.radius || 2200;
     const brain = s.brain || (s.brain = createBrain('regular', random)), p = profiles[brain.kind];
     s.routeTimer -= dt; s.weavePhase += dt * 1.3;
     s.coilCooldown = Math.max(0, (s.coilCooldown || 0) - dt);
-    brain.avoiding = false;
+    brain.avoiding = false;brain.boosting=false;
     if (brain.lapseLeft > 0) brain.lapseLeft = Math.max(0, brain.lapseLeft - dt);
     else if (p.focus && (brain.focusLeft -= dt) <= 0) {
       brain.lapseLeft = range(random, ...p.lapse); brain.focusLeft = range(random, ...p.focus);
@@ -48,7 +90,7 @@
       s.coilTime = 0; s.routeAngle = Math.atan2(-s.y, -s.x); s.routeTimer = 3;
       return s.routeAngle;
     }
-    if (s.behavior === 'square') {
+    if (!s.tacticsEnabled && s.behavior === 'square') {
       s.squareTimer = (s.squareTimer ?? range(random, 1, 2)) - dt;
       if (s.squareTimer <= 0) {
         s.squareTimer = range(random, 1.4, 3); s.routeAngle = s.a + (random() < .5 ? 1 : -1) * Math.PI / 2;
@@ -56,7 +98,7 @@
       }
     }
     const player = world.player;
-    if (brain.kind === 'smart' && s.behavior === 'coiler' && player?.alive && world.playing && world.boost &&
+    if (!s.tacticsEnabled && brain.kind === 'smart' && s.behavior === 'coiler' && player?.alive && world.playing && world.boost &&
         !s.coilCooldown && !s.coilTime) {
       const dx = player.x - s.x, dy = player.y - s.y;
       const along = dx * Math.cos(s.a) + dy * Math.sin(s.a), side = -dx * Math.sin(s.a) + dy * Math.cos(s.a);
@@ -65,7 +107,7 @@
         s.coilCenter = { x: s.x - Math.sin(s.a) * 90 * s.coilDir, y: s.y + Math.cos(s.a) * 90 * s.coilDir };
       }
     }
-    if (s.routeTimer <= 0) {
+    if (!s.tacticsEnabled && s.routeTimer <= 0) {
       s.routeTimer = range(random, 3, 6); s.routeAngle = s.a + range(random, -.28, .28);
       let best = 450 ** 2;
       for (let j = 0; j < world.coins.length; j += 5) {
@@ -82,6 +124,7 @@
       route = Math.atan2(s.coilCenter.y + Math.sin(a) * 90 - s.y, s.coilCenter.x + Math.cos(a) * 90 - s.x);
       if (!s.coilTime) { s.routeAngle = s.a; s.routeTimer = 4; }
     }
+    if(s.tacticsEnabled){const desired=intention(s,dt,world,random);brain.detourLeft=Math.max(0,(brain.detourLeft||0)-dt);route=brain.detourLeft>0?s.routeAngle:desired;}
     const speed = s.velocity || 245, nearby = [];
     for (const other of world.snakes) {
       if (other === s || !other.alive) continue;
@@ -114,14 +157,14 @@
       return score;
     };
     if (!nearby.length || danger(route) < .01) return route;
-    brain.avoiding = true;
+    brain.avoiding = true;brain.boosting=false;brain.burstLeft=0;
     let bestAngle = route, bestScore = Infinity;
     for (const offset of profiles.smart.offsets) {
       const angle = route + offset, score = Math.abs(offset) * 20 + angleGap(angle, s.a) * 8 + danger(angle);
       if (score < bestScore) { bestScore = score; bestAngle = angle; }
     }
     // Commit to the detour instead of swinging back into the same body at the next decision.
-    s.routeAngle = bestAngle; s.routeTimer = Math.max(s.routeTimer, 1.25);
+    brain.detourLeft=.9;s.routeAngle = bestAngle; s.routeTimer = Math.max(s.routeTimer, 1.25);
     return bestAngle;
   }
   return { normalize, roster, createBrain, heading };

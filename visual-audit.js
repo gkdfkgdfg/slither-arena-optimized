@@ -70,7 +70,7 @@ window.showVisualAuditSheet = function (index) {
 window.runMotionAudit = async function ({ frames = 1500 } = {}) {
   home();
   const savedBalance = prefs.balance, savedStake = $('stake').value;
-  prefs.balance = Math.max(1000, prefs.balance); $('stake').value = 10; start();
+  prefs.balance = Math.max(1000, prefs.balance); $('stake').value = 10; if (!await start()) throw Error($('error').textContent);
   snakes = [player]; collisionWorld.clear();
   const gaps = [], renders = [], updates = [];
   let previous = performance.now(), jitter = 0, invalidBodies = 0;

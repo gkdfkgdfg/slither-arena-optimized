@@ -1,0 +1,18 @@
+{
+  "version": "studio13",
+  "date": "2026-11-17",
+  "automatedTests": { "passed": 33, "failed": 0, "command": "node --test" },
+  "browser": "Desktop Chromium, ChatGPT in-app browser",
+  "mobileLayout": { "width": 390, "height": 844, "horizontalOverflow": false, "allInitialAppearancesReady": true },
+  "renderers": { "webgl": "passed", "canvas": "passed", "consoleErrorsObserved": 0 },
+  "slowImages": { "delayPerImageMs": 1300, "roundStartWaitMs": 5143.2, "balanceDuringLoading": 1000, "balanceAfterReady": 990, "allAppearancesReady": true },
+  "trafficConditions": "60 seconds per run, actual game update/physics/food/collisions; player inactive and crowd relocation disabled; manual 1/60 s steps, image requests allowed to complete between batches",
+  "traffic": [
+    { "difficulty": "easy", "seed": 41, "botDeaths": 1, "boundaryDeaths": 0, "respawns": 1, "unreadyAppearances": 0, "invalidStates": 0, "meanUpdateMs": 0.4592, "maxUpdateMs": 2.5 },
+    { "difficulty": "easy", "seed": 99, "botDeaths": 6, "boundaryDeaths": 0, "respawns": 6, "unreadyAppearances": 0, "invalidStates": 0, "meanUpdateMs": 0.4771, "maxUpdateMs": 2.1 },
+    { "difficulty": "hard", "seed": 41, "botDeaths": 5, "boundaryDeaths": 0, "respawns": 3, "unreadyAppearances": 0, "invalidStates": 0, "meanUpdateMs": 0.4498, "maxUpdateMs": 1.4 },
+    { "difficulty": "hard", "seed": 99, "botDeaths": 3, "boundaryDeaths": 0, "respawns": 3, "unreadyAppearances": 0, "invalidStates": 0, "meanUpdateMs": 0.4529, "maxUpdateMs": 4.1 }
+  ],
+  "liveMotion": { "scene": "Isolated player with turning and boost", "frames": 900, "simulatedSeconds": 3.7835, "invalidFrames": 0, "rafMedianMs": 4.2, "rafP95Ms": 6.3, "updateP95Ms": 0.2, "renderP95Ms": 0.4 },
+  "limits": "Timings measure JS and command submission on this computer, not complete GPU work or FPS on other devices. Physical iPhone/Safari was not tested. Effect screenshots use a local event fixture."
+}
