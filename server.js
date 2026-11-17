@@ -31,7 +31,8 @@ function createServer({ rootDir = __dirname } = {}) {
     }
     const relative = pathname === '/' ? 'index.html' : pathname.slice(1);
     const asset = /^(?:flags|fonts|maps|skins)\/[a-zA-Z0-9_-]+\.(?:png|webp|woff2)$/.test(relative);
-    if (pathname.includes('\\') || pathname.includes('\0') || (!clientFiles.has(relative) && !asset)) {
+    const releaseEntry = /^play-[a-z0-9][a-z0-9-]{0,63}\.html$/.test(relative);
+    if (pathname.includes('\\') || pathname.includes('\0') || (!clientFiles.has(relative) && !asset && !releaseEntry)) {
       res.writeHead(404).end('Not found'); return;
     }
     try {
