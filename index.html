@@ -8,8 +8,7 @@
         <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23080b09'/%3E%3Cpath d='M23 9H13a5 5 0 0 0 0 10h6a3 3 0 0 1 0 6H8' fill='none' stroke='%231aee67' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
         <link rel="preload" href="fonts/robotomono-latin-700.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="fonts/robotomono-cyrillic-700.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="stylesheet" href="style.css?v=vice19">
-        <link rel="stylesheet" href="vice-match.css?v=vice19">
+        <link rel="stylesheet" href="style.css?v=clean18">
     </head>
     <body class="originalMode mystakeMode">
         <canvas id="arena" aria-label="Игровая арена со змейками"></canvas>
@@ -85,30 +84,21 @@
         </div>
         <div id="hud" hidden>
             <div class="topbar">
-                <button id="pause" title="Пауза" aria-label="Пауза" data-game-i18n-label="pause" data-game-i18n-title="pause"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button>
+                <button id="pause" title="Пауза" aria-label="Пауза" data-game-i18n-label="pause" data-game-i18n-title="pause">Ⅱ</button>
                 <div class="pill">
                     <span id="time">0:00</span>
                 </div>
-                <button id="sound" aria-label="Переключить звук" data-game-i18n-label="sound"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4zM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"/></svg></button>
+                <button id="sound" aria-label="Переключить звук" data-game-i18n-label="sound">♪</button>
             </div>
             <div class="earnings">
-                <span class="viceEyebrow"><i></i> NEON COAST <span>/ NIGHT RUN</span></span>
-                <button id="progressValue" title="Cash Out" aria-label="Добыча и выход"><small data-game-i18n="currentScore">ДОБЫЧА</small><b id="progressAmount">0,00</b><span id="progressCurrency">USD</span></button>
+                <button id="progressValue" title="Cash Out" aria-label="Добыча и выход"><b id="progressAmount">0,00</b><span id="progressCurrency">USD</span></button>
                 <div id="earningsProgress" class="earningsTrack" role="progressbar" aria-label="Прогресс суммы" data-game-i18n-label="lootProgress" aria-valuemin="0" aria-valuemax="500" aria-valuenow="0">
                     <i id="earningsFill"></i>
                 </div>
                 <span id="progressTarget"><small data-game-i18n="target">ЦЕЛЬ</small><b id="targetAmount">500,00</b><span id="targetCurrency">USD</span></span>
             </div>
             <section class="gameRanks" aria-label="Лидерборд" data-game-i18n-label="leaderboard">
-                <header><span data-game-i18n="leaderboard">Лидерборд</span><b id="rankPosition">—</b></header>
                 <div id="liveRanks"></div>
-            </section>
-            <section class="viceStats" aria-label="Статистика матча" data-game-i18n-label="matchStats">
-                <div><small data-game-i18n="length">ДЛИНА</small><b id="matchLength">0</b></div>
-                <div><small data-game-i18n="kills">УБРАНО</small><b id="matchKills">0</b></div>
-                <div><small data-game-i18n="population">В АРЕНЕ</small><b id="matchPopulation">0</b></div>
-                <div class="viceRecord"><small data-game-i18n="record">РЕКОРД</small><b id="matchRecord">0</b></div>
-                <time id="matchTime">0:00</time>
             </section>
             <canvas id="map" width="130" height="130" aria-label="Миникарта" data-game-i18n-label="minimap"></canvas>
             <div class="bottom">
@@ -152,7 +142,6 @@
             <p data-game-i18n="paused">Раунд приостановлен</p>
             <button id="pauseEffects" class="optionToggle" type="button" aria-pressed="true"><span data-game-i18n="effects">Эффекты</span><b id="pauseEffectsState">ВКЛ</b></button>
             <button id="pauseMultipliers" class="optionToggle" type="button" aria-pressed="true"><span data-game-i18n="showMultipliers">Показывать множители</span><b id="pauseMultipliersState">ВКЛ</b></button>
-            <label class="viceCollectionLabel"><span data-game-i18n="collection">Коллекция</span><select id="matchCollection"><option value="0">VICE CITY</option><option value="1">NEON NIGHTS</option><option value="2">SUNSET</option><option value="3">MIAMI ICE</option><option value="4">GOLD COAST</option></select></label>
             <button id="resume" class="green big" data-game-i18n="resume">Продолжить</button>
             <button id="leave" data-game-i18n="leave">Завершить без сохранения добычи</button>
         </dialog>
@@ -196,22 +185,21 @@
             </dl>
             <button id="howDone" class="green big" type="button">Понятно</button>
         </dialog>
-        <script src="game-core.js?v=vice19"></script>
-        <script src="snake-collision.js?v=vice19"></script>
-        <script src="mystake-maps.js?v=vice19"></script>
-        <script src="bot-ai.js?v=vice19"></script>
-        <script src="mystake-bots.js?v=vice19"></script>
+        <script src="game-core.js?v=clean18"></script>
+        <script src="snake-collision.js?v=clean18"></script>
+        <script src="mystake-maps.js?v=clean18"></script>
+        <script src="bot-ai.js?v=clean18"></script>
+        <script src="mystake-bots.js?v=clean18"></script>
         <script src="extra-skins.js?v=19"></script>
         <script src="flag-countries.js?v=28"></script>
         <script src="video-look.js?v=10"></script>
-        <script src="ribbon-mesh.js?v=vice19"></script>
-        <script src="ribbon-renderer.js?v=vice19"></script>
-        <script src="vice-visual.js?v=vice19"></script>
-        <script src="mystake-art.js?v=vice19"></script>
-        <script src="mystake-physics.js?v=vice19"></script>
-        <script src="arena-labels.js?v=vice19"></script>
-        <script src="arena-i18n.js?v=vice19"></script>
-        <script src="arena-effects.js?v=vice19"></script>
-        <script src="mystake.js?v=vice19"></script>
+        <script src="ribbon-mesh.js?v=clean18"></script>
+        <script src="ribbon-renderer.js?v=clean18"></script>
+        <script src="mystake-art.js?v=clean18"></script>
+        <script src="mystake-physics.js?v=clean18"></script>
+        <script src="arena-labels.js?v=clean18"></script>
+        <script src="arena-i18n.js?v=clean18"></script>
+        <script src="arena-effects.js?v=clean18"></script>
+        <script src="mystake.js?v=clean18"></script>
     </body>
 </html>

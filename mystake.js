@@ -38,8 +38,7 @@ const gameLanguage=ArenaI18n.create(prefs.gameLanguage),tr=gameLanguage.t;
 try{prefs.skin=localStorage.getItem('slither-mystake-skin')||'flag_ve';if(prefs.skin.startsWith('v_')||!localStorage.getItem('slither-video-look2')){prefs.skin='flag_ve';localStorage.setItem('slither-video-look2','1');localStorage.setItem('slither-mystake-skin','flag_ve')}}catch{prefs.skin='flag_ve'}
 if(!SKINS.some(s=>s.id===prefs.skin))prefs.skin='neon';
 let W=innerWidth,H=innerHeight,dpr=1,mode='menu',paused=false,elapsed=0,kills=0,player,snakes=[],coins=[],particles=[],camera={x:0,y:0},aim={x:1,y:0},boost=false,last=0,acc=0,hudTick=0,zoom=1,sessionStake=10,roundExitX=ArenaCore.DEFAULT_EXIT_MULTIPLIER,touchOrigin=null,audioCtx;
-let viceHUD;
-const arenaFX=ArenaEffects.create({translate:tr,mobile:mobileRenderer});arenaFX.setEnabled(prefs.effects);arenaFX.setShowMultipliers(prefs.showMultipliers);
+const arenaFX=ArenaEffects.create({translate:tr});arenaFX.setEnabled(prefs.effects);arenaFX.setShowMultipliers(prefs.showMultipliers);
 const R=2200,rand=(a,b)=>a+Math.random()*(b-a),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),money=n=>ArenaLabels.amount(n),fmt=n=>money(n)+(prefs.showCurrency?' '+prefs.currency:'');
 function save(){try{localStorage.setItem('slither-mystake-skin',prefs.skin);const shared=JSON.parse(localStorage.getItem('slither-demo-v1')||'{}');localStorage.setItem('slither-demo-v1',JSON.stringify({...prefs,skin:shared.skin||'neon'}))}catch{}}
 function resize(){const v=window.visualViewport;W=Math.round(v?.width||innerWidth);H=Math.round(v?.height||innerHeight);dpr=Math.min(devicePixelRatio||1,renderScale,Math.sqrt(2500000/Math.max(1,W*H)));dpr=Math.max(.5,dpr);if(canvas.width!==Math.round(W*dpr)||canvas.height!==Math.round(H*dpr)){canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);}canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality=qualityMode==='high'?"high":"low";document.documentElement.style.setProperty('--view-width',W+'px');document.documentElement.style.setProperty('--view-height',H+'px');document.documentElement.style.setProperty('--view-top',(v?.offsetTop||0)+'px');document.documentElement.style.setProperty('--view-left',(v?.offsetLeft||0)+'px')}addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);window.visualViewport?.addEventListener('scroll',resize);resize();
@@ -63,7 +62,7 @@ $('gameLanguage').onchange=()=>{if(mode!=='menu')return;prefs.gameLanguage=gameL
 function syncDifficulty(){ $('difficulty').value=prefs.difficulty;$('difficultyHint').textContent=prefs.difficulty==='hard'?'Больше внимательных соперников и быстрых реакций.':'Больше рассеянных соперников — легче подрезать.'}
 function exitLabel(x){return '×'+String(x).replace('.',',')}
 function syncExitMultiplier(){prefs.exitX=ArenaCore.normalizeExitMultiplier(prefs.exitX);$('exitMultiplier').value=String(prefs.exitX);$('exitTargetLabel').textContent=exitLabel(prefs.exitX)}
-function sync(){ document.body.classList.toggle('viceMatch',mode==='play'||mode==='result');syncGameLanguage();syncDifficulty();syncExitMultiplier();$('sound').classList.toggle('muted',!prefs.sound);$('sound').setAttribute('aria-pressed',String(prefs.sound));$('toggleCurrency').setAttribute('aria-pressed',String(prefs.showCurrency));$('currencyState').textContent=prefs.showCurrency?'ВКЛ':'ВЫКЛ';$('nickname').value=prefs.name;if(document.activeElement!==$('currency'))$('currency').value=prefs.currency;$('balanceText').textContent=fmt(prefs.balance);$('stake').value=prefs.stake;document.querySelectorAll('.unit').forEach(x=>x.textContent=prefs.showCurrency?prefs.currency:'');document.querySelectorAll('[data-stake]').forEach(b=>{b.textContent=b.dataset.stake+(prefs.showCurrency?' '+prefs.currency:'');b.classList.toggle('selected',Number(b.dataset.stake)===prefs.stake)});goalHint();drawSkin();}
+function sync(){ syncGameLanguage();syncDifficulty();syncExitMultiplier();$('sound').textContent=prefs.sound?'♪':'♪ ×';$('sound').setAttribute('aria-pressed',String(prefs.sound));$('toggleCurrency').setAttribute('aria-pressed',String(prefs.showCurrency));$('currencyState').textContent=prefs.showCurrency?'ВКЛ':'ВЫКЛ';$('nickname').value=prefs.name;if(document.activeElement!==$('currency'))$('currency').value=prefs.currency;$('balanceText').textContent=fmt(prefs.balance);$('stake').value=prefs.stake;document.querySelectorAll('.unit').forEach(x=>x.textContent=prefs.showCurrency?prefs.currency:'');document.querySelectorAll('[data-stake]').forEach(b=>{b.textContent=b.dataset.stake+(prefs.showCurrency?' '+prefs.currency:'');b.classList.toggle('selected',Number(b.dataset.stake)===prefs.stake)});goalHint();drawSkin();}
 function fmtTarget(n){return money(n)+(prefs.showCurrency?' '+prefs.currency:'')}
 function goalHint(){const n=Number($('stake').value),x=ArenaCore.normalizeExitMultiplier($('exitMultiplier')?.value??prefs.exitX);$('goalValue').textContent=n>0&&n<=1e9?fmtTarget(ArenaCore.cashoutTarget(n,x)):'—';if($('exitTargetLabel'))$('exitTargetLabel').textContent=exitLabel(x);document.querySelectorAll('[data-stake]').forEach(b=>b.classList.toggle('selected',Number(b.dataset.stake)===n))}
 // Menu showcase: the chosen skin slithers in place.
@@ -183,7 +182,7 @@ async function start(){
  try{
   await prepareSnakeAppearances(snakes);
   // Upload this roster before its first visible frame as well as decoding its PNGs.
-  if(!canvasOnly){if(arenaRibbon===undefined)arenaRibbon=SnakeRibbon.create();arenaRibbon?.draw(snakes,{width:W,height:H,dpr,zoom,x:camera.x,y:camera.y,vice:true,effects:prefs.effects})}
+  if(!canvasOnly){if(arenaRibbon===undefined)arenaRibbon=SnakeRibbon.create();arenaRibbon?.draw(snakes,{width:W,height:H,dpr,zoom,x:camera.x,y:camera.y})}
  }catch(error){mode='menu';$('error').textContent=error.message;return false}
  finally{starting=false;$('lobby').inert=false;$('play').disabled=false;$('play').textContent='▶ ИГРАТЬ'}
  // Loading failures and duplicate clicks must never spend the virtual entry amount.
@@ -197,7 +196,7 @@ function finish(success,manual=false){if(mode!=='play'||paused)return;if(success
 $('winOverlay').onclick=home;
 $('result').addEventListener('cancel',e=>{e.preventDefault();home()});
 function togglePause(){if(mode!=='play')return;paused=!paused;boost=false;touchPoints.clear();steerPointer=null;touchOrigin=null;if(paused)$('pauseDialog').showModal();else $('pauseDialog').close()}
-$('pause').onclick=togglePause;$('resume').onclick=togglePause;$('pauseDialog').addEventListener('cancel',e=>{e.preventDefault();togglePause()});addEventListener('blur',()=>{boost=false;if(mode==='play'&&!paused)togglePause()});$('sound').onclick=()=>{prefs.sound=!prefs.sound;$('sound').classList.toggle('muted',!prefs.sound);$('sound').setAttribute('aria-pressed',String(prefs.sound));save()};
+$('pause').onclick=togglePause;$('resume').onclick=togglePause;$('pauseDialog').addEventListener('cancel',e=>{e.preventDefault();togglePause()});addEventListener('blur',()=>{boost=false;if(mode==='play'&&!paused)togglePause()});$('sound').onclick=()=>{prefs.sound=!prefs.sound;$('sound').textContent=prefs.sound?'♪':'♪ ×';$('sound').setAttribute('aria-pressed',String(prefs.sound));save()};
 function requestCashout(){if(mode==='play'&&!paused&&exitUnlocked)finish(true,true)}$('progressValue').onclick=requestCashout;
 addEventListener('keydown',e=>{if(mode!=='play'||/INPUT|TEXTAREA/.test(e.target.tagName))return;if(['Space','KeyQ','Escape','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();if(e.code==='Escape'&&!e.repeat)togglePause();if(paused)return;if(e.code==='KeyQ')requestCashout();if(e.code==='Space')boost=true;if(e.code==='ArrowUp')aim={x:0,y:-1};if(e.code==='ArrowDown')aim={x:0,y:1};if(e.code==='ArrowLeft')aim={x:-1,y:0};if(e.code==='ArrowRight')aim={x:1,y:0}});addEventListener('keyup',e=>{if(e.code==='Space')boost=false});
 const touchPoints=new Map();let steerPointer=null;
@@ -222,7 +221,7 @@ function die(s,killer){if(!s.alive)return;s.alive=false;releaseCoins(s);if(prefs
 const ball=16,dia=ball*1.8,totalPath=s.points.length*PHYS.pitch,step=Math.max(dia*1.05,totalPath/128*4),half=dia*.5,lim=R-25,cl=v=>Math.max(-lim,Math.min(lim,v)),put=[],P=s.points;
 {let acc=0,n=0;const pat=[-1,.2,1,-.2];for(let k=1;k<P.length&&put.length<128;k++){const a=P[k-1],b=P[k],seg=Math.hypot(b.x-a.x,b.y-a.y);if(seg<1e-6)continue;const ux=(b.x-a.x)/seg,uy=(b.y-a.y)/seg;
  let t=step/4-acc;while(t<=seg){const x=a.x+ux*t,y=a.y+uy*t,side=pat[n%4]+rand(-.15,.15),j=rand(-.1,.1)*dia;put.push([cl(x-uy*half*side+ux*j),cl(y+ux*half*side+uy*j)]);n++;t+=step/4}acc=seg-(t-step/4)}if(!put.length)put.push([cl(s.x),cl(s.y)])}
-{const per=s.value/put.length;for(const [x,y] of put){const c=spawnCoin(x,y,per);if(c){c.h=46;c.loot=true;c.r=ball}}}for(let j=0;j<s.points.length;j+=4){const p=s.points[j];burst(p.x,p.y,j%8?ViceVisual.theme(s).a:ViceVisual.theme(s).b,2)}burst(s.x,s.y,'#ffffff',18);if(killer===player){tailCrashCooldown=Math.max(tailCrashCooldown,6);kills++;arenaFX.kill(s.x,s.y,s.value,sessionStake)}if(s===player)finish(false);else {s.respawn=rand(2,5);if(mode==='play'&&Math.abs(s.x-camera.x)<W/zoom/2+80&&Math.abs(s.y-camera.y)<H/zoom/2+80)crashSound(killer===player?1:.65)}}
+{const per=s.value/put.length;for(const [x,y] of put){const c=spawnCoin(x,y,per);if(c){c.h=46;c.loot=true;c.r=ball}}}for(let j=0;j<s.points.length;j+=4){const p=s.points[j];burst(p.x,p.y,j%8?'#d8ffff':'#6fffff',2)}burst(s.x,s.y,'#ffffff',18);if(killer===player){tailCrashCooldown=Math.max(tailCrashCooldown,6);kills++;arenaFX.kill(s.x,s.y,s.value,sessionStake)}if(s===player)finish(false);else {s.respawn=rand(2,5);if(mode==='play'&&Math.abs(s.x-camera.x)<W/zoom/2+80&&Math.abs(s.y-camera.y)<H/zoom/2+80)crashSound(killer===player?1:.65)}}
 // Bots bank at the shared round goal; a cashout is not a death or a loot drop.
 function cashoutRival(s){if(!s.alive||s===player)return false;s.alive=false;s.cashedOut=true;s.respawn=rand(2,5);releaseCoins(s);return true}
 function dropBoostPellet(s){const tail=s.points.at(-1);const pellet=spawnCoin(tail.x,tail.y,s.dropValue);if(pellet){pellet.h=0;pellet.r=3.5;pellet.boostDrop=true;}s.dropValue=0;s.drop=0}
@@ -239,7 +238,7 @@ const suck=s.radius*1.6+35,suck2=suck*suck,pullSpeed=Math.max(112,s.velocity||0)
 coinGrid.query(s.x,s.y,suck,coinCandidates);const stamp=++coinStamp;for(const c of coinCandidates)c.checkStamp=stamp;
 if(s.pulledCoins)for(const c of s.pulledCoins)if(c.slot>=0&&c.checkStamp!==stamp){c.checkStamp=stamp;coinCandidates.push(c)}
 for(const c of coinCandidates){coinChecks++;if(c.slot<0)continue;if(c.pull&&!c.pull.alive){c.pull.pulledCoins?.delete(c);c.pull=null}const mine=c.pull===s,dx=s.x-c.x,dy=s.y-c.y;if(!mine&&(Math.abs(dx)>suck||Math.abs(dy)>suck))continue;const d2=dx*dx+dy*dy;
- if(d2<(s.radius+c.r+5)**2){const natural=c.h===0&&!c.boostDrop,gain=natural?ArenaCore.foodValue(sessionStake):c.value,before=s.value;s.value+=gain;s.len+=lenForValue(s.value)-lenForValue(before);if(s===player&&playing){tone(rand(780,1050),.035);burst(c.x,c.y,ViceVisual.coinColor(c),mobileRenderer?2:4);arenaFX.pickup(c.x,c.y,gain,sessionStake,ViceVisual.coinColor(c))}removeCoin(c);if(natural)spawnCoin();if(s!==player&&playing&&s.value>=ArenaCore.cashoutTarget(sessionStake,roundExitX)){cashoutRival(s);break}}
+ if(d2<(s.radius+c.r+5)**2){const natural=c.h===0&&!c.boostDrop,gain=natural?ArenaCore.foodValue(sessionStake):c.value,before=s.value;s.value+=gain;s.len+=lenForValue(s.value)-lenForValue(before);if(s===player&&playing){tone(rand(780,1050),.035);burst(c.x,c.y,c.h===46?'#ffd746':'#ff383c',3);if(c.loot)arenaFX.pickup(c.x,c.y,gain,sessionStake)}removeCoin(c);if(natural)spawnCoin();if(s!==player&&playing&&s.value>=ArenaCore.cashoutTarget(sessionStake,roundExitX)){cashoutRival(s);break}}
  else if(mine||(!c.pull&&d2<suck2)){if(!c.pull){c.pull=s;(s.pulledCoins??=new Set()).add(c)}const d=Math.sqrt(d2);if(d>1e-7){const step=Math.min(d,pullSpeed*dt+d*Math.min(1,dt*3));c.x+=dx/d*step;c.y+=dy/d*step;coinGrid.move(c)}}
 }
 
@@ -286,7 +285,7 @@ const videoPlateNumbers=new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,m
 function plateLabel(v){return videoPlateNumbers.format(Math.floor(v*100)/100).replace(/\s/g,' ')+(prefs.showCurrency?' '+prefs.currency:'')}
 function drawAmount(s){let cached=amountCache.get(s.id);const now=performance.now();const label=cached&&now-cached.checked<100?cached.label:plateLabel(s.value);if(cached&&now-cached.checked>=100)cached.checked=now;
 if(!cached||cached.label!==label){if(!cached){cached={c:document.createElement('canvas'),checked:now};amountCache.set(s.id,cached)}const S=2.5,pad=2,c=cached.c,size=17.5,h=29;let g=c.getContext('2d');g.font='400 '+size+'px '+PLATE_FONT;let w=Math.ceil(g.measureText(label).width+16);if(cached.w0&&w<cached.w0&&w>cached.w0-16)w=cached.w0;cached.w0=w;const cw=Math.ceil((w+pad*2)*S),ch=Math.ceil((h+pad*2)*S);if(c.width!==cw||c.height!==ch){c.width=cw;c.height=ch}else{g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cw,ch)}g=c.getContext('2d');g.scale(S,S);g.translate(pad,pad);
- g.fillStyle='#121c30ed';g.beginPath();g.roundRect(0,0,w,h,7);g.fill();g.strokeStyle=s===player?'#7de9dc99':'#d48ab34d';g.lineWidth=1.4;g.stroke();
+ g.fillStyle='#3a2c0c';g.beginPath();g.roundRect(0,0,w,h,2);g.fill();g.strokeStyle='#edcf73';g.lineWidth=1.4;g.stroke();
  g.font='400 '+size+'px '+PLATE_FONT;g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff0ae';g.fillText(label,w/2,h/2+.5);
  cached.label=label;cached.w=w+pad*2;cached.h=h+pad*2}
 // Videos: the plate is ~18% of the screen width wide and floats r·.7+45 above the head centre.
@@ -298,7 +297,7 @@ function drawOutside(g,left,top,vw,vh){
  const L=left,T=top,Rt=left+vw+120,B=top+vh+120;
  if(L>-R&&T>-R&&Rt<R&&B<R)return;
  g.save();g.beginPath();g.rect(L,T,Rt-L,B-T);g.rect(-R,-R,2*R,2*R);g.clip('evenodd');
- if(!exitUnlocked){if(mode==='play'||mode==='result')ViceVisual.arena(g,left,top,vw,vh,true);else drawArenaMap(g,left,top,vw,vh,arenaMap,true);g.fillStyle='rgba(50,4,16,.22)';g.fillRect(L,T,Rt-L,B-T)}
+ if(!exitUnlocked){drawArenaMap(g,left,top,vw,vh,arenaMap,true);g.fillStyle='rgba(50,4,16,.22)';g.fillRect(L,T,Rt-L,B-T)}
  const state=exitUnlocked?'open':'closed';
  if(!hazardPatterns[state]){
   const c=document.createElement('canvas');c.width=c.height=128;const h=c.getContext('2d');
@@ -309,7 +308,7 @@ function drawOutside(g,left,top,vw,vh){
  g.globalAlpha=.32;g.fillStyle=hazardPatterns[state];g.fillRect(L,T,Rt-L,B-T);g.restore();
 }
 function render(){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#070f18';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);const cx=camera.x,cy=camera.y;ctx.translate(-cx,-cy);const vw=W/zoom,vh=H/zoom,left=cx-vw/2-60,top=cy-vh/2-60;
-const vice=mode==='play'||mode==='result';if(vice)ViceVisual.arena(ctx,left,top,vw,vh);else drawArenaMap(ctx,left,top,vw,vh);
+drawArenaMap(ctx,left,top,vw,vh);
 // Restrict the warning to the floor, so snakes remain visible at an open exit.
 drawOutside(ctx,left,top,vw,vh);
 const drawEdge=()=>{
@@ -323,11 +322,11 @@ ctx.beginPath();ctx.rect(-R,-R,R*2,R*2);
  }
  ctx.lineWidth=lw*.8;ctx.stroke();}
 };
-const goldSprite=vice?null:foodSprite(true),redSprite=vice?null:foodSprite(false);for(const c of coins){if(c.x<left||c.x>left+vw+120||c.y<top||c.y>top+vh+120)continue;if(vice){ViceVisual.food(ctx,c,elapsed,prefs.effects&&!stillMotion);continue}const gold=c.h===46;if(gold){const r=c.loot?c.r:7;ctx.drawImage(goldSprite,c.x-r,c.y-r,r*2,r*2)}else ctx.drawImage(redSprite,c.x-7.5,c.y-7.5,15,15);}
-for(const trail of deathTrails){ctx.save();ctx.globalAlpha=trail.life/.3;ctx.lineCap='round';originalPath(ctx,trail.points);ctx.strokeStyle='#c786e455';ctx.lineWidth=trail.radius*2+8;ctx.stroke();ctx.strokeStyle='#f3b5db';ctx.lineWidth=trail.radius*1.5;ctx.stroke();ctx.restore()}
+const goldSprite=foodSprite(true),redSprite=foodSprite(false);for(const c of coins){if(c.x<left||c.x>left+vw+120||c.y<top||c.y>top+vh+120)continue;const gold=c.h===46;if(gold){const r=c.loot?c.r:7;ctx.drawImage(goldSprite,c.x-r,c.y-r,r*2,r*2)}else ctx.drawImage(redSprite,c.x-7.5,c.y-7.5,15,15);}
+for(const trail of deathTrails){ctx.save();ctx.globalAlpha=trail.life/.3;ctx.lineCap='round';originalPath(ctx,trail.points);ctx.strokeStyle='#9bffff55';ctx.lineWidth=trail.radius*2+8;ctx.stroke();ctx.strokeStyle='#f3ffff';ctx.lineWidth=trail.radius*1.5;ctx.stroke();ctx.restore()}
 snakeView=viewRect;viewRect.l=left;viewRect.t=top;viewRect.r=left+vw+120;viewRect.b=top+vh+120;
 const shown=[],ordered=snakes.slice().sort((a,b)=>a.len-b.len);for(const s of ordered){if(!s.alive)continue;{const m=s.radius+10;if(s.points.every(p=>p.x<left-m||p.x>left+vw+120+m||p.y<top-m||p.y>top+vh+120+m))continue}shown.push(s)}
-if(mode==='play'||mode==='result')arenaFX.world(ctx,player,zoom,stillMotion);if(vice)ViceVisual.outlines(ctx,shown,zoom,prefs.effects,stillMotion);drawArenaSnakes(ctx,shown,{width:W,height:H,dpr,zoom,x:cx,y:cy,vice,effects:prefs.effects&&!stillMotion});
+if(mode==='play'||mode==='result')arenaFX.world(ctx,player,zoom,stillMotion);drawArenaSnakes(ctx,shown,{width:W,height:H,dpr,zoom,x:cx,y:cy});
 // Plates sit above every body, as in the video.
 if(mode==='play'||mode==='result'){for(const s of shown)drawAmount(s);arenaFX.floatingLabels(ctx,zoom,stillMotion)}
 snakeView=null;drawEdge();
@@ -336,16 +335,14 @@ for(const p of particles){ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle=p.c
 function oldDrawMap(){const g=$('map').getContext('2d');g.clearRect(0,0,130,130);g.strokeStyle='#3e604a';g.beginPath();g.arc(65,65,60,0,7);g.stroke();for(const s of snakes){if(!s.alive)continue;g.fillStyle=s===player?'#6dffa4':'#576a5d';g.beginPath();g.arc(65+s.x/R*59,65+s.y/R*59,s===player?3.5:1.8,0,7);g.fill()}}
 // Top bar from the video: "100,044.63 Bs" green · progress bar (green, yellow after the goal) · "112,500 Bs" white.
 function renderHUD(){
- document.body.classList.add('viceMatch');
  const value=Math.max(0,player.value),target=ArenaCore.cashoutTarget(sessionStake,roundExitX),percent=Math.min(100,value/target*100),unit=prefs.showCurrency?prefs.currency:'',left=money(value),right=money(target);
  $('progressAmount').textContent=left;$('progressCurrency').textContent=unit;$('targetAmount').textContent=right;$('targetCurrency').textContent=unit;
- const digits=Math.max(left.length,right.length);$('hud').style.setProperty('--amount-font',Math.max(10,Math.min(23,(Math.min(W,408)-68)/(digits*1.3)))+'px');
+ const digits=Math.max(left.length,right.length);$('hud').style.setProperty('--amount-font',Math.max(10,Math.min(16,(W-68)/(digits*1.3)))+'px');
  $('earningsFill').style.width=percent+'%';$('earningsFill').classList.toggle('done',exitUnlocked);$('progressValue').classList.toggle('ready',exitUnlocked);
  $('progressValue').title=exitUnlocked?tr('cashoutHint'):tr('exitNeed',{multiplier:prefs.showMultipliers?exitLabel(roundExitX):fmtTarget(target)});
  $('progressValue').setAttribute('aria-label',fmt(value)+'. '+(exitUnlocked?tr('exitOpen'):tr('targetValue',{amount:fmtTarget(target)})));
  $('earningsProgress').setAttribute('aria-valuenow',String(value));$('earningsProgress').setAttribute('aria-valuemax',target);$('earningsProgress').setAttribute('aria-valuetext',fmt(value)+' / '+fmtTarget(target));
  $('controlsHint').textContent=tr('controls',{multiplier:prefs.showMultipliers?exitLabel(roundExitX):fmtTarget(target)});$('time').textContent=clock(elapsed);$('length').textContent=Math.floor(player.len);$('kills').textContent=kills;
- viceHUD?.update({snakes,player,currency:prefs.currency,showCurrency:prefs.showCurrency,time:clock(elapsed),kills});drawMap();
 }
 let lastPaint=0,slowFrames=0,lastSkinPreview=0;
 function frame(t){let gap=last?Math.max(0,t-last):STEP*1000;last=t;if(document.hidden){acc=0;requestAnimationFrame(frame);return}
@@ -360,14 +357,13 @@ document.addEventListener('visibilitychange',()=>{last=0;acc=0;boost=false;if(do
 $('quality').value=qualityMode;$('quality').onchange=()=>{qualityMode=$('quality').value;renderScale=QUALITY[qualityMode];slowFrames=0;try{localStorage.setItem('arena-quality',qualityMode)}catch{}resize()};
 $('difficulty').onchange=()=>{if(mode!=='menu')return;prefs.difficulty=BotAI.normalize($('difficulty').value);save();syncDifficulty();seed()};
 $('exitMultiplier').onchange=()=>{if(mode!=='menu')return;prefs.exitX=ArenaCore.normalizeExitMultiplier($('exitMultiplier').value);save();goalHint();syncExitMultiplier();seed()};
-viceHUD=ViceVisual.createHUD({tr,format:money});
 sync();sessionStake=prefs.stake;seed();requestAnimationFrame(frame);
 if(document.modelContext?.registerTool){for(const tool of [{name:'read_demo_state',description:'Read the virtual game balance, currency and current round state.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>({mode,currency:prefs.currency,balance:prefs.balance,stake:prefs.stake,roundValue:mode==='play'?player.value:null})},{name:'configure_demo_currency',description:'Set the custom currency label and virtual balance between rounds. No real money is involved.',inputSchema:{type:'object',properties:{currency:{type:'string',minLength:1,maxLength:12},balance:{type:'number',minimum:0,maximum:1e12}},required:['currency','balance'],additionalProperties:false},execute:({currency,balance})=>configure(currency,balance)}]){try{Promise.resolve(document.modelContext.registerTool(tool)).catch(()=>{})}catch{}}}
 
 function drawBotName(s){const name=s.name+s.id;ctx.save();ctx.font='bold 9px Arial';const w=ctx.measureText(name).width+14;ctx.fillStyle='#09161be6';ctx.strokeStyle='#457d8199';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(s.x-w/2,s.y+s.radius+6,w,15,7);ctx.fill();ctx.stroke();ctx.fillStyle='#edf7fb';ctx.textAlign='center';ctx.fillText(name,s.x,s.y+s.radius+17);ctx.restore()}
-function drawMap(){const g=$('map').getContext('2d');g.clearRect(0,0,130,130);g.fillStyle='#11192bd9';g.fillRect(0,0,130,130);g.strokeStyle='#98afd344';g.lineWidth=1;g.strokeRect(1,1,128,128);g.fillStyle='#94a8ba';g.font='8px monospace';g.fillText(tr('map'),7,12);for(const s of snakes){if(!s.alive)continue;g.fillStyle=s===player?'#f4a1cb':ViceVisual.theme(s).b;for(let i=0;i<s.points.length;i+=12){const p=s.points[i];g.fillRect(65+p.x/R*58,65+p.y/R*58,2,2)}}g.fillStyle='#fff4e4';g.beginPath();g.arc(65+player.x/R*58,65+player.y/R*58,3,0,7);g.fill()}
+function drawMap(){const g=$('map').getContext('2d');g.clearRect(0,0,130,130);g.fillStyle='#04121be6';g.fillRect(0,0,130,130);g.strokeStyle='#138c9f';g.lineWidth=1;g.strokeRect(1,1,128,128);g.fillStyle='#38bbd0';g.font='8px monospace';g.fillText(tr('map'),7,12);for(const s of snakes){if(!s.alive)continue;g.fillStyle=s===player?'#f7ffac':'#59ccdf';for(let i=0;i<s.points.length;i+=12){const p=s.points[i];g.fillRect(65+p.x/R*58,65+p.y/R*58,2,2)}}g.fillStyle='#a8ffcc';g.beginPath();g.arc(65+player.x/R*58,65+player.y/R*58,3,0,7);g.fill()}
 // Joystick from the video: thin faint ring, grey translucent knob always visible.
-function drawJoystick(){if(!mobileRenderer)return;const x=touchOrigin?.x??W*.76,y=touchOrigin?.y??H*.77;ctx.save();ctx.strokeStyle='#89a8cc55';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(x,y,44,0,7);ctx.stroke();let kx=x,ky=y;if(touchOrigin){const p=touchPoints.get(steerPointer)||touchOrigin,dx=p.x-x,dy=p.y-y,d=Math.max(1,Math.hypot(dx,dy)/34);kx=x+dx/d;ky=y+dy/d}const knob=ctx.createRadialGradient(kx-5,ky-6,2,kx,ky,17);knob.addColorStop(0,'#a9e0e8aa');knob.addColorStop(1,'#566c9a99');ctx.fillStyle=knob;ctx.strokeStyle='#ffffff70';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(kx,ky,17,0,7);ctx.fill();ctx.stroke();ctx.restore()}
+function drawJoystick(){if(!mobileRenderer)return;const x=touchOrigin?.x??W*.76,y=touchOrigin?.y??H*.77;ctx.save();ctx.strokeStyle='#ffffff38';ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(x,y,44,0,7);ctx.stroke();let kx=x,ky=y;if(touchOrigin){const p=touchPoints.get(steerPointer)||touchOrigin,dx=p.x-x,dy=p.y-y,d=Math.max(1,Math.hypot(dx,dy)/34);kx=x+dx/d;ky=y+dy/d}const knob=ctx.createRadialGradient(kx-5,ky-6,2,kx,ky,17);knob.addColorStop(0,'#e9edf0c0');knob.addColorStop(1,'#b9c1c8a0');ctx.fillStyle=knob;ctx.strokeStyle='#ffffff70';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(kx,ky,17,0,7);ctx.fill();ctx.stroke();ctx.restore()}
 
 initArenaMaps();
 // Warm the player's material; each rival warms its selected skin when it spawns.

@@ -11,7 +11,7 @@ const SnakeRibbon = (() => {
     const uploadCanvas = document.createElement('canvas'), uploadContext = uploadCanvas.getContext('2d');
     let anisotropy, anisotropyLevel = 1;
     const powerOfTwo = value => 2 ** Math.ceil(Math.log2(Math.max(1, value)));
-    let program, buffer, position, uv, view, rim, allocated = 0, ready = false, lastError = null;
+    let program, buffer, position, uv, view, allocated = 0, ready = false, lastError = null;
     function initialize() {
       // Extensions must be acquired again after a restored WebGL context.
       anisotropy = gl.getExtension('EXT_texture_filter_anisotropic');
@@ -25,16 +25,14 @@ const SnakeRibbon = (() => {
         uniform vec4 u_view; varying vec2 v_uv;
         void main(){vec2 p=(a_position-u_view.xy)/u_view.zw;gl_Position=vec4(p.x,-p.y,0.0,1.0);v_uv=a_uv;}`);
       const fragment = shader(gl.FRAGMENT_SHADER, `precision highp float; varying vec2 v_uv;
-        uniform sampler2D u_skin; uniform float u_rim;
+        uniform sampler2D u_skin;
         void main(){vec4 color=texture2D(u_skin,vec2(v_uv.x,clamp(v_uv.y,0.0,1.0)));
-          float edge=smoothstep(0.82,0.98,abs(v_uv.y*2.0-1.0));
-          color.rgb+=u_rim*edge*vec3(0.20,0.32,0.36);
           gl_FragColor=vec4(color.rgb*color.a,color.a);}`);
       program = gl.createProgram(); gl.attachShader(program, vertex); gl.attachShader(program, fragment); gl.linkProgram(program);
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw Error(gl.getProgramInfoLog(program));
       gl.deleteShader(vertex); gl.deleteShader(fragment);
       buffer = gl.createBuffer(); position = gl.getAttribLocation(program, 'a_position'); uv = gl.getAttribLocation(program, 'a_uv');
-      view = gl.getUniformLocation(program, 'u_view'); rim = gl.getUniformLocation(program, 'u_rim'); allocated = 0; textures.clear();
+      view = gl.getUniformLocation(program, 'u_view'); allocated = 0; textures.clear();
       gl.useProgram(program); gl.uniform1i(gl.getUniformLocation(program, 'u_skin'), 0);
       gl.disable(gl.DEPTH_TEST); gl.disable(gl.CULL_FACE); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       ready = true; lastError = null;
@@ -57,8 +55,7 @@ const SnakeRibbon = (() => {
         gl.uniform4f(view, viewport.x, viewport.y, viewport.width / (2 * viewport.zoom), viewport.height / (2 * viewport.zoom));
         for (const s of snakes) {
           if (s.points.length < 2) continue;
-          const source = viewport.vice ? ViceVisual.texture(s) : skinTexture(s.skin || 'neon', s.color), key = viewport.vice ? 'vice:'+source.viceKey : (s.skin || 'neon') + ':' + s.color;
-          gl.uniform1f(rim, viewport.vice ? (viewport.effects && s.boosting ? .9 : .3) : 0);
+          const source = skinTexture(s.skin || 'neon', s.color), key = (s.skin || 'neon') + ':' + s.color;
           let entry = textures.get(key);
           if (!entry) { entry = { texture: gl.createTexture() }; textures.set(key, entry); }
           else { textures.delete(key); textures.set(key, entry); }
