@@ -21,6 +21,9 @@ test('server serves local resources, compression, validators and rejects private
   for (const path of ['/game-core.js?v=1', '/arena-i18n.js?v=languages17', '/arena-effects.js?v=studio13', '/arena-labels.js?v=badges14', '/bot-ai.js?v=difficulty5', '/snake-collision.js?v=collision4', '/ribbon-mesh.js?v=visualfix3', '/ribbon-renderer.js?v=visualfix3', '/skins/vb_teal.png?v=31', '/flags/ve.png', '/fonts/lilita-one.woff2', '/maps/reg_stoneflags.webp?v=33']) {
     const res = await request(path); assert.equal(res.status, 200, path); assert.ok(res.body.length > 100);
   }
+  for (const path of ['/vice-visual.js?v=vice19', '/vice-match.css?v=vice19']) {
+    const res = await request(path); assert.equal(res.status, 200, path); assert.ok(res.body.length > 100);
+  }
   const raw = await request('/mystake.js');
   const gzip = await request('/mystake.js', { headers: { 'Accept-Encoding': 'gzip' } });
   assert.equal(gzip.headers['content-encoding'], 'gzip');

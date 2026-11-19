@@ -1,0 +1,325 @@
+{
+  "responsive": [
+    {
+      "height": 712,
+      "overflow": false,
+      "rects": [
+        {
+          "height": 104.05208587646484,
+          "selector": ".earnings",
+          "visible": true,
+          "width": 296,
+          "x": 12,
+          "y": 12
+        },
+        {
+          "height": 44,
+          "selector": ".topbar",
+          "visible": true,
+          "width": 96,
+          "x": 12,
+          "y": 142
+        },
+        {
+          "height": 157.33334350585938,
+          "selector": ".gameRanks",
+          "visible": true,
+          "width": 160,
+          "x": 148,
+          "y": 142
+        },
+        {
+          "height": 51.66666793823242,
+          "selector": ".viceStats",
+          "visible": true,
+          "width": 296,
+          "x": 12,
+          "y": 648.3333740234375
+        },
+        {
+          "height": 78,
+          "selector": "#map",
+          "visible": true,
+          "width": 78,
+          "x": 12,
+          "y": 542
+        }
+      ],
+      "width": 320
+    },
+    {
+      "height": 844,
+      "overflow": false,
+      "rects": [
+        {
+          "height": 104.05208587646484,
+          "selector": ".earnings",
+          "visible": true,
+          "width": 366,
+          "x": 12,
+          "y": 12
+        },
+        {
+          "height": 44,
+          "selector": ".topbar",
+          "visible": true,
+          "width": 96,
+          "x": 12,
+          "y": 142
+        },
+        {
+          "height": 157.33334350585938,
+          "selector": ".gameRanks",
+          "visible": true,
+          "width": 174,
+          "x": 204,
+          "y": 142
+        },
+        {
+          "height": 51.66666793823242,
+          "selector": ".viceStats",
+          "visible": true,
+          "width": 366,
+          "x": 12,
+          "y": 780.3333740234375
+        },
+        {
+          "height": 78,
+          "selector": "#map",
+          "visible": true,
+          "width": 78,
+          "x": 12,
+          "y": 674
+        }
+      ],
+      "width": 390
+    },
+    {
+      "height": 1024,
+      "overflow": false,
+      "rects": [
+        {
+          "height": 114.05208587646484,
+          "selector": ".earnings",
+          "visible": true,
+          "width": 360,
+          "x": 24,
+          "y": 20
+        },
+        {
+          "height": 44,
+          "selector": ".topbar",
+          "visible": true,
+          "width": 96,
+          "x": 24,
+          "y": 164
+        },
+        {
+          "height": 166.33334350585938,
+          "selector": ".gameRanks",
+          "visible": true,
+          "width": 240,
+          "x": 504,
+          "y": 20
+        },
+        {
+          "height": 57.66666793823242,
+          "selector": ".viceStats",
+          "visible": true,
+          "width": 511.5520935058594,
+          "x": 24,
+          "y": 944.3333740234376
+        },
+        {
+          "height": 112,
+          "selector": "#map",
+          "visible": true,
+          "width": 112,
+          "x": 24,
+          "y": 800
+        }
+      ],
+      "width": 768
+    },
+    {
+      "height": 390,
+      "overflow": false,
+      "rects": [
+        {
+          "height": 114.05208587646484,
+          "selector": ".earnings",
+          "visible": true,
+          "width": 290,
+          "x": 10,
+          "y": 8
+        },
+        {
+          "height": 44,
+          "selector": ".topbar",
+          "visible": true,
+          "width": 96,
+          "x": 10,
+          "y": 261
+        },
+        {
+          "height": 166.33334350585938,
+          "selector": ".gameRanks",
+          "visible": true,
+          "width": 180,
+          "x": 654,
+          "y": 8
+        },
+        {
+          "height": 57.66666793823242,
+          "selector": ".viceStats",
+          "visible": true,
+          "width": 511.5520935058594,
+          "x": 24,
+          "y": 324.3333435058594
+        },
+        {
+          "height": 0,
+          "selector": "#map",
+          "visible": false,
+          "width": 0,
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "width": 844
+    },
+    {
+      "height": 900,
+      "overflow": false,
+      "rects": [
+        {
+          "height": 114.05208587646484,
+          "selector": ".earnings",
+          "visible": true,
+          "width": 360,
+          "x": 24,
+          "y": 20
+        },
+        {
+          "height": 44,
+          "selector": ".topbar",
+          "visible": true,
+          "width": 96,
+          "x": 24,
+          "y": 164
+        },
+        {
+          "height": 166.33334350585938,
+          "selector": ".gameRanks",
+          "visible": true,
+          "width": 240,
+          "x": 1176,
+          "y": 20
+        },
+        {
+          "height": 57.66666793823242,
+          "selector": ".viceStats",
+          "visible": true,
+          "width": 511.5520935058594,
+          "x": 24,
+          "y": 820.3333740234375
+        },
+        {
+          "height": 112,
+          "selector": "#map",
+          "visible": true,
+          "width": 112,
+          "x": 24,
+          "y": 676
+        }
+      ],
+      "width": 1440
+    }
+  ],
+  "stressWebGL": {
+    "frames": 300,
+    "viewport": [
+      390,
+      844
+    ],
+    "snakes": 10,
+    "pointsPerSnake": 1200,
+    "coins": 3200,
+    "renderMedian": 2.1000000089406967,
+    "renderP95": 5.4000000059604645,
+    "frameMedian": 4.200000000000728,
+    "frameP95": 8.30000000000291,
+    "renderer": {
+      "ready": true,
+      "textures": 15,
+      "error": null
+    }
+  },
+  "stressBaseline": {
+    "frames": 300,
+    "viewport": [
+      390,
+      844
+    ],
+    "snakes": 10,
+    "pointsPerSnake": 1200,
+    "coins": 3200,
+    "renderMedian": 1.8999999910593033,
+    "renderP95": 3.800000011920929,
+    "frameMedian": 4.19999999999709,
+    "frameP95": 4.299999999999272,
+    "renderer": {
+      "ready": true,
+      "textures": 13,
+      "error": null
+    }
+  },
+  "contextRecovery": {
+    "lost": true,
+    "fallback": true,
+    "restored": true
+  },
+  "release": "vice19",
+  "environment": "Chromium in Codex in-app browser on this Windows desktop; CSS viewport emulation and synthetic handler checks, not physical iPhone/Safari",
+  "tests": {
+    "passed": 43,
+    "failed": 0
+  },
+  "renderNotes": "300 manual rAF render samples after 20 warm-up renders; paused artificial scene, same 390x844 viewport, 10 snakes x 1200 points, 3200 coins. Measures CPU JavaScript plus drawing submission, not GPU time or achievable phone FPS. Median ~2.1ms new vs ~1.9ms previous; p95 ~5.4 vs ~3.8ms. New visual detail has a measurable cost; bounded caches and particle caps avoid unbounded growth.",
+  "manualChecks": [
+    "all five palettes generated before match",
+    "Canvas fallback renders bodies and heads",
+    "WebGL context loss falls back, restoration reinitializes textures",
+    "red/green boundary visuals retained",
+    "effects and multiplier toggles persist after reload",
+    "collection choice persists after reload",
+    "Italian and 12-character currency with large amounts fit on 320px",
+    "synthetic touch handlers: second pointer boosts, releasing it stops boost; pointer capture stub restored",
+    "main lobby markup and core physics/collision/AI modules unchanged"
+  ],
+  "liveRound": {
+    "frames": 600,
+    "invalidCoordinatesOrValues": 0,
+    "elapsedSeconds": 2.7,
+    "snakes": 10,
+    "renderMsLastSample": 0.4,
+    "updateMsLastSample": 0.8
+  },
+  "cashoutDOM": {
+    "amount": "100,00",
+    "currency": "USD",
+    "fx": {
+      "combo": 0,
+      "enabled": true,
+      "labels": 0,
+      "rings": 0,
+      "showMultipliers": true,
+      "sparks": 0,
+      "stage": 1,
+      "unlocked": false
+    },
+    "mode": "result",
+    "text": "100,00\nUSD",
+    "visible": true
+  }
+}

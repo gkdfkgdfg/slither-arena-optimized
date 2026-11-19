@@ -2,7 +2,7 @@
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.ArenaI18n=factory()})(typeof globalThis!=='undefined'?globalThis:this,()=>{
  'use strict';
  const messages={
-  ru:{
+  ru:{collection:'Коллекция',currentScore:'ДОБЫЧА',population:'В АРЕНЕ',record:'РЕКОРД',you:'ВЫ',matchStats:'Статистика матча',
    showMultipliers:'Показывать множители',lootPlain:'ДОБЫЧА',comboPlain:'КОМБО',target:'ЦЕЛЬ',pause:'Пауза',paused:'Раунд приостановлен',effects:'Эффекты',on:'ВКЛ',off:'ВЫКЛ',resume:'Продолжить',leave:'Завершить без сохранения добычи',
    returnMenu:'Вернуться в меню',died:'ВЫ ПОГИБЛИ',again:'Играть ещё',home:'В меню',
    deathInfo:'Добыча осталась на арене. Время: {time} · Убрано: {kills}. Баланс: {balance}',
@@ -12,7 +12,7 @@
    loot:'ДОБЫЧА ×{multiplier}',combo:'КОМБО ×{count}',cutOff:'ПОДРЕЗАЛ!',anotherRival:'ЕЩЁ ОДИН СОПЕРНИК',collectLoot:'СОБИРАЙ ДОБЫЧУ',
    exitBanner:'ВЫХОД ОТКРЫТ',boundaryHint:'ДОБЕРИСЬ ДО ЗЕЛЁНОЙ ГРАНИЦЫ',newStage:'НОВЫЙ УРОВЕНЬ ДОБЫЧИ'
   },
-  cs:{
+  cs:{collection:'Kolekce',currentScore:'KOŘIST',population:'V ARÉNĚ',record:'REKORD',you:'TY',matchStats:'Statistiky zápasu',
    showMultipliers:'Zobrazit násobiče',lootPlain:'KOŘIST',comboPlain:'KOMBO',target:'CÍL',pause:'Pauza',paused:'Hra je pozastavena',effects:'Efekty',on:'ZAP',off:'VYP',resume:'Pokračovat',leave:'Ukončit bez vyzvednutí kořisti',
    returnMenu:'Zpět do menu',died:'KONEC HRY',again:'Hrát znovu',home:'Do menu',
    deathInfo:'Kořist zůstala v aréně. Čas: {time} · Vyřazení: {kills}. Zůstatek: {balance}',
@@ -22,7 +22,7 @@
    loot:'KOŘIST ×{multiplier}',combo:'KOMBO ×{count}',cutOff:'MÁŠ HO!',anotherRival:'DALŠÍ SOUPEŘ',collectLoot:'SBÍREJ KOŘIST',
    exitBanner:'ODCHOD OTEVŘEN',boundaryHint:'DOJEĎ K ZELENÉ HRANICI',newStage:'NOVÁ ÚROVEŇ KOŘISTI'
   },
-  sr:{
+  sr:{collection:'Kolekcija',currentScore:'PLEN',population:'U ARENI',record:'REKORD',you:'TI',matchStats:'Statistika meča',
    showMultipliers:'Prikaži množitelje',lootPlain:'PLEN',comboPlain:'KOMBO',target:'CILJ',pause:'Pauza',paused:'Igra je pauzirana',effects:'Efekti',on:'UKLJ',off:'ISKLJ',resume:'Nastavi',leave:'Završi bez preuzimanja plena',
    returnMenu:'Vrati se u meni',died:'KRAJ IGRE',again:'Igraj ponovo',home:'U meni',
    deathInfo:'Plen je ostao u areni. Vreme: {time} · Eliminacije: {kills}. Stanje: {balance}',
@@ -32,7 +32,7 @@
    loot:'PLEN ×{multiplier}',combo:'KOMBO ×{count}',cutOff:'PRESEKAO SI GA!',anotherRival:'JOŠ JEDAN PROTIVNIK',collectLoot:'SAKUPI PLEN',
    exitBanner:'IZLAZ OTVOREN',boundaryHint:'STIGNI DO ZELENE GRANICE',newStage:'NOVI NIVO PLENA'
   },
-  it:{
+  it:{collection:'Collezione',currentScore:'BOTTINO',population:'IN ARENA',record:'RECORD',you:'TU',matchStats:'Statistiche partita',
    showMultipliers:'Mostra moltiplicatori',lootPlain:'BOTTINO',comboPlain:'COMBO',target:'OBIETTIVO',pause:'Pausa',paused:'Partita in pausa',effects:'Effetti',on:'SÌ',off:'NO',resume:'Continua',leave:'Esci senza riscuotere il bottino',
    returnMenu:'Torna al menu',died:'SEI MORTO',again:'Gioca ancora',home:'Menu',
    deathInfo:'Il bottino è rimasto in arena. Tempo: {time} · Eliminati: {kills}. Saldo: {balance}',
@@ -42,7 +42,7 @@
    loot:'BOTTINO ×{multiplier}',combo:'COMBO ×{count}',cutOff:'PRESO!',anotherRival:'UN ALTRO AVVERSARIO',collectLoot:'RACCOGLI IL BOTTINO',
    exitBanner:'USCITA APERTA',boundaryHint:'RAGGIUNGI IL CONFINE VERDE',newStage:'NUOVO LIVELLO DI BOTTINO'
   },
-  en:{
+  en:{collection:'Collection',currentScore:'LOOT',population:'IN ARENA',record:'BEST',you:'YOU',matchStats:'Match statistics',
    showMultipliers:'Show multipliers',lootPlain:'LOOT',comboPlain:'COMBO',target:'TARGET',pause:'Pause',paused:'Round paused',effects:'Effects',on:'ON',off:'OFF',resume:'Resume',leave:'Leave without collecting loot',
    returnMenu:'Return to menu',died:'YOU DIED',again:'Play again',home:'Menu',
    deathInfo:'Your loot stayed in the arena. Time: {time} · Kills: {kills}. Balance: {balance}',

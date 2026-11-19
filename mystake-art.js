@@ -284,7 +284,7 @@ function fanTriangle(g,tex,u,w,px,py,e1x,e1y,e2x,e2y,side){
  g.save();g.beginPath();g.moveTo(px+(0-mx)*k+mx,py+(0-my)*k+my);g.lineTo(px+(e1x-mx)*k+mx,py+(e1y-my)*k+my);g.lineTo(px+(e2x-mx)*k+mx,py+(e2y-my)*k+my);g.closePath();g.clip();
  g.transform(bx-ax,by-ay,cx-ax,cy-ay,ax,ay);g.drawImage(tex,0,0,tex.width,tex.height,-u/w,0,768/w,1);g.restore();
 }
-function drawCanvasSnake(g,s,alpha=1){
+function drawCanvasSnake(g,s,alpha=1,vice=false){
  const raw=s.points,n=raw.length;if(n<2)return;
  const B=snakeBuffers(n+1),idx=B.idx,arc=B.arc,nx=B.nx,ny=B.ny,r=s.radius;
  // Mesh density follows thickness: thick bodies need fewer, longer pieces.
@@ -295,7 +295,7 @@ function drawCanvasSnake(g,s,alpha=1){
  // into jagged pieces, so bends sharper than the body allows are rounded off before meshing.
  const pts=B.pts;for(let k=0;k<m;k++){const q=raw[idx[k]];let o=pts[k];if(!o)o=pts[k]={x:0,y:0};o.x=q.x;o.y=q.y}
  for(let pass=0;pass<4;pass++)for(let k=1;k<m-1;k++){const a=pts[k-1],p=pts[k],b=pts[k+1],ax=p.x-a.x,ay=p.y-a.y,bx=b.x-p.x,by=b.y-p.y,th=Math.abs(Math.atan2(ax*by-ay*bx,ax*bx+ay*by));if(th>.45){const f=Math.min(.5,(th-.45)*1.5);p.x+=((a.x+b.x)/2-p.x)*f;p.y+=((a.y+b.y)/2-p.y)*f}}
- const tex=skinTexture(s.skin,s.color),scale=128/(r*2);arc[0]=0;
+ const tex=vice?ViceVisual.texture(s):skinTexture(s.skin,s.color),scale=128/(r*2);arc[0]=0;
  for(let k=0;k<m;k++){const p=pts[k];if(k){const q=pts[k-1];arc[k]=arc[k-1]+Math.hypot(p.x-q.x,p.y-q.y)}const a=pts[k?k-1:0],b=pts[k<m-1?k+1:m-1],d=Math.hypot(b.x-a.x,b.y-a.y)||1;nx[k]=-(b.y-a.y)/d*r;ny[k]=(b.x-a.x)/d*r}
  // Each piece is an undistorted rectangle with its own normal (like a stroke with round joins):
  // on the inner side of a bend neighbours simply overlap, the outer gap is closed by a fan of the
@@ -326,7 +326,7 @@ function drawCanvasSnake(g,s,alpha=1){
  const flatSkin=s.skin.startsWith('flag_')||s.skin.startsWith('v_');
  g.beginPath();if(!flatSkin)for(let i=1,pen=false;i<m-1;i+=rs){const p=P(i),q=P(i-1);if(offView(p,q)){pen=false;continue}const a=Math.atan2(q.y-p.y,q.x-p.x)+Math.PI/2,off=Math.sin(arc[i]*.012-phase)*r*.48,x=p.x+Math.cos(a)*off,y=p.y+Math.sin(a)*off;if(pen)g.lineTo(x,y);else{g.moveTo(x,y);pen=true}}g.strokeStyle=ENERGY_MATERIALS[s.skin]?'rgba('+ENERGY_MATERIALS[s.skin].core.join(',')+',.28)':['galaxy','nebula','lightning'].includes(s.skin)?'#d9c1ff40':'#fffce322';g.lineWidth=r*.16;g.stroke();
  if(ENERGY_MATERIALS[s.skin]||SKIN_GLINT.has(s.skin))for(let i=2;i<m-2;i+=ss){const p=P(i),q=P(i-1);if(offView(p,q))continue;const a=Math.atan2(q.y-p.y,q.x-p.x)+Math.PI/2,o=Math.sin(i*9)*r*.7,x=p.x+Math.cos(a)*o,y=p.y+Math.sin(a)*o;g.globalAlpha=alpha*Math.pow(.5+.5*Math.sin(time*1.8+i),5)*.8;g.fillStyle='#ebfbff';g.fillRect(x-2,y-.5,4,1);g.fillRect(x-.5,y-2,1,4)}
- g.globalAlpha=alpha;const hx=s.x??P(0).x,hy=s.y??P(0).y;if(s.skin==='hw_pumpkin'||s.skin==='hw_ghost')drawHalloweenHead(g,s.skin,hx,hy,s.a||0,r);else if(headSprite(s.skin))drawSpriteHead(g,s.skin,hx,hy,s.a||0,r);else {eyes(g,hx,hy,s.a||0,r*1.24);if(s.skin==='hw_vampire')drawVampireFangs(g,hx,hy,s.a||0,r)}g.restore();
+ g.globalAlpha=alpha;const hx=s.x??P(0).x,hy=s.y??P(0).y;if(vice)ViceVisual.drawHead(g,s);else if(s.skin==='hw_pumpkin'||s.skin==='hw_ghost')drawHalloweenHead(g,s.skin,hx,hy,s.a||0,r);else if(headSprite(s.skin))drawSpriteHead(g,s.skin,hx,hy,s.a||0,r);else {eyes(g,hx,hy,s.a||0,r*1.24);if(s.skin==='hw_vampire')drawVampireFangs(g,hx,hy,s.a||0,r)}g.restore();
 }
 
 let arenaRibbon,previewRibbon;
@@ -349,10 +349,10 @@ function drawOriginalSnake(g,s,alpha=1){
 function drawArenaSnakes(g,snakes,viewport){
  if(!canvasOnly){if(arenaRibbon===undefined)arenaRibbon=SnakeRibbon.create();if(arenaRibbon?.draw(snakes,viewport)){
    g.save();g.setTransform(viewport.dpr,0,0,viewport.dpr,0,0);g.drawImage(arenaRibbon.canvas,0,0,viewport.width,viewport.height);g.restore();
-   for(const s of snakes)drawSnakeHead(g,s,1);return;
+   for(const s of snakes)viewport.vice?ViceVisual.drawHead(g,s):drawSnakeHead(g,s,1);return;
   }
  }
- for(const s of snakes){s.renderX=s.x;s.renderY=s.y;s.renderRadius=s.radius;drawCanvasSnake(g,s,1)}
+ for(const s of snakes){s.renderX=s.x;s.renderY=s.y;s.renderRadius=s.radius;drawCanvasSnake(g,s,1,viewport.vice)}
 }
 
 // Decorative heads are cached once, then rotated with the snake heading.
@@ -394,6 +394,7 @@ function snakeAppearanceState(s){
  return body==='error'||head?.error?'error':body==='loading'||(head&&!head.ready)?'loading':'ready';
 }
 async function prepareSnakeAppearances(roster,timeout=10000){
+ if(typeof ViceVisual!=='undefined')ViceVisual.prepare(roster);
  for(const s of roster){const id=s.skin||'neon',key=id.startsWith('flag_')?id:id+s.color;if(skinAssetState.get(key)==='error'){skinAssetState.delete(key);referenceMaterials.delete(key)}if(headSprites.get(id)?.error)headSprites.delete(id)}
  const begin=performance.now();
  while(true){
