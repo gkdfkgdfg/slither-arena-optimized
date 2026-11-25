@@ -32,6 +32,7 @@ try{Object.assign(prefs,JSON.parse(localStorage.getItem('slither-demo-v1')||'{}'
 prefs.currency=String(prefs.currency||'USD').slice(0,12);prefs.balance=Math.max(0,Math.min(1e12,Number(prefs.balance)||0));prefs.stake=Math.max(.01,Math.min(1e9,Number(prefs.stake)||10));prefs.color=Math.abs(Number(prefs.color)||0)%COLORS.length;
 prefs.effects=prefs.effects!==false;prefs.difficulty=BotAI.normalize(prefs.difficulty);prefs.exitX=ArenaCore.normalizeExitMultiplier(prefs.exitX);
 prefs.showMultipliers=prefs.showMultipliers!==false;
+prefs.topPlateStyle=prefs.topPlateStyle==='classic'?'classic':'current';
 prefs.gameLanguage=ArenaI18n.normalize(new URLSearchParams(location.search).get('lang')||prefs.gameLanguage);
 const gameLanguage=ArenaI18n.create(prefs.gameLanguage),tr=gameLanguage.t;
 // Venezuela (Flags tab) is the default; the old hidden video skins map onto it.
@@ -47,7 +48,7 @@ function syncGameLanguage(){
  for(const el of document.querySelectorAll('[data-game-i18n]'))el.textContent=tr(el.dataset.gameI18n);
  for(const [attribute,key] of [['aria-label','gameI18nLabel'],['title','gameI18nTitle']])for(const el of document.querySelectorAll(attribute==='title'?'[data-game-i18n-title]':'[data-game-i18n-label]'))el.setAttribute(attribute,tr(el.dataset[key]));
  for(const id of ['hud','pauseDialog','result','winOverlay','arena'])$(id).lang=gameLanguage.language==='sr'?'sr-Latn':gameLanguage.language;
- canvas.setAttribute('aria-label',tr('arena'));syncEffects();syncMultipliers();
+ canvas.setAttribute('aria-label',tr('arena'));syncEffects();syncMultipliers();syncTopPlate();
  if(mode==='play')renderHUD();
 }
 function syncEffects(){ $('effectsEnabled').value=prefs.effects?'on':'off';$('pauseEffects').setAttribute('aria-pressed',String(prefs.effects));$('pauseEffectsState').textContent=tr(prefs.effects?'on':'off');document.body.classList.toggle('effectsOff',!prefs.effects)}
@@ -58,6 +59,10 @@ function syncMultipliers(){ $('multipliersVisible').value=prefs.showMultipliers?
 function setMultipliersVisible(value){prefs.showMultipliers=value!==false;arenaFX.setShowMultipliers(prefs.showMultipliers);save();syncMultipliers();if(mode==='play')renderHUD()}
 $('multipliersVisible').onchange=()=>setMultipliersVisible($('multipliersVisible').value==='on');
 $('pauseMultipliers').onclick=()=>setMultipliersVisible(!prefs.showMultipliers);
+function syncTopPlate(){for(const id of ['topPlateStyle','pauseTopPlateStyle'])$(id).value=prefs.topPlateStyle;document.body.classList.toggle('classicTopPlate',prefs.topPlateStyle==='classic')}
+function setTopPlateStyle(value){prefs.topPlateStyle=value==='classic'?'classic':'current';save();syncTopPlate();if(mode==='play'||mode==='result')renderHUD()}
+$('topPlateStyle').onchange=()=>setTopPlateStyle($('topPlateStyle').value);
+$('pauseTopPlateStyle').onchange=()=>setTopPlateStyle($('pauseTopPlateStyle').value);
 $('gameLanguage').onchange=()=>{if(mode!=='menu')return;prefs.gameLanguage=gameLanguage.setLanguage($('gameLanguage').value);save();const url=new URL(location.href);url.searchParams.set('lang',prefs.gameLanguage);history.replaceState(null,'',url);syncGameLanguage()};
 function syncDifficulty(){ $('difficulty').value=prefs.difficulty;$('difficultyHint').textContent=prefs.difficulty==='hard'?'Больше внимательных соперников и быстрых реакций.':'Больше рассеянных соперников — легче подрезать.'}
 function exitLabel(x){return '×'+String(x).replace('.',',')}
@@ -337,7 +342,8 @@ function oldDrawMap(){const g=$('map').getContext('2d');g.clearRect(0,0,130,130)
 function renderHUD(){
  const value=Math.max(0,player.value),target=ArenaCore.cashoutTarget(sessionStake,roundExitX),percent=Math.min(100,value/target*100),unit=prefs.showCurrency?prefs.currency:'',left=money(value),right=money(target);
  $('progressAmount').textContent=left;$('progressCurrency').textContent=unit;$('targetAmount').textContent=right;$('targetCurrency').textContent=unit;
- const digits=Math.max(left.length,right.length);$('hud').style.setProperty('--amount-font',Math.max(10,Math.min(16,(W-68)/(digits*1.3)))+'px');
+ const digits=Math.max(left.length,right.length),classic=prefs.topPlateStyle==='classic',characters=left.length+right.length+(unit?2*(unit.length+1):0);
+ $('hud').style.setProperty('--amount-font',(classic?Math.max(5,Math.min(12,(W-94)/(characters*.64))):Math.max(10,Math.min(16,(W-68)/(digits*1.3))))+'px');
  $('earningsFill').style.width=percent+'%';$('earningsFill').classList.toggle('done',exitUnlocked);$('progressValue').classList.toggle('ready',exitUnlocked);
  $('progressValue').title=exitUnlocked?tr('cashoutHint'):tr('exitNeed',{multiplier:prefs.showMultipliers?exitLabel(roundExitX):fmtTarget(target)});
  $('progressValue').setAttribute('aria-label',fmt(value)+'. '+(exitUnlocked?tr('exitOpen'):tr('targetValue',{amount:fmtTarget(target)})));

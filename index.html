@@ -8,7 +8,7 @@
         <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23080b09'/%3E%3Cpath d='M23 9H13a5 5 0 0 0 0 10h6a3 3 0 0 1 0 6H8' fill='none' stroke='%231aee67' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
         <link rel="preload" href="fonts/robotomono-latin-700.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="fonts/robotomono-cyrillic-700.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="stylesheet" href="style.css?v=clean18">
+        <link rel="stylesheet" href="style.css?v=topplate20">
     </head>
     <body class="originalMode mystakeMode">
         <canvas id="arena" aria-label="Игровая арена со змейками"></canvas>
@@ -124,6 +124,7 @@
                     <span>Показывать валюту</span>
                     <b id="currencyState">ВКЛ</b>
                 </button>
+                <label class="qualityField" for="topPlateStyle">Верхняя плашка<select id="topPlateStyle"><option value="current">Текущая</option><option value="classic">Старая</option></select></label>
                 <button class="green big" type="submit">Сохранить</button>
             </form>
         </dialog>
@@ -142,6 +143,7 @@
             <p data-game-i18n="paused">Раунд приостановлен</p>
             <button id="pauseEffects" class="optionToggle" type="button" aria-pressed="true"><span data-game-i18n="effects">Эффекты</span><b id="pauseEffectsState">ВКЛ</b></button>
             <button id="pauseMultipliers" class="optionToggle" type="button" aria-pressed="true"><span data-game-i18n="showMultipliers">Показывать множители</span><b id="pauseMultipliersState">ВКЛ</b></button>
+            <label class="qualityField" for="pauseTopPlateStyle"><span data-game-i18n="topPlate">Верхняя плашка</span><select id="pauseTopPlateStyle"><option value="current" data-game-i18n="currentPlate">Текущая</option><option value="classic" data-game-i18n="classicPlate">Старая</option></select></label>
             <button id="resume" class="green big" data-game-i18n="resume">Продолжить</button>
             <button id="leave" data-game-i18n="leave">Завершить без сохранения добычи</button>
         </dialog>
@@ -185,21 +187,21 @@
             </dl>
             <button id="howDone" class="green big" type="button">Понятно</button>
         </dialog>
-        <script src="game-core.js?v=clean18"></script>
-        <script src="snake-collision.js?v=clean18"></script>
-        <script src="mystake-maps.js?v=clean18"></script>
-        <script src="bot-ai.js?v=clean18"></script>
-        <script src="mystake-bots.js?v=clean18"></script>
+        <script src="game-core.js?v=topplate20"></script>
+        <script src="snake-collision.js?v=topplate20"></script>
+        <script src="mystake-maps.js?v=topplate20"></script>
+        <script src="bot-ai.js?v=topplate20"></script>
+        <script src="mystake-bots.js?v=topplate20"></script>
         <script src="extra-skins.js?v=19"></script>
         <script src="flag-countries.js?v=28"></script>
         <script src="video-look.js?v=10"></script>
-        <script src="ribbon-mesh.js?v=clean18"></script>
-        <script src="ribbon-renderer.js?v=clean18"></script>
-        <script src="mystake-art.js?v=clean18"></script>
-        <script src="mystake-physics.js?v=clean18"></script>
-        <script src="arena-labels.js?v=clean18"></script>
-        <script src="arena-i18n.js?v=clean18"></script>
-        <script src="arena-effects.js?v=clean18"></script>
-        <script src="mystake.js?v=clean18"></script>
+        <script src="ribbon-mesh.js?v=topplate20"></script>
+        <script src="ribbon-renderer.js?v=topplate20"></script>
+        <script src="mystake-art.js?v=topplate20"></script>
+        <script src="mystake-physics.js?v=topplate20"></script>
+        <script src="arena-labels.js?v=topplate20"></script>
+        <script src="arena-i18n.js?v=topplate20"></script>
+        <script src="arena-effects.js?v=topplate20"></script>
+        <script src="mystake.js?v=topplate20"></script>
     </body>
 </html>

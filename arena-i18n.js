@@ -3,7 +3,7 @@
  'use strict';
  const messages={
   ru:{
-   showMultipliers:'Показывать множители',lootPlain:'ДОБЫЧА',comboPlain:'КОМБО',target:'ЦЕЛЬ',pause:'Пауза',paused:'Раунд приостановлен',effects:'Эффекты',on:'ВКЛ',off:'ВЫКЛ',resume:'Продолжить',leave:'Завершить без сохранения добычи',
+   topPlate:'Верхняя плашка',currentPlate:'Текущая',classicPlate:'Старая',showMultipliers:'Показывать множители',lootPlain:'ДОБЫЧА',comboPlain:'КОМБО',target:'ЦЕЛЬ',pause:'Пауза',paused:'Раунд приостановлен',effects:'Эффекты',on:'ВКЛ',off:'ВЫКЛ',resume:'Продолжить',leave:'Завершить без сохранения добычи',
    returnMenu:'Вернуться в меню',died:'ВЫ ПОГИБЛИ',again:'Играть ещё',home:'В меню',
    deathInfo:'Добыча осталась на арене. Время: {time} · Убрано: {kills}. Баланс: {balance}',
    controls:'Мышь / палец — поворот · Space — ускорение · Esc — пауза · Q — забрать при {multiplier}',
@@ -13,7 +13,7 @@
    exitBanner:'ВЫХОД ОТКРЫТ',boundaryHint:'ДОБЕРИСЬ ДО ЗЕЛЁНОЙ ГРАНИЦЫ',newStage:'НОВЫЙ УРОВЕНЬ ДОБЫЧИ'
   },
   cs:{
-   showMultipliers:'Zobrazit násobiče',lootPlain:'KOŘIST',comboPlain:'KOMBO',target:'CÍL',pause:'Pauza',paused:'Hra je pozastavena',effects:'Efekty',on:'ZAP',off:'VYP',resume:'Pokračovat',leave:'Ukončit bez vyzvednutí kořisti',
+   topPlate:'Horní panel',currentPlate:'Současný',classicPlate:'Původní',showMultipliers:'Zobrazit násobiče',lootPlain:'KOŘIST',comboPlain:'KOMBO',target:'CÍL',pause:'Pauza',paused:'Hra je pozastavena',effects:'Efekty',on:'ZAP',off:'VYP',resume:'Pokračovat',leave:'Ukončit bez vyzvednutí kořisti',
    returnMenu:'Zpět do menu',died:'KONEC HRY',again:'Hrát znovu',home:'Do menu',
    deathInfo:'Kořist zůstala v aréně. Čas: {time} · Vyřazení: {kills}. Zůstatek: {balance}',
    controls:'Myš / dotyk — zatáčení · Space — zrychlení · Esc — pauza · Q — vyzvednutí při {multiplier}',
@@ -23,7 +23,7 @@
    exitBanner:'ODCHOD OTEVŘEN',boundaryHint:'DOJEĎ K ZELENÉ HRANICI',newStage:'NOVÁ ÚROVEŇ KOŘISTI'
   },
   sr:{
-   showMultipliers:'Prikaži množitelje',lootPlain:'PLEN',comboPlain:'KOMBO',target:'CILJ',pause:'Pauza',paused:'Igra je pauzirana',effects:'Efekti',on:'UKLJ',off:'ISKLJ',resume:'Nastavi',leave:'Završi bez preuzimanja plena',
+   topPlate:'Gornji panel',currentPlate:'Trenutni',classicPlate:'Stari',showMultipliers:'Prikaži množitelje',lootPlain:'PLEN',comboPlain:'KOMBO',target:'CILJ',pause:'Pauza',paused:'Igra je pauzirana',effects:'Efekti',on:'UKLJ',off:'ISKLJ',resume:'Nastavi',leave:'Završi bez preuzimanja plena',
    returnMenu:'Vrati se u meni',died:'KRAJ IGRE',again:'Igraj ponovo',home:'U meni',
    deathInfo:'Plen je ostao u areni. Vreme: {time} · Eliminacije: {kills}. Stanje: {balance}',
    controls:'Miš / dodir — skretanje · Space — ubrzanje · Esc — pauza · Q — preuzmi na {multiplier}',
@@ -33,7 +33,7 @@
    exitBanner:'IZLAZ OTVOREN',boundaryHint:'STIGNI DO ZELENE GRANICE',newStage:'NOVI NIVO PLENA'
   },
   it:{
-   showMultipliers:'Mostra moltiplicatori',lootPlain:'BOTTINO',comboPlain:'COMBO',target:'OBIETTIVO',pause:'Pausa',paused:'Partita in pausa',effects:'Effetti',on:'SÌ',off:'NO',resume:'Continua',leave:'Esci senza riscuotere il bottino',
+   topPlate:'Pannello superiore',currentPlate:'Attuale',classicPlate:'Originale',showMultipliers:'Mostra moltiplicatori',lootPlain:'BOTTINO',comboPlain:'COMBO',target:'OBIETTIVO',pause:'Pausa',paused:'Partita in pausa',effects:'Effetti',on:'SÌ',off:'NO',resume:'Continua',leave:'Esci senza riscuotere il bottino',
    returnMenu:'Torna al menu',died:'SEI MORTO',again:'Gioca ancora',home:'Menu',
    deathInfo:'Il bottino è rimasto in arena. Tempo: {time} · Eliminati: {kills}. Saldo: {balance}',
    controls:'Mouse / tocco — sterza · Space — accelera · Esc — pausa · Q — riscuoti a {multiplier}',
@@ -43,7 +43,7 @@
    exitBanner:'USCITA APERTA',boundaryHint:'RAGGIUNGI IL CONFINE VERDE',newStage:'NUOVO LIVELLO DI BOTTINO'
   },
   en:{
-   showMultipliers:'Show multipliers',lootPlain:'LOOT',comboPlain:'COMBO',target:'TARGET',pause:'Pause',paused:'Round paused',effects:'Effects',on:'ON',off:'OFF',resume:'Resume',leave:'Leave without collecting loot',
+   topPlate:'Top panel',currentPlate:'Current',classicPlate:'Classic',showMultipliers:'Show multipliers',lootPlain:'LOOT',comboPlain:'COMBO',target:'TARGET',pause:'Pause',paused:'Round paused',effects:'Effects',on:'ON',off:'OFF',resume:'Resume',leave:'Leave without collecting loot',
    returnMenu:'Return to menu',died:'YOU DIED',again:'Play again',home:'Menu',
    deathInfo:'Your loot stayed in the arena. Time: {time} · Kills: {kills}. Balance: {balance}',
    controls:'Mouse / touch — steer · Space — boost · Esc — pause · Q — cash out at {multiplier}',
