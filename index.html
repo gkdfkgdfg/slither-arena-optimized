@@ -8,7 +8,8 @@
         <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23080b09'/%3E%3Cpath d='M23 9H13a5 5 0 0 0 0 10h6a3 3 0 0 1 0 6H8' fill='none' stroke='%231aee67' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
         <link rel="preload" href="fonts/robotomono-latin-700.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="fonts/robotomono-cyrillic-700.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="stylesheet" href="style.css?v=topplate20">
+        <link rel="stylesheet" href="style.css?v=menu21">
+        <link rel="stylesheet" href="lobby.css?v=menu21">
     </head>
     <body class="originalMode mystakeMode">
         <canvas id="arena" aria-label="Игровая арена со змейками"></canvas>
@@ -23,6 +24,7 @@
             </header>
             <main class="lobbyMain">
                 <section class="hero">
+                    <p class="heroEyebrow">Собирай. Подрезай. Побеждай.</p>
                     <h1 class="brand">Slither<span>Arena</span></h1>
                     <div class="showcase">
                         <canvas id="skinPreview" width="720" height="250" role="img" aria-label="Выбранный скин змеи"></canvas>
@@ -41,44 +43,38 @@
                     </div>
                 </section>
                 <section class="joinCard" aria-label="Вход в игру">
+                    <div class="joinHeading"><h2>Новый раунд</h2><span>Твой следующий рекорд</span></div>
                     <div class="identity">
-                        <div>
-                            <label class="formLabel" for="nickname">Имя</label>
-                            <input id="nickname" maxlength="18" placeholder="Твоё имя" value="Player" autocomplete="off">
-                        </div>
-                        <div>
-                            <label class="formLabel" for="currency">Валюта</label>
-                            <input id="currency" maxlength="12" placeholder="USD" autocomplete="off" aria-describedby="goalValue">
-                        </div>
-                    </div>
-                    <div class="visualOptions">
-                    <label class="qualityField" for="quality">Качество<select id="quality"><option value="auto">Авто</option><option value="high">Высокое</option><option value="balanced">Среднее</option><option value="low">Низкое</option></select></label>
-                    <label class="qualityField" for="effectsEnabled">Эффекты<select id="effectsEnabled"><option value="on">Вкл</option><option value="off">Выкл</option></select></label>
-                    </div>
-                    <div class="visualOptions">
-                    <label class="qualityField" for="difficulty">Сложность<select id="difficulty" aria-describedby="difficultyHint"><option value="easy">Лёгкий</option><option value="hard">Сложный</option></select></label>
-                    <label class="qualityField" for="gameLanguage">Язык в игре<select id="gameLanguage"><option value="ru">Русский</option><option value="cs">Čeština</option><option value="sr">Srpski</option><option value="it">Italiano</option><option value="en">English</option></select></label>
-                    </div>
-                    <p id="difficultyHint" class="difficultyHint"></p>
-                    <div class="visualOptions">
-                    <label class="qualityField" for="exitMultiplier">Множитель выхода<select id="exitMultiplier"><option value="10">×10</option><option value="20">×20</option><option value="37.5">×37,5</option><option value="60">×60</option><option value="100">×100</option></select></label>
-                    <label class="qualityField" for="multipliersVisible">Показывать ×<select id="multipliersVisible"><option value="on">Да</option><option value="off">Нет</option></select></label>
+                        <div><label class="formLabel" for="nickname">Имя</label><input id="nickname" maxlength="18" placeholder="Твоё имя" value="Player" autocomplete="off"></div>
+                        <div><label class="formLabel" for="currency">Валюта</label><input id="currency" maxlength="12" placeholder="USD" autocomplete="off" aria-describedby="goalValue"></div>
                     </div>
                     <div class="stakeBlock">
                         <label class="formLabel" for="stake">Ставка</label>
-                        <div class="stakes">
-                            <button type="button" data-stake="1">1</button>
-                            <button type="button" data-stake="10">10</button>
-                            <button type="button" data-stake="100">100</button>
-                        </div>
-                        <div class="moneyInput">
-                            <input id="stake" type="number" inputmode="decimal" min="0.01" max="1000000000" step="any" value="10">
-                            <span class="unit">USD</span>
+                        <div class="stakeRow">
+                            <div class="stakes"><button type="button" data-stake="1">1</button><button type="button" data-stake="10">10</button><button type="button" data-stake="100">100</button></div>
+                            <div class="moneyInput"><input id="stake" type="number" inputmode="decimal" min="0.01" max="1000000000" step="any" value="10"><span class="unit">USD</span></div>
                         </div>
                     </div>
-                    <p class="goal"><span>Выход при <b id="exitTargetLabel">×37,5</b></span><b id="goalValue"></b></p>
-                    <button id="play" class="green" type="button"><svg width="20" height="22" viewBox="0 0 20 22" aria-hidden="true"><path d="M3 2.5v17L18 11z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>ИГРАТЬ</button>
-                    <p class="demoNote">Виртуальный баланс · соперники — боты</p><div id="error" role="alert"></div>
+                    <div class="menuFields">
+                        <label class="qualityField" for="exitMultiplier">Выход при<select id="exitMultiplier"><option value="10">×10</option><option value="20">×20</option><option value="37.5">×37,5</option><option value="60">×60</option><option value="100">×100</option></select></label>
+                        <label class="qualityField" for="difficulty">Сложность<select id="difficulty" aria-describedby="difficultyHint"><option value="easy">Лёгкий</option><option value="hard">Сложный</option></select></label>
+                        <label class="qualityField" for="gameLanguage">Язык в игре<select id="gameLanguage"><option value="ru">Русский</option><option value="cs">Čeština</option><option value="sr">Srpski</option><option value="it">Italiano</option><option value="en">English</option><option value="ro">Română</option></select></label>
+                        <label class="qualityField" for="topPlateStyle">Верхняя плашка<select id="topPlateStyle"><option value="current">Текущая</option><option value="classic">Старая</option></select></label>
+                    </div>
+                    <p id="difficultyHint" class="difficultyHint"></p>
+                    <details class="menuAdvanced">
+                        <summary>Графика и эффекты<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary>
+                        <div class="advancedFields">
+                            <label class="qualityField" for="quality">Качество<select id="quality"><option value="auto">Авто</option><option value="high">Высокое</option><option value="balanced">Среднее</option><option value="low">Низкое</option></select></label>
+                            <label class="qualityField" for="effectsEnabled">Эффекты<select id="effectsEnabled"><option value="on">Вкл</option><option value="off">Выкл</option></select></label>
+                            <label class="qualityField" for="multipliersVisible">Показывать ×<select id="multipliersVisible"><option value="on">Да</option><option value="off">Нет</option></select></label>
+                        </div>
+                    </details>
+                    <div class="menuStart">
+                        <p class="goal"><span>Цель раунда <b id="exitTargetLabel">×37,5</b></span><b id="goalValue"></b></p>
+                        <button id="play" class="green" type="button"><span>Играть</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                        <p class="demoNote">Виртуальный баланс · соперники — боты</p><div id="error" role="alert"></div>
+                    </div>
                 </section>
             </main>
         </div>
@@ -124,7 +120,6 @@
                     <span>Показывать валюту</span>
                     <b id="currencyState">ВКЛ</b>
                 </button>
-                <label class="qualityField" for="topPlateStyle">Верхняя плашка<select id="topPlateStyle"><option value="current">Текущая</option><option value="classic">Старая</option></select></label>
                 <button class="green big" type="submit">Сохранить</button>
             </form>
         </dialog>
@@ -187,21 +182,21 @@
             </dl>
             <button id="howDone" class="green big" type="button">Понятно</button>
         </dialog>
-        <script src="game-core.js?v=topplate20"></script>
-        <script src="snake-collision.js?v=topplate20"></script>
-        <script src="mystake-maps.js?v=topplate20"></script>
-        <script src="bot-ai.js?v=topplate20"></script>
-        <script src="mystake-bots.js?v=topplate20"></script>
+        <script src="game-core.js?v=menu21"></script>
+        <script src="snake-collision.js?v=menu21"></script>
+        <script src="mystake-maps.js?v=menu21"></script>
+        <script src="bot-ai.js?v=menu21"></script>
+        <script src="mystake-bots.js?v=menu21"></script>
         <script src="extra-skins.js?v=19"></script>
         <script src="flag-countries.js?v=28"></script>
         <script src="video-look.js?v=10"></script>
-        <script src="ribbon-mesh.js?v=topplate20"></script>
-        <script src="ribbon-renderer.js?v=topplate20"></script>
-        <script src="mystake-art.js?v=topplate20"></script>
-        <script src="mystake-physics.js?v=topplate20"></script>
-        <script src="arena-labels.js?v=topplate20"></script>
-        <script src="arena-i18n.js?v=topplate20"></script>
-        <script src="arena-effects.js?v=topplate20"></script>
-        <script src="mystake.js?v=topplate20"></script>
+        <script src="ribbon-mesh.js?v=menu21"></script>
+        <script src="ribbon-renderer.js?v=menu21"></script>
+        <script src="mystake-art.js?v=menu21"></script>
+        <script src="mystake-physics.js?v=menu21"></script>
+        <script src="arena-labels.js?v=menu21"></script>
+        <script src="arena-i18n.js?v=menu21"></script>
+        <script src="arena-effects.js?v=menu21"></script>
+        <script src="mystake.js?v=menu21"></script>
     </body>
 </html>

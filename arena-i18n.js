@@ -42,6 +42,16 @@
    loot:'BOTTINO ×{multiplier}',combo:'COMBO ×{count}',cutOff:'PRESO!',anotherRival:'UN ALTRO AVVERSARIO',collectLoot:'RACCOGLI IL BOTTINO',
    exitBanner:'USCITA APERTA',boundaryHint:'RAGGIUNGI IL CONFINE VERDE',newStage:'NUOVO LIVELLO DI BOTTINO'
   },
+  ro:{
+   topPlate:'Panoul de sus',currentPlate:'Actual',classicPlate:'Clasic',showMultipliers:'Arată multiplicatorii',lootPlain:'PRADĂ',comboPlain:'COMBO',target:'ȚINTĂ',pause:'Pauză',paused:'Rundă întreruptă',effects:'Efecte',on:'DA',off:'NU',resume:'Continuă',leave:'Ieși fără să colectezi prada',
+   returnMenu:'Înapoi la meniu',died:'AI MURIT',again:'Joacă din nou',home:'Meniu',
+   deathInfo:'Prada a rămas în arenă. Timp: {time} · Eliminări: {kills}. Sold: {balance}',
+   controls:'Mouse / atingere — viraj · Space — accelerare · Esc — pauză · Q — retrage la {multiplier}',
+   cashoutHint:'Retrage: Q sau marginea verde',exitNeed:'Ai nevoie de {multiplier} pentru a ieși',exitOpen:'Ieșirea este deschisă',targetValue:'Țintă {amount}',
+   lootProgress:'Progresul prăzii',leaderboard:'Clasament',minimap:'Minihartă',map:'HARTĂ',arena:'Arena de joc cu șerpi',sound:'Activează sau dezactivează sunetul',length:'LUNGIME',kills:'ELIMINĂRI',
+   loot:'PRADĂ ×{multiplier}',combo:'COMBO ×{count}',cutOff:'L-AI BLOCAT!',anotherRival:'ÎNCĂ UN ADVERSAR',collectLoot:'COLECTEAZĂ PRADA',
+   exitBanner:'IEȘIRE DESCHISĂ',boundaryHint:'AJUNGI LA MARGINEA VERDE',newStage:'NIVEL NOU DE PRADĂ'
+  },
   en:{
    topPlate:'Top panel',currentPlate:'Current',classicPlate:'Classic',showMultipliers:'Show multipliers',lootPlain:'LOOT',comboPlain:'COMBO',target:'TARGET',pause:'Pause',paused:'Round paused',effects:'Effects',on:'ON',off:'OFF',resume:'Resume',leave:'Leave without collecting loot',
    returnMenu:'Return to menu',died:'YOU DIED',again:'Play again',home:'Menu',

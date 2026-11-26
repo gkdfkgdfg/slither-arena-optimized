@@ -6,6 +6,7 @@ const I18n=require('../arena-i18n'),FX=require('../arena-effects'),labels=requir
 test('round languages cover every message and normalize shared-link language codes',()=>{
  assert.equal(I18n.normalize('cs-CZ'),'cs');assert.equal(I18n.normalize('cz'),'cs');
  assert.equal(I18n.normalize('sr-Latn-RS'),'sr');assert.equal(I18n.normalize('en_US'),'en');
+ assert.equal(I18n.normalize('ro-RO'),'ro');assert.equal(I18n.normalize('ro_MD'),'ro');
  assert.equal(I18n.normalize('unsupported'),'ru');
  const values={amount:'12 000,00 zł',time:'1:23',kills:4,balance:'500,00 zł',multiplier:'×20',count:3};
  for(const language of I18n.languages){
@@ -20,7 +21,7 @@ test('round languages cover every message and normalize shared-link language cod
 });
 
 test('real effect drawing uses the selected round language for loot, combo and exit',()=>{
- for(const language of ['cs','sr','it','en']){
+ for(const language of I18n.languages.filter(language=>language!=='ru')){
   const translator=I18n.create(language),fx=FX.create({translate:translator.t}),painted=[];
   const g={save(){},restore(){},strokeText(){},fillText(text){painted.push(text)}};
   fx.kill(0,0,50,10);fx.floatingLabels(g,1,false);fx.screen(g,390,844,false);

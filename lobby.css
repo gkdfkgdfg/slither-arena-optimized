@@ -1,0 +1,86 @@
+/* Lobby only; arena, plates and match dialogs keep their existing appearance. */
+#lobby{background:radial-gradient(ellipse at 18% 20%,#20362b66,transparent 55%),#0a1114f7;color:#e8eeeb;scrollbar-width:thin;scrollbar-color:#34493f #0a1114}
+#lobby .lobbyTop{width:100%;max-width:1120px;margin:0 auto;padding:24px 32px}
+#lobby .iconBtn{border-radius:12px;border-color:#2e3d36;background:#121d1a;color:#a9bdb0;font:500 17px Arial,sans-serif}
+#lobby .walletChip{border-radius:12px;border-color:#2e3d36;background:#121d1a;gap:10px;padding:0 13px;max-width:80%}
+#lobby .walletChip .coin{width:8px;height:8px;background:#b6d99c;box-shadow:none}
+#lobby .walletChip b{font-size:14px;color:#dbe7d1;font-weight:500}
+#lobby .walletChip svg{width:14px;color:#91a397}
+#lobby .lobbyMain{max-width:1040px;grid-template-columns:minmax(0,1fr) minmax(0,424px);gap:64px;padding:20px 32px 44px;align-items:center;align-content:center}
+#lobby .hero{max-width:440px;align-items:flex-start;justify-self:center}
+#lobby .heroEyebrow{margin:0 0 14px;font:500 12px/1.4 Rubik,Arial,sans-serif;color:#92a89a;letter-spacing:.5px}
+#lobby .brand{font:800 clamp(40px,4.5vw,58px)/1.05 Rubik,Arial,sans-serif;letter-spacing:-2.6px;color:#f0f3ed;text-shadow:none;text-align:left;white-space:nowrap}
+#lobby .brand span{margin-left:.12em;color:#b8d99d;text-shadow:none}
+#lobby .showcase{margin:28px 0 20px;border:1px solid #293c32;border-radius:24px;background:#122019;overflow:hidden}
+#lobby .showcase:before{display:none}
+#lobby #skinPreview{aspect-ratio:720/250;width:100%;height:auto}
+#lobby .picks{gap:10px}
+#lobby .pickTile{min-height:68px;padding:10px;grid-template-columns:36px minmax(0,1fr) 12px;gap:8px;border:1px solid #2b3b33;border-radius:14px;background:#121d19}
+#lobby .pickTile .tileArt{width:36px;height:36px;border:1px solid #34483c;border-radius:10px}
+#lobby .pickTile .skinArt{background:#22382a;color:#bedaa5}
+#lobby .pickTile small{font-size:10px;color:#93a598;margin-bottom:3px}
+#lobby .pickTile b{font-size:12px;font-weight:500;color:#e0e9df}
+#lobby .pickTile>svg{display:block;width:12px;color:#798d7c}
+#lobby .joinCard{max-width:none;padding:24px;border:1px solid #304137;border-radius:22px;background:#111c18;box-shadow:0 16px 50px #0002}
+#lobby .joinHeading{display:flex;flex-direction:column;gap:4px;margin-bottom:20px}
+#lobby .joinHeading h2{font:500 21px/1.3 Rubik,Arial,sans-serif;letter-spacing:-.5px;margin:0}
+#lobby .joinHeading span{font-size:11px;color:#8fa292}
+#lobby .formLabel,#lobby .qualityField{font:500 11px/1.3 Rubik,Arial,sans-serif;color:#9bad9e;letter-spacing:0}
+#lobby .formLabel{margin-bottom:7px}
+#lobby .identity{grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px}
+#lobby input,#lobby select{width:100%;min-width:0;max-width:100%;height:44px;padding:10px 12px!important;background:#0c1512;border:1px solid #304137;border-radius:10px;color:#ecf0e8;font-family:Rubik,Arial,sans-serif;font-size:16px!important;font-weight:500;box-shadow:none;outline-offset:3px}
+#lobby input:focus-visible,#lobby select:focus-visible,#lobby button:focus-visible,#lobby summary:focus-visible{outline:2px solid #b8d99d;outline-offset:3px}
+#lobby .stakeBlock{margin-top:18px}
+#lobby .stakeRow{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:10px}
+#lobby .stakes{gap:5px}
+#lobby .stakes button{min-height:44px;padding:4px 2px;background:#15231a;border-color:#304137;border-radius:10px;font-size:12px;font-weight:500;color:#a7bca6;box-shadow:none}
+#lobby .stakes button.selected{background:#293b27;border-color:#a7c58d;color:#e3efd9;box-shadow:none}
+#lobby .moneyInput{margin:0;min-width:0}
+#lobby .moneyInput input{padding-right:46px!important}
+#lobby .moneyInput span{right:10px;font-size:10px;font-weight:500;color:#a5b69e;max-width:36px;text-overflow:ellipsis}
+#lobby .menuFields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 12px;margin-top:18px}
+#lobby .qualityField{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:7px;margin:0;min-width:0}
+#lobby .difficultyHint{margin:9px 0 0;color:#8da08f;font:10px/1.5 Rubik,Arial,sans-serif}
+#lobby .menuAdvanced{margin-top:16px;border-top:1px solid #2b3c30;border-bottom:1px solid #2b3c30}
+#lobby .menuAdvanced summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;min-height:44px;cursor:pointer;font-size:11px;color:#a4b5a7;touch-action:manipulation}
+#lobby .menuAdvanced summary::-webkit-details-marker{display:none}
+#lobby .menuAdvanced summary svg{width:14px;height:14px;fill:none;stroke:#9bb38f;stroke-width:1.6;transition:transform .15s}
+#lobby .menuAdvanced[open] summary svg{transform:rotate(180deg)}
+#lobby .advancedFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px;padding:0 0 16px}
+#lobby .menuStart{padding-top:15px}
+#lobby .goal{align-items:baseline;margin:0;gap:10px;font:11px/1.5 Rubik,Arial,sans-serif;color:#94a494}
+#lobby .goal span{min-width:0}
+#lobby .goal span b{color:#b5c5ae;font-weight:500;margin-left:4px}
+#lobby #goalValue{max-width:60%;font-weight:500;color:#d7e5c9}
+#lobby #play{margin-top:12px;min-height:50px;border-radius:12px;background:#bfdc9f;color:#172515;font:800 16px Rubik,Arial,sans-serif;letter-spacing:0;box-shadow:none;justify-content:space-between;padding:12px 18px}
+#lobby #play:active{transform:translateY(1px);box-shadow:none}
+#lobby .demoNote{font:10px/1.5 Rubik,Arial,sans-serif;color:#7f9482;margin:10px 0 0}
+@media(max-width:899px){
+ #lobby .lobbyTop{padding:14px 20px;max-width:488px}
+ #lobby .lobbyMain{grid-template-columns:minmax(0,1fr);align-content:start;max-width:488px;gap:18px;padding:12px 20px 24px}
+ #lobby .hero{max-width:none;width:100%;align-items:center}
+ #lobby .heroEyebrow{margin:0 0 7px;font-size:10px}
+ #lobby .brand{font-size:40px;letter-spacing:-1.8px}
+ #lobby .showcase{max-width:100%;width:100%;margin:14px 0 10px;border-radius:18px;height:105px}
+ #lobby #skinPreview{width:100%;height:100%;object-fit:contain}
+ #lobby .pickTile{min-height:56px;padding:8px}
+ #lobby .joinCard{padding:20px}
+ #lobby .joinHeading{margin-bottom:16px}
+ #lobby .joinHeading h2{font-size:18px}
+}
+@media(max-width:450px){
+ #lobby .lobbyTop{padding:12px 14px}
+ #lobby .lobbyMain{padding:4px 14px 20px;gap:14px}
+ #lobby .heroEyebrow{display:none}
+ #lobby .brand{font-size:36px}
+ #lobby .showcase{height:78px;margin:10px 0 8px;border-radius:14px}
+ #lobby .joinCard{padding:16px;border-radius:18px}
+ #lobby .joinHeading{margin-bottom:14px}
+ #lobby .joinHeading span{display:none}
+ #lobby .stakeBlock,#lobby .menuFields{margin-top:14px}
+ #lobby .menuFields{gap:12px}
+ #lobby .pickTile{grid-template-columns:30px minmax(0,1fr) 10px;gap:7px}
+ #lobby .pickTile .tileArt{width:30px;height:30px}
+ #lobby .stakes button{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){#lobby .menuAdvanced summary svg{transition:none}}

@@ -18,6 +18,7 @@ test('server serves local resources, compression, validators and rejects private
   });
   const page = await request('/');
   assert.equal(page.status, 200); assert.match(page.body.toString(), /game-core.js/);
+  const lobby = await request('/lobby.css?v=menu21'); assert.equal(lobby.status, 200); assert.match(lobby.headers['content-type'], /^text\/css/);
   for (const path of ['/game-core.js?v=1', '/arena-i18n.js?v=languages17', '/arena-effects.js?v=studio13', '/arena-labels.js?v=badges14', '/bot-ai.js?v=difficulty5', '/snake-collision.js?v=collision4', '/ribbon-mesh.js?v=visualfix3', '/ribbon-renderer.js?v=visualfix3', '/skins/vb_teal.png?v=31', '/flags/ve.png', '/fonts/lilita-one.woff2', '/maps/reg_stoneflags.webp?v=33']) {
     const res = await request(path); assert.equal(res.status, 200, path); assert.ok(res.body.length > 100);
   }
