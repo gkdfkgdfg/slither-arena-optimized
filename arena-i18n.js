@@ -52,6 +52,16 @@
    loot:'PRADĂ ×{multiplier}',combo:'COMBO ×{count}',cutOff:'L-AI BLOCAT!',anotherRival:'ÎNCĂ UN ADVERSAR',collectLoot:'COLECTEAZĂ PRADA',
    exitBanner:'IEȘIRE DESCHISĂ',boundaryHint:'AJUNGI LA MARGINEA VERDE',newStage:'NIVEL NOU DE PRADĂ'
   },
+  hu:{
+   topPlate:'Felső sáv',currentPlate:'Új',classicPlate:'Régi',showMultipliers:'Szorzók megjelenítése',lootPlain:'ZSÁKMÁNY',comboPlain:'KOMBÓ',target:'CÉL',pause:'Szünet',paused:'A menet szünetel',effects:'Effektek',on:'BE',off:'KI',resume:'Folytatás',leave:'Kilépés a zsákmány felvétele nélkül',
+   returnMenu:'Vissza a menübe',died:'MEGHALTÁL',again:'Új játék',home:'Menü',
+   deathInfo:'A zsákmány az arénában maradt. Idő: {time} · Kiiktatva: {kills}. Egyenleg: {balance}',
+   controls:'Egér / érintés — irányítás · Space — gyorsítás · Esc — szünet · Q — beváltás ennél: {multiplier}',
+   cashoutHint:'Beváltás: Q vagy a zöld határ',exitNeed:'A kilépéshez szükséges: {multiplier}',exitOpen:'A kijárat nyitva',targetValue:'Cél: {amount}',
+   lootProgress:'Zsákmány alakulása',leaderboard:'Ranglista',minimap:'Minitérkép',map:'TÉRKÉP',arena:'Kígyós aréna',sound:'Hang be- vagy kikapcsolása',length:'HOSSZ',kills:'KIIKTATVA',
+   loot:'ZSÁKMÁNY ×{multiplier}',combo:'KOMBÓ ×{count}',cutOff:'ELVÁGTAD AZ ÚTJÁT!',anotherRival:'ÚJABB ELLENFÉL',collectLoot:'GYŰJTSD ÖSSZE A ZSÁKMÁNYT',
+   exitBanner:'A KIJÁRAT NYITVA',boundaryHint:'ÉRD EL A ZÖLD HATÁRT',newStage:'ÚJ ZSÁKMÁNYSZINT'
+  },
   en:{
    topPlate:'Top panel',currentPlate:'Current',classicPlate:'Classic',showMultipliers:'Show multipliers',lootPlain:'LOOT',comboPlain:'COMBO',target:'TARGET',pause:'Pause',paused:'Round paused',effects:'Effects',on:'ON',off:'OFF',resume:'Resume',leave:'Leave without collecting loot',
    returnMenu:'Return to menu',died:'YOU DIED',again:'Play again',home:'Menu',
