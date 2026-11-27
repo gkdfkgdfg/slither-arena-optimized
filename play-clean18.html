@@ -336,6 +336,10 @@ dialog::backdrop{background:#03080dc7}
                     <span>Показывать валюту</span>
                     <b id="currencyState">ВКЛ</b>
                 </button>
+                <button id="toggleWinCurrency" class="optionToggle" type="button" aria-pressed="false">
+                    <span>Скрывать валюту в финале</span>
+                    <b id="winCurrencyState" aria-hidden="true">ВЫКЛ</b>
+                </button>
                 <button class="green big" type="submit">Сохранить</button>
             </form>
         </dialog>
@@ -2002,7 +2006,7 @@ function pickBotSkin(){
 }
 const BOT_COUNT=9;
 let exitUnlocked=false,deathTrails=[],rivalTiers=[],botKinds=[],roundDifficulty='easy';
-let prefs={currency:'USD',balance:1000,stake:10,name:'Player',color:0,sound:true,showCurrency:true,effects:true,skin:'lava',difficulty:'easy'};
+let prefs={currency:'USD',balance:1000,stake:10,name:'Player',color:0,sound:true,showCurrency:true,hideWinCurrency:false,effects:true,skin:'lava',difficulty:'easy'};
 try{Object.assign(prefs,JSON.parse(localStorage.getItem('slither-demo-v1')||'{}'))}catch{}
 prefs.currency=String(prefs.currency||'USD').slice(0,12);prefs.balance=Math.max(0,Math.min(1e12,Number(prefs.balance)||0));prefs.stake=Math.max(.01,Math.min(1e9,Number(prefs.stake)||10));prefs.color=Math.abs(Number(prefs.color)||0)%COLORS.length;
 prefs.effects=prefs.effects!==false;prefs.difficulty=BotAI.normalize(prefs.difficulty);prefs.exitX=ArenaCore.normalizeExitMultiplier(prefs.exitX);
@@ -2065,6 +2069,20 @@ showSkinTab(skinTab);
 
 COLORS.forEach((color,i)=>{const b=document.createElement('button');b.style.setProperty('--c',color);b.setAttribute('aria-label',['Зелёный','Голубой','Фиолетовый','Розовый','Золотой'][i]);b.classList.toggle('active',i===prefs.color);b.onclick=()=>{prefs.color=i;prefs.skin='neon';save();document.querySelectorAll('#swatches button').forEach((b,n)=>b.classList.toggle('active',n===i));drawSkin()};$('swatches').append(b)});
 $('toggleCurrency').onclick=()=>{prefs.showCurrency=!prefs.showCurrency;amountCache.clear();save();sync()};
+const winCurrencyToggle=$('toggleWinCurrency');
+if(winCurrencyToggle){
+ const syncWinCurrency=()=>{
+  const hidden=prefs.hideWinCurrency===true;
+  winCurrencyToggle.setAttribute('aria-pressed',String(hidden));
+  $('winCurrencyState').textContent=hidden?'ВКЛ':'ВЫКЛ';
+ };
+ winCurrencyToggle.onclick=()=>{
+  prefs.hideWinCurrency=prefs.hideWinCurrency!==true;
+  save();
+  syncWinCurrency();
+ };
+ syncWinCurrency();
+}
 $('editSettings').onclick=()=>{$('balance').value=prefs.balance;$('settings').showModal()};$('closeSettings').onclick=()=>$('settings').close();
 $('chooseSkin').onclick=()=>{showSkinTab(skinTabOf(prefs.skin));$('skinDialog').showModal()};$('closeSkins').onclick=()=>$('skinDialog').close();
 $('howTo').onclick=()=>$('howDialog').showModal();$('closeHow').onclick=$('howDone').onclick=()=>$('howDialog').close();
@@ -2167,7 +2185,7 @@ async function start(){
 $('play').onclick=start;$('again').onclick=async()=>{if(!await start()){ $('result').close();home()}};
 function home(){ arenaFX.reset();$('winOverlay').hidden=true;mode='menu';paused=false;boost=false;$('hud').hidden=true;$('lobby').hidden=false;$('result').close();$('pauseDialog').close();sync();sessionStake=prefs.stake;seed()}
 $('home').onclick=home;$('leave').onclick=home;
-function finish(success,manual=false){if(mode!=='play'||paused)return;if(success&&(!exitUnlocked||(!manual&&Math.max(Math.abs(player.x),Math.abs(player.y))<R)))return;mode='result';paused=false;boost=false;touchOrigin=null;arenaFX.reset();if(success){prefs.balance=Math.round((prefs.balance+player.value)*1000000)/1000000;save();tone(850,.25);/* videos: HUD stays, dimmed under the overlay; number like 157,737.46 */const won=ArenaLabels.details(player.value,sessionStake,prefs.currency,prefs.showCurrency,true,true);$('winNumber').textContent=won.amount;$('winCurrency').textContent=won.unit;$('winNumber').style.fontSize=Math.max(17,Math.min(52,(W-72)/Math.max(1,won.amount.length*.65)))+'px';$('winOverlay').hidden=false;$('winOverlay').focus();}else{tone(100,.3);$('resultTitle').textContent=tr('died');$('resultAmount').textContent=fmt(0);$('resultInfo').textContent=tr('deathInfo',{time:clock(elapsed),kills,balance:fmt(prefs.balance)});$('result').showModal()}}
+function finish(success,manual=false){if(mode!=='play'||paused)return;if(success&&(!exitUnlocked||(!manual&&Math.max(Math.abs(player.x),Math.abs(player.y))<R)))return;mode='result';paused=false;boost=false;touchOrigin=null;arenaFX.reset();if(success){prefs.balance=Math.round((prefs.balance+player.value)*1000000)/1000000;save();tone(850,.25);/* videos: HUD stays, dimmed under the overlay; number like 157,737.46 */const showWinCurrency=prefs.showCurrency&&prefs.hideWinCurrency!==true;const won=ArenaLabels.details(player.value,sessionStake,prefs.currency,showWinCurrency,true,true);$('winNumber').textContent=won.amount;$('winCurrency').textContent=won.unit;$('winNumber').style.fontSize=Math.max(17,Math.min(52,(W-72)/Math.max(1,won.amount.length*.65)))+'px';$('winOverlay').hidden=false;$('winOverlay').focus();}else{tone(100,.3);$('resultTitle').textContent=tr('died');$('resultAmount').textContent=fmt(0);$('resultInfo').textContent=tr('deathInfo',{time:clock(elapsed),kills,balance:fmt(prefs.balance)});$('result').showModal()}}
 $('winOverlay').onclick=home;
 $('result').addEventListener('cancel',e=>{e.preventDefault();home()});
 function togglePause(){if(mode!=='play')return;paused=!paused;boost=false;touchPoints.clear();steerPointer=null;touchOrigin=null;if(paused)$('pauseDialog').showModal();else $('pauseDialog').close()}
